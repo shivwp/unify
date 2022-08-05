@@ -29,6 +29,12 @@ class Project extends Model
         'updated_at',
         'deleted_at',
         'description',
+        'freelancer_type',
+        'project_duration',
+        'payment_base',
+        'level',
+        'english_level',
+        'files',
     ];
 
     public function notes()
