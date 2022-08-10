@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
-                <label for="description">Project description *</label>
+                <label for="description">Project description*</label>
                 <textarea id="description" name="description" class="form-control ">{{ old('description', isset($project) ? $project->description : '') }}</textarea>
                 @if($errors->has('description'))
                     <p class="help-block">
@@ -37,6 +37,21 @@
                 <p class="helper-block">
                     {{ trans('cruds.project.fields.description_helper') }}
                 </p>
+            </div>
+            <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }}">
+                <label for="client">Client Name*</label>
+                <select name="client_id" id="client" class="form-control select2" required>
+                    @if(isset($clients))
+                        @foreach($clients as $id => $client)
+                            <option value="{{ $id }}" {{ (isset($project) && $project->client ? $project->client->id : old('client_id')) == $id ? 'selected' : '' }}>{{ $client }}</option>
+                        @endforeach
+                    @endif
+                </select>
+                @if($errors->has('client_id'))
+                    <p class="help-block">
+                        {{ $errors->first('client_id') }}
+                    </p>
+                @endif
             </div>
             <div class="form-group">
                 <label class="form-label">Select Categories *</label>
@@ -71,22 +86,10 @@
                     @endif
                 </select>
             </div>
-            <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }}">
-                <label for="client">Client Name*</label>
-                <select name="client_id" id="client" class="form-control select2" required>
-                    @foreach($clients as $id => $client)
-                        <option value="{{ $id }}" {{ (isset($project) && $project->client ? $project->client->id : old('client_id')) == $id ? 'selected' : '' }}>{{ $client }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('client_id'))
-                    <p class="help-block">
-                        {{ $errors->first('client_id') }}
-                    </p>
-                @endif
-            </div>
+            
             
             <div class="form-group ">
-                <label for="start_date">Start Date *</label>
+                <label for="start_date">Start Date </label>
                 <input type="text" id="start_date" name="start_date" class="form-control date" value="{{ old('start_date', isset($project) ? $project->start_date : '') }}">
                
             </div>
@@ -139,9 +142,11 @@
             <div class="form-group {{ $errors->has('status_id') ? 'has-error' : '' }}">
                 <label for="status">Project Status *</label>
                 <select name="status_id" id="status" class="form-control select2">
-                    @foreach($statuses as $id => $status)
-                        <option value="{{ $id }}" {{ (isset($project) && $project->status ? $project->status->id : old('status_id')) == $id ? 'selected' : '' }}>{{ $status }}</option>
-                    @endforeach
+                    @if($statuses)
+                        @foreach($statuses as $id => $status)
+                            <option value="{{ $id }}" {{ (isset($project) && $project->status ? $project->status->id : old('status_id')) == $id ? 'selected' : '' }}>{{ $status }}</option>
+                        @endforeach
+                    @endif
                 </select>
                 @if($errors->has('status_id'))
                     <p class="help-block">

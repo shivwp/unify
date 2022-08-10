@@ -24,5 +24,10 @@ class ProjectCategory extends Model
         'deleted_at',
     ];
 
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
     
 }

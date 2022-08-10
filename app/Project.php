@@ -34,7 +34,7 @@ class Project extends Model
         'payment_base',
         'level',
         'english_level',
-        'files',
+        'project_images',
     ];
 
     public function notes()
@@ -70,5 +70,18 @@ class Project extends Model
     public function status()
     {
         return $this->belongsTo(ProjectStatus::class, 'status_id');
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(ProjectCategory::class);
+    }
+     public function skills()
+    {
+        return $this->belongsToMany(ProjectSkill::class);
+    }
+     public function listingtypes()
+    {
+        return $this->belongsToMany(ProjectListingType::class);
     }
 }

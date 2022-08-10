@@ -23,6 +23,10 @@ class ProjectSkill extends Model
         'updated_at',
         'deleted_at',
     ];
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
 
     
 }

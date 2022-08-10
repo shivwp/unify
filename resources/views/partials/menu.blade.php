@@ -47,7 +47,7 @@
                             </p>
                         </a>
                     </li>
-                @endcan--}}
+                @endcan
                 @can('note_access')
                     <li class="nav-item">
                         <a href="{{ route("admin.notes.index") }}" class="nav-link {{ request()->is('admin/notes') || request()->is('admin/notes/*') ? 'active' : '' }}">
@@ -59,7 +59,7 @@
                             </p>
                         </a>
                     </li>
-                @endcan
+                @endcan--}}
                 @can('document_access')
                     <li class="nav-item">
                         <a href="{{ route("admin.documents.index") }}" class="nav-link {{ request()->is('admin/documents') || request()->is('admin/documents/*') ? 'active' : '' }}">
@@ -85,7 +85,7 @@
                     </li>
                 @endcan
                 @can('project_access')
-                    <li class="nav-item has-treeview {{ request()->is('admin/projects*') ? 'menu-open' : '' }} {{ request()->is('admin/project-category*') ? 'menu-open' : '' }} {{ request()->is('admin/project-skill*') ? 'menu-open' : '' }} {{ request()->is('admin/project-listing-type*') ? 'menu-open' : '' }}">
+                    <li class="nav-item has-treeview {{ request()->is('admin/projects*') ? 'menu-open' : '' }} {{ request()->is('admin/project-category*') ? 'menu-open' : '' }} {{ request()->is('admin/project-skill*') ? 'menu-open' : '' }} {{ request()->is('admin/project-listing-type*') ? 'menu-open' : '' }} {{ request()->is('admin/project-statuses*') ? 'menu-open' : '' }}">
                         <a class="nav-link nav-dropdown-toggle" href="#">
                             <i class="fa-fw fas fa-briefcase">
 
@@ -103,7 +103,7 @@
 
                                         </i>
                                         <p>
-                                            <span>Projects</span>
+                                            <span>All Projects</span>
                                         </p>
                                     </a>
                                 </li>
@@ -115,7 +115,7 @@
 
                                         </i>
                                         <p>
-                                            <span>Category</span>
+                                            <span>Categories</span>
                                         </p>
                                     </a>
                                 </li>
@@ -139,7 +139,19 @@
 
                                         </i>
                                         <p>
-                                            <span>Listing Type</span>
+                                            <span>Listing Types</span>
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('project_status_access')
+                                <li class="nav-item">
+                                    <a href="{{ route("admin.project-statuses.index") }}" class="nav-link {{ request()->is('admin/project-statuses') || request()->is('admin/project-statuses/*') ? 'active' : '' }}">
+                                        <i class="fa-fw fas fa-server">
+
+                                        </i>
+                                        <p>
+                                            <span>Statuses</span>
                                         </p>
                                     </a>
                                 </li>
@@ -148,7 +160,7 @@
                     </li>
                 @endcan
                 @can('client_management_setting_access')
-                    <li class="nav-item has-treeview {{ request()->is('admin/currencies*') ? 'menu-open' : '' }} {{ request()->is('admin/transaction-types*') ? 'menu-open' : '' }} {{ request()->is('admin/income-sources*') ? 'menu-open' : '' }} {{ request()->is('admin/client-statuses*') ? 'menu-open' : '' }} {{ request()->is('admin/project-statuses*') ? 'menu-open' : '' }}">
+                    <li class="nav-item has-treeview {{ request()->is('admin/currencies*') ? 'menu-open' : '' }} {{ request()->is('admin/transaction-types*') ? 'menu-open' : '' }} {{ request()->is('admin/income-sources*') ? 'menu-open' : '' }} {{ request()->is('admin/client-statuses*') ? 'menu-open' : '' }} ">
                         <a class="nav-link nav-dropdown-toggle" href="#">
                             <i class="fa-fw fas fa-cog">
 
@@ -159,7 +171,33 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            @can('currency_access')
+                            @can('site_setting_access')
+                                <li class="nav-item">
+                                    {{--<a href="{{ route("admin.site-setting.index") }}" class="nav-link {{ request()->is('admin/site-setting') || request()->is('admin/site-setting/*') ? 'active' : '' }}">--}}
+                                    <a href="#" class="nav-link {{ request()->is('admin/site-setting') || request()->is('admin/site-setting/*') ? 'active' : '' }}">
+                                        <i class="fa-fw fas fa fa-cog">
+
+                                        </i>
+                                        <p>
+                                            <span>Site Settings</span>
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('mail_setting_acccess')
+                                <li class="nav-item">
+                                    {{--<a href="{{ route("admin.currencies.index") }}" class="nav-link {{ request()->is('admin/currencies') || request()->is('admin/currencies/*') ? 'active' : '' }}">--}}
+                                    <a href="#" class="nav-link {{ request()->is('admin/currencies') || request()->is('admin/currencies/*') ? 'active' : '' }}">
+                                        <i class="fa-fw fas fa-envelope">
+
+                                        </i>
+                                        <p>
+                                            <span>Mail Settings</span>
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            {{--@can('currency_access')
                                 <li class="nav-item">
                                     <a href="{{ route("admin.currencies.index") }}" class="nav-link {{ request()->is('admin/currencies') || request()->is('admin/currencies/*') ? 'active' : '' }}">
                                         <i class="fa-fw fas fa-money-bill">
@@ -206,19 +244,8 @@
                                         </p>
                                     </a>
                                 </li>
-                            @endcan
-                            @can('project_status_access')
-                                <li class="nav-item">
-                                    <a href="{{ route("admin.project-statuses.index") }}" class="nav-link {{ request()->is('admin/project-statuses') || request()->is('admin/project-statuses/*') ? 'active' : '' }}">
-                                        <i class="fa-fw fas fa-server">
-
-                                        </i>
-                                        <p>
-                                            <span>{{ trans('cruds.projectStatus.title') }}</span>
-                                        </p>
-                                    </a>
-                                </li>
-                            @endcan
+                            @endcan--}}
+                            
                         </ul>
                     </li>
                 @endcan

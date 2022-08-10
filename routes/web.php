@@ -50,6 +50,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('project-listing-type/destroy', 'ProjectListingTypeController@massDestroy')->name('project-listing-type.massDestroy');
     Route::resource('project-listing-type', 'ProjectListingTypeController');
 
+    // site setting
+    Route::delete('site-setting/destroy', 'SiteSettingController@massDestroy')->name('site-setting.massDestroy');
+    Route::resource('site-setting', 'SiteSettingController');
+
     // Clients
     Route::delete('clients/destroy', 'ClientController@massDestroy')->name('clients.massDestroy');
     Route::resource('clients', 'ClientController');
@@ -74,4 +78,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Clientreports
     Route::delete('client-reports/destroy', 'ClientReportController@massDestroy')->name('client-reports.massDestroy');
     Route::resource('client-reports', 'ClientReportController');
+
+    //ckeditor
+    Route::post('', [App\Http\Controllers\HomeController::class, 'upload'])->name('ckeditor.upload');
 });
