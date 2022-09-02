@@ -1,179 +1,165 @@
-@extends('layouts.admin')
-@section('content')
-<style type="text/css">
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: #787878 !important;
-    border: 1px solid #787878 !important;
-}
-</style>
-<div class="card">
-    <div class="card-header">
-        {{ trans('global.create') }} {{ trans('cruds.project.title_singular') }}
-    </div>
+@extends('layouts.master') @section('content')
 
-    <div class="card-body">
-        <form action="{{ route("admin.site-setting.store") }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                <label for="name">Project Name*</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($project) ? $project->name : '') }}" required>
-                @if($errors->has('name'))
-                    <p class="help-block">
-                        {{ $errors->first('name') }}
-                    </p>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.project.fields.name_helper') }}
-                </p>
-            </div>
-            <div class="form-group {{ $errors->has('description') ? 'has-error' : '' }}">
-                <label for="description">Project description*</label>
-                <textarea id="description" name="description" class="form-control ">{{ old('description', isset($project) ? $project->description : '') }}</textarea>
-                @if($errors->has('description'))
-                    <p class="help-block">
-                        {{ $errors->first('description') }}
-                    </p>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.project.fields.description_helper') }}
-                </p>
-            </div>
-            <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }}">
-                <label for="client">Client Name*</label>
-                <select name="client_id" id="client" class="form-control select2" required>
-                    @foreach($clients as $id => $client)
-                        <option value="{{ $id }}" {{ (isset($project) && $project->client ? $project->client->id : old('client_id')) == $id ? 'selected' : '' }}>{{ $client }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('client_id'))
-                    <p class="help-block">
-                        {{ $errors->first('client_id') }}
-                    </p>
-                @endif
-            </div>
-            <div class="form-group">
-                <label class="form-label">Select Categories *</label>
-                <select name="category[]" class="form-control select2" id="select-category" multiple required>
-                    <option value="" disabled>Select</option>
-                    @if(count($category) > 0)
-                        @foreach($category as $key => $cate)
-                        <option value="{{ $cate->id }}">{{ $cate->name }}</option>
-                        @endforeach
-                    @endif
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Select Skills *</label>
-                <select name="skills[]" class="form-control select2" id="select-skills" multiple required>
-                    <option value="" disabled>Select</option>
-                    @if(count($skill) > 0)
-                    @foreach($skill as $key => $val)
-                    <option value="{{ $val->id }}">{{ $val->name }}</option>
-                    @endforeach
-                    @endif
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Select Listing Type *</label>
-                <select name="listing[]" class="form-control select2" id="select-listing" multiple required>
-                    <option value="" disabled>Select</option>
-                    @if(count($listing) > 0)
-                    @foreach($listing as $key => $list)
-                    <option value="{{ $list->id }}">{{ $list->name }}</option>
-                    @endforeach
-                    @endif
-                </select>
-            </div>
-            
-            
-            <div class="form-group ">
-                <label for="start_date">Start Date </label>
-                <input type="text" id="start_date" name="start_date" class="form-control date" value="{{ old('start_date', isset($project) ? $project->start_date : '') }}">
-               
-            </div>
-            <div class="form-group">
-                <label for="project_duration">Project Duration *</label>
-                <input type="text" name="project_duration" class="form-control" value="" required>
-            </div>
-            <div class="form-group">
-                <label for="freelancer_type">Freelancer Type *</label>
-                <input type="text" name="freelancer_type" class="form-control" value="" required>
-            </div>
-            <div class="form-group">
-                <label for="payment_base">How do you want to pay*</label>
-                <select name="payment_base" id="client" class="form-control select2" required>
-                    <option value="">Please select</option>
-                    <option value="hourly">Hourly Based</option>
-                    <option value="fixed">Fixed Price</option>
-                </select>
-            </div>
-            
-            <div class="form-group {{ $errors->has('budget') ? 'has-error' : '' }}">
-                <label for="budget">Budget *</label>
-                <input type="number" id="budget" name="budget" class="form-control" value="{{ old('budget', isset($project) ? $project->budget : '') }}" step="0.01">
-                @if($errors->has('budget'))
-                    <p class="help-block">
-                        {{ $errors->first('budget') }}
-                    </p>
-                @endif
-                <p class="helper-block">
-                    {{ trans('cruds.project.fields.budget_helper') }}
-                </p>
-            </div>
-            <div class="form-group">
-                <label for="level">Level *</label>
-                <select name="level" id="client" class="form-control select2" required>
-                    <option value="">Please select</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="mediator">Mediator</option>
-                    <option value="expert">Expert</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="english_level">English Level *</label>
-                <select name="english_level" id="client" class="form-control select2" required>
-                    <option value="">Please select</option>
-                    <option value="beginner">Native</option>
-                    <option value="mediator">Fluent</option>
-                </select>
-            </div>
-            <div class="form-group {{ $errors->has('status_id') ? 'has-error' : '' }}">
-                <label for="status">Project Status *</label>
-                <select name="status_id" id="status" class="form-control select2">
-                    @foreach($statuses as $id => $status)
-                        <option value="{{ $id }}" {{ (isset($project) && $project->status ? $project->status->id : old('status_id')) == $id ? 'selected' : '' }}>{{ $status }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('status_id'))
-                    <p class="help-block">
-                        {{ $errors->first('status_id') }}
-                    </p>
-                @endif
-            </div>
-            {{--@if(!empty($property->gallery_image))
-                @php
-                $value = json_decode($property->gallery_image);
-                @endphp
-                @if(!empty($value))
-                <div class="even" style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
-                    @foreach($value as $multidata)
-                    <div class="parc">
-                        <span class="pip" data-title="{{$multidata}}">
-                            <img src="{{ url('/project-files').'/'.$multidata ?? "" }}" alt="" width="100" height="100">
-                            <a class="btn"><i class="fa fa-times remove" onclick="removeImage('{{$multidata}}')"></i></a>
-                        </span>
-                    </div>
-                    @endforeach
-                </div>
-                @endif
-                <input type="hidden" name="image1" id="gallery_img" value="{{$property->gallery_image}}">
-            @endif--}}
-            <label class="form-label mt-0">Add Multiple Images/Files </label>
-            <input type="file" class="form-control" name="image[]" value="" multiple>
-            <div>
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
-            </div>
-        </form>
-    </div>
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-lg-12">
+
+  <!-- PAGE-HEADER -->
+  <div class="card-header">
+    Site Setting
 </div>
+<!-- PAGE-HEADER END -->
+<div class="card">
+<div class="card-body" id="add_space">
+<form action="{{ route("admin.site-setting.store") }}" method="post" enctype="multipart/form-data">
+  @csrf
+  <div class="row">
+     <div class="col-md-2">
+      <div class="form-group">
+        <label class="control-label ">Business logo </label>
+        <input type="hidden" name="setting[0][name]" value="business_logo">
+        <input type="file" class="form-control" name="setting[0][value]" value="">
+      </div>
+    </div>
+    <div class="col-md-4 mt-3">
+      <div class="form-group">
+        <img src="" style="height:100px;width:200px;" alt="logo">
+      </div>
+    </div>
+    <div class="col-md-6"><div class="form-group">
+        <label class="control-label ">Unify Service Fee </label>
+        <input type="hidden" name="setting[100][name]" value="servicefee">
+        <input type="text" name="setting[100][value]" class="form-control" value="{{isset($settings['servicefee']) ? $settings['servicefee'] : ''}}">
+      </div></div>
+    
+  </div>
+  <div class="row">
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Country </label>
+        <input type="hidden" name="setting[1][name]" value="country">
+        <input type="text" name="setting[1][value]" class="form-control" value="{{isset($settings['country']) ? $settings['country'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">State </label>
+        <input type="hidden" name="setting[2][name]" value="state">
+        <input type="text" name="setting[2][value]" class="form-control" value="{{isset($settings['state']) ? $settings['state'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">City </label>
+        <input type="hidden" name="setting[3][name]" value="city">
+        <input type="text" name="setting[3][value]" class="form-control" value="{{isset($settings['city']) ? $settings['city'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Postcode </label>
+        <input type="hidden" name="setting[4][name]" value="postcode">
+        <input type="number" name="setting[4][value]" class="form-control" placeholder="postcode" value="{{isset($settings['postcode']) ? $settings['postcode'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Business Name </label>
+        <input type="hidden" name="setting[5][name]" value="business_name">
+        <input type="text" name="setting[5][value]" class="form-control" value="{{isset($settings['business_name']) ? $settings['business_name'] : ''}}">
+      </div>
+    </div>
+    
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Email </label>
+        <input type="hidden" name="setting[6][name]" value="email">
+        <input type="email" class="form-control" placeholder="Email" name="setting[6][value]" value="{{isset($settings['email']) ? $settings['email'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">PAN Number </label>
+        <input type="hidden" name="setting[7][name]" value="pan_number">
+        <input type="text" class="form-control" placeholder="PAN NUMBER" name="setting[7][value]" value="{{isset($settings['pan_number']) ? $settings['pan_number'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">CIN Number </label>
+        <input type="hidden" name="setting[8][name]" value="cin_number">
+        <input type="text" class="form-control" placeholder="CIN NUMBER" name="setting[8][value]" value="{{isset($settings['cin_number']) ? $settings['cin_number'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Site Url </label>
+        <input type="hidden" name="setting[9][name]" value="site_url">
+        <input type="url" class="form-control" name="setting[9][value]" placeholder="www.example.com" value="{{isset($settings['site_url']) ? $settings['site_url'] : ''}}">
+      </div>
+    </div>
+    <div class="col-md-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Helpline Number </label>
+        <input type="hidden" name="setting[10][name]" value="helpline_number">
+        <input type="number" class="form-control" placeholder="Helpline Number" name="setting[10][value]" value="{{isset($settings['helpline_number']) ? $settings['helpline_number'] : ''}}">
+      </div>
+    </div>
+    
+    <div class="col-md-12 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Address </label>
+        <input type="hidden" name="setting[11][name]" value="address">
+        <textarea name="setting[11][value]" class="form-control">{{isset($settings['address']) ? $settings['address'] : ''}}</textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer links -->
+  {{--<hr class="light-grey-hr" />
+  <div class="row">
+    <div class="col-sm-12">
+      <h4>Social Setting</h4>
+    </div>
+  </div>
+  @php $social=isset($setting[15]->value) ? json_decode($setting[15]->value,true):'' @endphp
+  <div class="row">
+    <div class="col-sm-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Facebook</label>
+        <input type="hidden" name="id_15" value="{{ isset($setting[15]->id)?$setting[15]->id:""}}">
+        <input type="hidden" name="name_15" value="Social Info">
+        <input type="text" class="form-control" id="exampleInputuname_1" placeholder="Facebook" name="facebook" value="{{ isset($social['facebook']) ? $social['facebook']:""}}">
+      </div>
+    </div>
+    <div class="col-sm-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Twitter</label>
+        <input type="text" class="form-control" id="exampleInputuname_1" placeholder="Twitter" name="twitter" value="{{ isset($social['twitter']) ? $social['twitter']:""}}">
+      </div>
+    </div>
+    <div class="col-sm-6 mt-3">
+      <div class="form-group">
+        <label class="control-label ">Instagram</label>
+        <input type="text" class="form-control" id="exampleInputuname_1" placeholder="Instagram" name="instagram" value="{{ isset($social['instagram']) ? $social['instagram']:""}}">
+      </div>
+    </div>
+    <div class="col-sm-6 mt-3">
+      <div class="form-group">
+        <label class="control-label">Linkedin</label>
+        <input type="text" class="form-control" id="exampleInputuname_1" placeholder="Linkedin" name="linkedin" value="{{ isset($social['linkedin']) ? $social['linkedin']:""}}">
+      </div>
+    </div>
+  </div>--}}
+  <div class="form-actions mt-3" id="add_space">
+  <button class="btn btn-danger">Save & update</button>
+</div>
+</div>
+</form>
+</div>
+</div>
+
 @endsection

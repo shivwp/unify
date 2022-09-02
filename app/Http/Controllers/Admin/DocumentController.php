@@ -21,7 +21,7 @@ class DocumentController extends Controller
     {
         abort_if(Gate::denies('document_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $documents = Document::all();
+        $documents = Document::paginate(10);
 
         return view('admin.documents.index', compact('documents'));
     }

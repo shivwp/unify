@@ -25,6 +25,9 @@ class Project extends Model
         'client_id',
         'status_id',
         'start_date',
+        'end_date',
+        'total_budget',
+        'per_hour_budget',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -34,6 +37,7 @@ class Project extends Model
         'payment_base',
         'level',
         'english_level',
+        'scop',
         'project_images',
     ];
 

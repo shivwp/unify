@@ -5,13 +5,16 @@ Route::redirect('/home', '/admin');
 Auth::routes(['register' => false]);
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
+    Route::get('logout', 'HomeController@logout')->name('logout');
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('dashboard', 'HomeController@dashboard')->name('dashboard');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionsController');
 
     // Roles
     Route::delete('roles/destroy', 'RolesController@massDestroy')->name('roles.massDestroy');
+    
     Route::resource('roles', 'RolesController');
 
     // Users
@@ -21,7 +24,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Currencies
     Route::delete('currencies/destroy', 'CurrencyController@massDestroy')->name('currencies.massDestroy');
     Route::resource('currencies', 'CurrencyController');
-
     // Transactiontypes
     Route::delete('transaction-types/destroy', 'TransactionTypeController@massDestroy')->name('transaction-types.massDestroy');
     Route::resource('transaction-types', 'TransactionTypeController');
@@ -57,12 +59,33 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Clients
     Route::delete('clients/destroy', 'ClientController@massDestroy')->name('clients.massDestroy');
     Route::resource('clients', 'ClientController');
+    Route::get('clients-show/{id}','ClientController@show')->name('client');
 
     // Projects
     Route::delete('projects/destroy', 'ProjectController@massDestroy')->name('projects.massDestroy');
     Route::resource('projects', 'ProjectController');
+    Route::get('/projects-pdf', 'ProjectController@createPDF');
+    Route::get('/projects-excel', 'ProjectController@export_in_excel');
+    //subscription
+      
+    Route::post('service/{id}', 'ServicesController@destroy')->name('service');
+    Route::get('service-update/{id}', 'ServicesController@edit')->name('service');
+    Route::resource('service', 'ServicesController');
 
     // Notes
+
+    Route::post('plan/{id}', 'SubscriptionPlansController@destroy')->name('plan');
+    Route::get('plan-update/{id}', 'SubscriptionPlansController@edit')->name('plan');
+    Route::resource('plan', 'SubscriptionPlansController');
+
+    //proposals
+
+    Route::post('proposal/{id}', 'ProposalController@destroy')->name('proposal');
+    Route::get('proposal-update/{id}', 'ProposalController@edit')->name('proposal');
+    Route::get('proposal-show/{id}', 'ProposalController@show')->name('proposal');    
+    Route::resource('proposal', 'ProposalController');
+
+    //Notes
     Route::delete('notes/destroy', 'NoteController@massDestroy')->name('notes.massDestroy');
     Route::resource('notes', 'NoteController');
 

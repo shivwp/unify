@@ -9,8 +9,8 @@ use App\SiteSetting;
 class SiteSettingController extends Controller
 {
     public function index(){
-        $d['setting_data'] = SiteSetting::pluck('name','value');
-        return view('admin/siteSetting/create');
+        $d['settings'] = SiteSetting::pluck('value','name');
+        return view('admin/siteSetting/create',$d);
     }
 
     public function create(){
@@ -18,6 +18,16 @@ class SiteSettingController extends Controller
     }
 
     public function store(Request $request){
-        
+       
+        $setting_data = '';
+        foreach ($request->setting as $value) {
+            $setting_data = SiteSetting::updateOrCreate([
+                'name' => $value['name'],
+            ],
+            [
+                'value' => isset($value['value']) ? $value['value'] : '' ,
+            ]);
+        }
+        return redirect()->back()->with('message','Setting data saved Successfully');
     }
 }

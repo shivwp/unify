@@ -9,6 +9,8 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Project;
 use App\ProjectStatus;
+use App\Exports\ProjectExport;
+use Maatwebsite\Excel\Facades\Excel;    
 use App\ProjectCategory;
 use App\ProjectListingType;
 use App\ProjectSkill;
@@ -16,17 +18,54 @@ use App\ProjectProjectSkill;
 use App\ProjectProjectCategory;
 use App\ProjectProjectListingType;
 use Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Intervention\Image\ImageManagerStatic as Image;
-
+use DateTime;
+use PDF;
+use App\Project_proposals;
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('project_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $dt = new DateTime();
+        
+        $q = Project::query();
 
-        $d['projects'] = Project::all();
+        $d['year']=$dt->format('Y');
+        $d['month']=$dt->format('m');
+        $d['day']=$dt->format('d');
+
+        if (isset($request->day) || isset($request->month) || isset($request->year)) {
+
+           if ($request->day=='all' && $request->month=='all') {
+            $q->whereYear('created_at', '=', $request->year);
+            $d['day']='all';
+            $d['month']='all';
+            $d['year']=$request->year;
+
+           }elseif($request->day=='all'){
+
+            $q->whereYear('created_at', '=', $request->year)->whereMonth('created_at', '=', $request->month);
+            $d['day']='all';
+            $d['month']=$request->month;
+            $d['year']=$request->year;
+           }else{
+            $q->whereDate('created_at', '=', date(''.$request->year.'-'.$request->month.'-'.$request->day.''));
+            $d['day']=$request->day;
+            $d['month']=$request->month;
+            $d['year']=$request->year;
+           }
+
+           
+         
+
+        }
+
+        
+         $d['projects']=$q->paginate(10);
 
         return view('admin.projects.index', $d);
     }
@@ -45,13 +84,16 @@ class ProjectController extends Controller
     }
 
     public function store(StoreProjectRequest $request)
-    {
+    { 
+      
         // dd($request);
         $project = Project::create([
             'name' =>$request->name,
             'description' =>$request->description,
             'start_date' =>$request->start_date,
-            'budget' =>$request->budget,
+            'end_date' =>$request->end_date,
+            'total_budget' =>$request->total_budget,
+            'per_hour_budget' =>$request->per_hour_budget,
             'client_id' =>$request->client_id,
             'status_id' =>$request->status_id,
             'freelancer_type' =>$request->freelancer_type,
@@ -59,7 +101,9 @@ class ProjectController extends Controller
             'payment_base' =>$request->payment_base,
             'level' =>$request->level,
             'english_level' =>$request->english_level,
+            'scop' =>$request->scop,
         ]);
+      
         if ($request->hasfile('image')) {
           $file1 = $request->file('image');
           $image_name = [];
@@ -92,7 +136,7 @@ class ProjectController extends Controller
                 foreach($project_category as $vlu){
                     $cat = ProjectProjectCategory::create([
                         'project_id'=>$project->id,
-                        'category_id'=>$vlu,
+                        'project_category_id'=>$vlu,
                     ]);
                     $cat->save();
                 }
@@ -102,7 +146,7 @@ class ProjectController extends Controller
                 foreach($project_skills as $skl){
                     $skil = ProjectProjectSkill::create([
                         'project_id'=>$project->id,
-                        'skill_id'=>$skl,
+                        'project_skill_id'=>$skl,
                     ]);
                     $skil->save();
                 }
@@ -112,7 +156,7 @@ class ProjectController extends Controller
                 foreach($project_listing as $list){
                     $listingg = ProjectProjectListingType::create([
                         'project_id'=>$project->id,
-                        'listing_type_id'=>$list,
+                        'project_listing_type_id'=>$list,
                     ]);
                     $listingg->save();
                 }
@@ -134,17 +178,21 @@ class ProjectController extends Controller
         
         $d['project'] = $project;
 
+        
+        
+     
         return view('admin.projects.edit',$d);
     }
 
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        // dd($project);
         $project = Project::where('id',$request->project_id)->update([
             'name' =>$request->name,
             'description' =>$request->description,
             'start_date' =>$request->start_date,
-            'budget' =>$request->budget,
+            'end_date' =>$request->end_date,
+            'total_budget' =>$request->total_budget,
+            'per_hour_budget' =>$request->per_hour_budget,
             'client_id' =>$request->client_id,
             'status_id' =>$request->status_id,
             'freelancer_type' =>$request->freelancer_type,
@@ -152,6 +200,7 @@ class ProjectController extends Controller
             'payment_base' =>$request->payment_base,
             'level' =>$request->level,
             'english_level' =>$request->english_level,
+            'scop' =>$request->scop,
         ]);
         if ($request->hasfile('image')) {
           $file1 = $request->file('image');
@@ -215,10 +264,11 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         abort_if(Gate::denies('project_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
+        
+        $proposals=Project_proposals::where('project_id',$project->id)->orderby('id','desc')->get();
         $project->load('client', 'status','categories','skills','listingtypes');
 
-        return view('admin.projects.show', compact('project'));
+        return view('admin.projects.show', compact('project','proposals'));
     }
 
     public function destroy(Project $project)
@@ -235,5 +285,24 @@ class ProjectController extends Controller
         Project::whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+    //   public function createPDF() {
+      
+    //   $data = Project::all();
+
+    //   view()->share('employee',$data);
+    //   $pdf = PDF::loadView('pdf_view', $data);
+    
+    //   return $pdf->download('pdf_file.pdf');
+    // }
+     public function createPDF()
+    {
+      $projects=Project::all();
+      $pdf = PDF::loadView('admin/pdf/projects', compact('projects'));
+     return $pdf->download('download.pdf');
+    }
+    public function export_in_excel() 
+    {
+        return Excel::download(new ProjectExport, 'users.xlsx');
     }
 }

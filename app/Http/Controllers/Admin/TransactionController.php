@@ -21,7 +21,7 @@ class TransactionController extends Controller
     {
         abort_if(Gate::denies('transaction_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $transactions = Transaction::all();
+        $transactions = Transaction::paginate(10);
 
         return view('admin.transactions.index', compact('transactions'));
     }

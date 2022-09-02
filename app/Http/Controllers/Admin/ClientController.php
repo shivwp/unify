@@ -9,16 +9,20 @@ use App\Http\Requests\MassDestroyClientRequest;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use Gate;
+use App\Project;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use DB;
 class ClientController extends Controller
 {
     public function index()
     {
         abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clients = Client::all();
+        $clients =DB::table('users')
+        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+        ->where('role_user.role_id', '=', 2)
+        ->where('users.deleted_at','=',null)->paginate(10);
 
         return view('admin.clients.index', compact('clients'));
     }
@@ -40,9 +44,12 @@ class ClientController extends Controller
     }
 
     public function edit(Client $client)
-    {
+    { 
+        
         abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        
+        
         $statuses = ClientStatus::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
         $client->load('status');
@@ -57,13 +64,19 @@ class ClientController extends Controller
         return redirect()->route('admin.clients.index');
     }
 
-    public function show(Client $client)
+    public function show($id)
     {
         abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $client->load('status');
+        $clients =DB::table('users')
+        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+        ->where('role_user.role_id', '=', 2)
+        ->where('users.deleted_at','=',null)
+        ->where('users.id',$id)->first();
+        $Projects=Project::where('client_id',$id)->get();
+     
 
-        return view('admin.clients.show', compact('client'));
+        return view('admin.clients.show',compact('clients','Projects'));
     }
 
     public function destroy(Client $client)

@@ -17,7 +17,7 @@ class ProjectListingTypeController extends Controller
     {
         abort_if(Gate::denies('project_listing_type_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $d['projectListingType'] = ProjectListingType::all();
+        $d['projectListingType'] = ProjectListingType::paginate(10);
 
         return view('admin.projectListingType.index',$d);
     }

@@ -17,33 +17,42 @@ class ProjectCategoryController extends Controller
     {
         abort_if(Gate::denies('project_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $d['projectCategory'] = ProjectCategory::all();
+        $d['projectCategory'] = ProjectCategory::paginate(10);
 
         return view('admin.projectCategory.index',$d);
     }
 
     public function create()
     {
-        return view('admin.projectCategory.create');
+        $Category=ProjectCategory::where("parent_id",'0')->get();
+
+        return view('admin.projectCategory.create',compact('Category'));
     }
 
     public function store(Request $request)
     {
-        $projectCategory = ProjectCategory::create($request->all());
+        $projectCategory = new ProjectCategory;
+        $projectCategory->name=$request->name;
+        $projectCategory->parent_id=$request->parent_id;
+        $projectCategory->save();
 
         return redirect()->route('admin.project-category.index');
     }
 
     public function edit(ProjectCategory $projectCategory)
     {
+      
         abort_if(Gate::denies('project_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        return view('admin.projectCategory.edit', compact('projectCategory'));
+        $Category=ProjectCategory::where("parent_id",'0')->get();
+        return view('admin.projectCategory.edit', compact('projectCategory','Category'));
     }
 
     public function update(Request $request, ProjectCategory $projectCategory)
     {
-        $projectCategory->update($request->all());
+        $projectCategory1=ProjectCategory::where('id',$projectCategory->id)->first();
+        $projectCategory1->name=$request->name;
+        $projectCategory1->parent_id=$request->parent_id;
+        $projectCategory1->save();
 
         return redirect()->route('admin.project-category.index');
     }

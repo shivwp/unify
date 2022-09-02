@@ -173,8 +173,7 @@
                         <ul class="nav nav-treeview">
                             @can('site_setting_access')
                                 <li class="nav-item">
-                                    {{--<a href="{{ route("admin.site-setting.index") }}" class="nav-link {{ request()->is('admin/site-setting') || request()->is('admin/site-setting/*') ? 'active' : '' }}">--}}
-                                    <a href="#" class="nav-link {{ request()->is('admin/site-setting') || request()->is('admin/site-setting/*') ? 'active' : '' }}">
+                                    <a href="{{ route("admin.site-setting.index") }}" class="nav-link {{ request()->is('admin/site-setting') || request()->is('admin/site-setting/*') ? 'active' : '' }}">
                                         <i class="fa-fw fas fa fa-cog">
 
                                         </i>
@@ -186,8 +185,7 @@
                             @endcan
                             @can('mail_setting_acccess')
                                 <li class="nav-item">
-                                    {{--<a href="{{ route("admin.currencies.index") }}" class="nav-link {{ request()->is('admin/currencies') || request()->is('admin/currencies/*') ? 'active' : '' }}">--}}
-                                    <a href="#" class="nav-link {{ request()->is('admin/currencies') || request()->is('admin/currencies/*') ? 'active' : '' }}">
+                                    <a href="{{ route("admin.currencies.index") }}" class="nav-link {{ request()->is('admin/currencies') || request()->is('admin/currencies/*') ? 'active' : '' }}">
                                         <i class="fa-fw fas fa-envelope">
 
                                         </i>

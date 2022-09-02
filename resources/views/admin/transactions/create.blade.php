@@ -1,5 +1,12 @@
-@extends('layouts.admin')
-@section('content')
+@extends('layouts.master') @section('content')
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-lg-12">
+            
 
 <div class="card">
     <div class="card-header">
@@ -25,6 +32,7 @@
             <div class="form-group {{ $errors->has('transaction_type_id') ? 'has-error' : '' }}">
                 <label for="transaction_type">{{ trans('cruds.transaction.fields.transaction_type') }}*</label>
                 <select name="transaction_type_id" id="transaction_type" class="form-control select2" required>
+                    <option value="1" >dg</option>
                     @foreach($transaction_types as $id => $transaction_type)
                         <option value="{{ $id }}" {{ (isset($transaction) && $transaction->transaction_type ? $transaction->transaction_type->id : old('transaction_type_id')) == $id ? 'selected' : '' }}>{{ $transaction_type }}</option>
                     @endforeach
@@ -38,6 +46,7 @@
             <div class="form-group {{ $errors->has('income_source_id') ? 'has-error' : '' }}">
                 <label for="income_source">{{ trans('cruds.transaction.fields.income_source') }}*</label>
                 <select name="income_source_id" id="income_source" class="form-control select2" required>
+                    <option value="1" >dg</option>
                     @foreach($income_sources as $id => $income_source)
                         <option value="{{ $id }}" {{ (isset($transaction) && $transaction->income_source ? $transaction->income_source->id : old('income_source_id')) == $id ? 'selected' : '' }}>{{ $income_source }}</option>
                     @endforeach
@@ -114,5 +123,5 @@
             </div>
         </form>
     </div>
-</div>
+</div> 
 @endsection

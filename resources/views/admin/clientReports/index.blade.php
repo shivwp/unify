@@ -1,5 +1,12 @@
-@extends('layouts.admin')
-@section('content')
+@extends('layouts.master') @section('content')
+
+<div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-lg-12">
+            
 <h3 class="page-title">{{ trans('cruds.clientReport.title') }}</h3>
 
 <form action="" method="GET">
@@ -12,9 +19,9 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 mb-3">
             <label class="control-label">&nbsp;</label><br>
-            <input class="btn btn-primary" type="submit" value="{{ trans('global.submit') }}">
+            <input class="btn btn-success" type="submit" value="{{ trans('global.submit') }}">
         </div>
     </div>
 </form>
@@ -55,5 +62,5 @@
         </div>
 
     </div>
-</div>
+</div> 
 @endsection

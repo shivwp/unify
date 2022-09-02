@@ -8,6 +8,7 @@ use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use App\Permission;
 use Gate;
+
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,7 +18,7 @@ class PermissionsController extends Controller
     {
         abort_if(Gate::denies('permission_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $permissions = Permission::all();
+        $permissions = Permission::paginate(10);
 
         return view('admin.permissions.index', compact('permissions'));
     }
