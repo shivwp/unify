@@ -50,10 +50,11 @@
             </div>
             <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }} mt-3">
                 <label for="client">Client Name*</label>
+                
                 <select name="client_id" id="client" class="form-control " required>
                     @if(isset($clients)) 
-                        @foreach($clients as $id => $client)
-                            <option value="{{ $id }}" {{ (isset($project) && $project->client ? $project->client->id : old('client_id')) == $id ? 'selected' : '' }}>{{ $client }}</option>
+                        @foreach($clients as $client)
+                            <option value="{{ $client->id }}" @if($project->client_id==$client->id) selected @endif >{{ $client->name }}</option>
                         @endforeach
                     @endif
                 </select>

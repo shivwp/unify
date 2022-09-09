@@ -4,11 +4,14 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+// use Cviebrock\EloquentSluggable\Sluggable;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
     use SoftDeletes;
+    // use Sluggable;
 
     public $table = 'projects';
 
@@ -58,7 +61,7 @@ class Project extends Model
 
     public function client()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->hasOne('App\User', 'id', 'client_id');
     }
 
     public function getStartDateAttribute($value)
@@ -88,4 +91,19 @@ class Project extends Model
     {
         return $this->belongsToMany(ProjectListingType::class);
     }
-}
+//     public function sluggable(): array
+
+//     {
+
+//         return [
+
+//             'slug' => [
+
+//                 'source' => 'name'
+
+//             ]
+
+//         ];
+
+//     }
+ }

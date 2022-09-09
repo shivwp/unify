@@ -19,17 +19,37 @@
   <div class="row">
      <div class="col-md-2">
       <div class="form-group">
-        <label class="control-label ">Business logo </label>
-        <input type="hidden" name="setting[0][name]" value="business_logo">
-        <input type="file" class="form-control" name="setting[0][value]" value="">
+        <label class="control-label ">Business logo 1 </label>
+       
+        <input type="file" class="form-control" name="business_logo1" value="">
       </div>
     </div>
     <div class="col-md-4 mt-3">
+    @if(!empty($settings['business_logo1']))
+   
       <div class="form-group">
-        <img src="" style="height:100px;width:200px;" alt="logo">
+        <img src="{{ url('/images/logo').'/'.$settings['business_logo1'] ?? "" }}" style="height:50px;width:120px;" alt="logo">
+      
+      @endif
       </div>
     </div>
-    <div class="col-md-6"><div class="form-group">
+    <div class="col-md-2">
+   
+      <div class="form-group">
+        <label class="control-label">Business logo 2</label>
+    
+        <input type="file" class="form-control" name="business_logo2" value="">
+      </div>
+   
+    </div>
+    <div class="col-md-4 mt-3">
+      @if(!empty($settings['business_logo2']))
+      <div class="form-group">
+      <img src="{{ url('/images/logo').'/'.$settings['business_logo2'] ?? "" }}" style="height:50px;width:120px;" alt="logo">
+      </div> 
+      @endif
+    </div>
+    <div class="col-md-12 mt-3"><div class="form-group">
         <label class="control-label ">Unify Service Fee </label>
         <input type="hidden" name="setting[100][name]" value="servicefee">
         <input type="text" name="setting[100][value]" class="form-control" value="{{isset($settings['servicefee']) ? $settings['servicefee'] : ''}}">

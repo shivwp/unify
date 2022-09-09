@@ -6,7 +6,7 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
 
-            @can('client_create')
+            <!-- @can('client_create')
             <div style="margin-bottom: 10px;" class="row">
                 <div class="col-lg-12">
                     <a class="btn btn-success" href="{{ route("admin.clients.create") }}">
@@ -14,7 +14,7 @@
                     </a>
                 </div>
             </div>
-            @endcan
+            @endcan -->
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">

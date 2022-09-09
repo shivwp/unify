@@ -46,7 +46,7 @@
 
                 <tbody>
                     @foreach($entries as $date => $info)
-                        @foreach($info as $currency => $row)
+                        <!-- @foreach($info as $currency => $row)
                             <tr>
                                 <td>{{ $date }}</td>
                                 <td>{{ number_format($row['income'],2) }} {{ $currency }}</td>
@@ -55,7 +55,7 @@
                                 <td>{{ number_format($row['total'],2) }} {{ $currency }}</td>
                             </tr>
                             <?php $date = ''; ?>
-                        @endforeach
+                        @endforeach -->
                     @endforeach
                 </tbody>
             </table>

@@ -11,11 +11,14 @@
 
         <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
             <!-- Search -->
+          
             <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center">
-                    <i class="bx bx-search fs-4 lh-0"></i>
-                    <input type="text" class="form-control border-0 shadow-none" placeholder="Search..."
+                   <form action="" method="GET" class="d-flex">
+                  <div type="submit"> <i class="bx bx-search fs-4 lh-0 mt-2"></i></div>
+                    <input type="text" name="search" value="" class="form-control border-0 shadow-none" placeholder="Search..."
                         aria-label="Search..." />
+                   </form>
                 </div>
             </div>
             <!-- /Search -->

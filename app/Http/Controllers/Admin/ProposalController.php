@@ -27,12 +27,29 @@ use DB;
 use App\Project_proposals;
 class ProposalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        abort_if(Gate::denies('project_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
+    
+       $q =Project_proposals::query();
+       $d['pagination']='10';
+       if($request->pagination){
+        $d['pagination']=$request->pagination;
+    }
+        $d['project']=Project::all();
+        $d['freelancer']= DB::table('users')
+        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+        ->where('role_user.role_id', '=', 2)
+        ->where('users.deleted_at','=',null)->get();
+        if($request->freelancer){
+          $q->where('freelancer_id',$request->freelancer);
+        }
 
-        $d['proposal']=Project_proposals::orderby('id','desc')->paginate(10);
-
+        if($request->project){
+          $q->where('project_id',$request->project);
+        }
+        
+        $d['proposal']=$q->paginate( $d['pagination']);
         return view('admin.proposals.index', $d);
     }
 
@@ -133,8 +150,8 @@ class ProposalController extends Controller
       }
         $Proposal=Project_proposals::where('id',$project)->first();
        
-        $Proposal->project_id=$request->project_id;
-        $Proposal->freelancer_id=$request->freelancer;
+        // $Proposal->project_id=$request->project_id;
+        // $Proposal->freelancer_id=$request->freelancer;
         $Proposal->amount=$request->amount;
         $Proposal->status=$request->status;
         $Proposal->description=$request->description;

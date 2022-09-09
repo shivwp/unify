@@ -50,8 +50,8 @@
                 <label for="client">Client Name*</label>
                 <select name="client_id" id="client" class="form-control " required>
                     @if(isset($clients))
-                        @foreach($clients as $id => $client)
-                            <option value="{{ $id }}" {{ (isset($project) && $project->client ? $project->client->id : old('client_id')) == $id ? 'selected' : '' }}>{{ $client }}</option>
+                        @foreach($clients as  $client)
+                            <option value="{{ $client->id }}" >{{ $client->name }}</option>
                         @endforeach
                     @endif
                 </select>

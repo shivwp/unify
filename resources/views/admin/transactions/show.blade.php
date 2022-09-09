@@ -40,14 +40,14 @@
                             {{ $transaction->transaction_type->name ?? '' }}
                         </td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <th>
                             {{ trans('cruds.transaction.fields.income_source') }}
                         </th>
                         <td>
                             {{ $transaction->income_source->name ?? '' }}
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <th>
                             {{ trans('cruds.transaction.fields.amount') }}
@@ -56,14 +56,14 @@
                             ${{ $transaction->amount }}
                         </td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <th>
                             {{ trans('cruds.transaction.fields.currency') }}
                         </th>
                         <td>
                             {{ $transaction->currency->name ?? '' }}
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <th>
                             {{ trans('cruds.transaction.fields.transaction_date') }}
@@ -90,7 +90,7 @@
                     </tr>
                 </tbody>
             </table>
-            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
+            <a style="margin-top:20px;" class="btn btn-success" href="{{ url()->previous() }}">
                 {{ trans('global.back_to_list') }}
             </a>
         </div>

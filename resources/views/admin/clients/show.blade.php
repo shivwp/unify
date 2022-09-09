@@ -104,7 +104,7 @@
                         </td>
                       
                         <td>
-                            {{ $project->description ?? '' }}
+                           {!! \Illuminate\Support\Str::limit($project->description, 40) !!}
                         </td>
                         <td>
                             {{ $project->start_date ?? '' }}

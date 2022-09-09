@@ -24,6 +24,7 @@
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="{{ URL::asset('admin/assets/vendor/fonts/boxicons.css') }}" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/vendor/libs/flatpickr/flatpickr.css" />
     <!-- Core CSS -->
     <link rel="stylesheet" href="assets/vendor/libs/select2/select2.css " />
     <link rel="stylesheet" href="{{ URL::asset('admin/assets/vendor/css/core.css') }}"

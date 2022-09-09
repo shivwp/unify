@@ -56,7 +56,7 @@
                             {{ $project->name ?? '' }}
                         </td>
                         <td style="margin-left: 3px;">
-                            {{ $project->client->first_name ?? '' }}
+                            {{ $project->client->name ?? '' }}
                         </td>
                         <td style="margin-left: 3px;">
                             {{ $project->description ?? '' }}

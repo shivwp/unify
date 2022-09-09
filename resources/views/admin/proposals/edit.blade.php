@@ -21,7 +21,7 @@
             <input type="hidden" id="servicefee" value="{{$servicefee->value}}">
             <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                 <label for="name">Project/job</label>
-               <select  id="Project"  class="form-control mt-2" required>
+               <select  id="Project"  class="form-control mt-2" disabled>
                <option >Select Project/Job</option>
                 @foreach($Project as $item)
                   <option value="{{$item->id}}" data="{{$item->payment_base}}"  @if($proposals->project_id==$item->id) selected @endif>{{$item->name}}</option>
@@ -59,7 +59,7 @@
             </div>
             <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }} mt-3">
                 <label for="name">Freelancer</label>
-               <select name="freelancer" id="Project"  class="form-control mt-2" required>
+               <select name="freelancer" id="Project"  class="form-control mt-2" disabled>
                <option >Select Freelancer</option>
                 @foreach($freelancer as $item)
                   <option value="{{$item->id}}" @if($proposals->freelancer_id==$item->id) selected @endif>{{$item->name}}</option>

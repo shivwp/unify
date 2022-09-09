@@ -1,21 +1,14 @@
 <footer class="content-footer footer bg-footer-theme">
     <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
         <div class="mb-2 mb-md-0">
-            ©
-            <script>
+           
+           
+       
+            <a href="#" target="_blank" class="footer-link fw-bolder"> Copyright  ©  <script>
                 document.write(new Date().getFullYear());
-            </script>
-            , made with by
-            <a href="#" target="_blank" class="footer-link fw-bolder">Eoxys It</a>
+            </script> Unify. Designed by Eoxysit All rights reserved.</a>
         </div>
-        <div>
-            <a href="#" class="footer-link me-4" target="_blank">License</a>
-            <a href="#" target="_blank" class="footer-link me-4">More Themes</a>
-
-            <a href="#" target="_blank" class="footer-link me-4">Documentation</a>
-
-            <a href="#" target="_blank" class="footer-link me-4">Support</a>
-        </div>
+        
     </div>
 </footer>
 <!-- / Footer -->
@@ -33,7 +26,7 @@
 <!-- / Layout wrapper -->
 
 
-
+<script src="https://cdn.jsdelivr.net/gh/linways/table-to-excel@v1.0.4/dist/tableToExcel.js"></script>
 <!-- Core JS -->
 <!-- build:js assets/vendor/js/core.js -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -222,33 +215,82 @@
 </script>
 <script>
     function fnExcelReport() {
-        var table = document.getElementById('exportToTable'); // id of table
 
-        var tableHTML = table.outerHTML;
-         alert(tableHTML);
-        var fileName = 'Projects.xls';
-
-        var msie = window.navigator.userAgent.indexOf("MSIE ");
-
-        // If Internet Explorer
-        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
-            dummyFrame.document.open('txt/html', 'replace');
-            dummyFrame.document.write(tableHTML);
-            dummyFrame.document.close();
-            dummyFrame.focus();
-            return dummyFrame.document.execCommand('SaveAs', true, fileName);
-        }
-        //other browsers
-        else {
-            var a = document.createElement('a');
-            tableHTML = tableHTML.replace(/  /g, '').replace(/ /g, '%20'); // replaces spaces
-            a.href = 'data:application/vnd.ms-excel,' + tableHTML;
-            a.setAttribute('download', fileName);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
+        let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+  TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+    name: `export.xlsx`, // fileName you could use any name
+    sheet: {
+      name: 'Sheet 1' // sheetName
     }
+  });
+    }
+</script>
+<script>
+
+   $('#user_filter').change(function(){
+    $('#filter_form').submit();
+    });
+
+</script>
+<script>
+    $('#materialUnchecked').click(function(event) {   
+    if(this.checked) {
+        // Iterate each checkbox
+        $(':checkbox').each(function() {
+            this.checked = true;                        
+        });
+    } else {
+        $(':checkbox').each(function() {
+            this.checked = false;                       
+        });
+    }
+}); 
+</script>
+<script>
+
+   $('#pagination').change(function(){
+    $('#pagination').submit();
+    });
+
+</script>
+<script>
+
+   $('#project_filter').change(function(){
+    $('#project_filter').submit();
+    });
+
+</script>
+<script>
+
+   $('#freelancer_filter').change(function(){
+    $('#freelancer_filter').submit();
+    });
+
+</script>
+<script>
+     $(document).ready(function(){
+        $(".category_re").click(function(e){
+         var delete_category_id = $(this).val();
+            $('#nameBasic').val(delete_category_id);
+
+            $.ajax({
+        type: 'get',
+        dataType : 'json',
+        url: "{{ url('admin/category-replace') }}",
+        data: {
+            id:delete_category_id,
+           
+        },
+        success:function(response){
+        if (response.status) {
+            jQuery('#select2Basic').html(response.online);
+            
+        }
+        }
+
+    });
+        });
+     });
 </script>
 
 

@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Intervention\Image\ImageManagerStatic as Image;
 use DateTime;
 use PDF;
+use DB;
 use App\Project_proposals;
 class ProjectController extends Controller
 {
@@ -31,13 +32,18 @@ class ProjectController extends Controller
     {
         abort_if(Gate::denies('project_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $dt = new DateTime();
-        
+        $d['d']= $dt->format('Y');
+        $d['m']= $dt->format('m');
+        $d['y']= $dt->format('d');
         $q = Project::query();
-
-        $d['year']=$dt->format('Y');
-        $d['month']=$dt->format('m');
-        $d['day']=$dt->format('d');
-
+    
+        $d['year']='';
+        $d['month']='';
+        $d['day']='';
+        $d['pagination']='10';
+            if($request->pagination){
+                $d['pagination']=$request->pagination;
+            }
         if (isset($request->day) || isset($request->month) || isset($request->year)) {
 
            if ($request->day=='all' && $request->month=='all') {
@@ -62,10 +68,15 @@ class ProjectController extends Controller
            
          
 
+        }elseif(isset($request->start_date) && isset($request->end_date)){
+            $q->whereBetween('created_at',[$request->start_date,$request->end_date]);
         }
-
+        if($request->search){
         
-         $d['projects']=$q->paginate(10);
+            $q->where('name', 'like', "%$request->search%");
+        }
+       
+         $d['projects']=$q->paginate($d['pagination']);
 
         return view('admin.projects.index', $d);
     }
@@ -74,7 +85,11 @@ class ProjectController extends Controller
     {
         abort_if(Gate::denies('project_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $d['clients'] = Client::all()->pluck('first_name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $d['clients']  =DB::table('users')
+        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+        ->where('role_user.role_id', '=', 3)
+        ->where('users.deleted_at','=',null)->get();
+      
         $d['statuses'] = ProjectStatus::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $d['category'] = ProjectCategory::all();
         $d['skill'] = ProjectSkill::all();
@@ -111,6 +126,7 @@ class ProjectController extends Controller
             $name = $image->getClientOriginalName();
             $filename = time() . '_' . $name;
             $image_resize = Image::make($image->getRealPath());
+           
             $image_resize->save('project-files/' . $filename);
             $image_name[] =  $filename;
           }
@@ -169,7 +185,11 @@ class ProjectController extends Controller
     {
         abort_if(Gate::denies('project_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $d['clients'] = Client::all()->pluck('first_name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $d['clients'] =DB::table('users')
+        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+        ->where('role_user.role_id', '=', 3)
+        ->where('users.deleted_at','=',null)->get();
+        
         $d['statuses'] = ProjectStatus::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $d['category'] = ProjectCategory::all();
         $d['skill'] = ProjectSkill::all();
@@ -271,10 +291,11 @@ class ProjectController extends Controller
         return view('admin.projects.show', compact('project','proposals'));
     }
 
-    public function destroy(Project $project)
+    public function destroy( $id)
     {
+      
         abort_if(Gate::denies('project_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
+        $project= Project::where('id', $id)->first();
         $project->delete();
 
         return back();
@@ -301,8 +322,22 @@ class ProjectController extends Controller
       $pdf = PDF::loadView('admin/pdf/projects', compact('projects'));
      return $pdf->download('download.pdf');
     }
-    public function export_in_excel() 
+    // public function export_in_excel() 
+    // {
+    //     return Excel::download(new ProjectExport, 'users.xlsx');
+    // }
+    public function project_multi_delete(Request $request) 
     {
-        return Excel::download(new ProjectExport, 'users.xlsx');
+        
+       if(!empty($request->multi_delete)){
+        foreach($request->multi_delete as $item){
+            $project= Project::where('id', $item)->first();
+            $project->delete();
+        }
+        return back();
+       }
+        return back();
+      
     }
+   
 }

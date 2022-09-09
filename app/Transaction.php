@@ -43,15 +43,15 @@ class Transaction extends Model
         return $this->belongsTo(TransactionType::class, 'transaction_type_id');
     }
 
-    public function income_source()
-    {
-        return $this->belongsTo(IncomeSource::class, 'income_source_id');
-    }
+    // public function income_source()
+    // {
+    //     return $this->belongsTo(IncomeSource::class, 'income_source_id');
+    // }
 
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class, 'currency_id');
-    }
+    // public function currency()
+    // {
+    //     return $this->belongsTo(Currency::class, 'currency_id');
+    // }
 
     public function getTransactionDateAttribute($value)
     {

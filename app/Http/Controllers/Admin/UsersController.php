@@ -9,17 +9,33 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Role;
 use App\User;
 use Gate;
+use DB;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $users = User::paginate(10);
 
+        if($request->search){
+          
+            $users = User::where('name', 'like', "%$request->search%")->paginate(10);
+        }
+        if($request->user_filter){
+            if($request->user_filter=='Client'){
+                $users = User::whereHas('roles', function($q){
+                    $q->where('title', '=', 'Client');})->paginate(10);
+            }
+            if($request->user_filter=='Freelancer'){
+                $users = User::whereHas('roles', function($q){
+                    $q->where('title', '=', 'Freelancer');})->paginate(10);
+            }
+        }
+        
         return view('admin.users.index', compact('users'));
     }
 
@@ -82,5 +98,16 @@ class UsersController extends Controller
         User::whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+    public function statusupdate(Request $request, $id){
+        $data = User::where('id',$id)->first();
+        $status =  $data->status;
+        if($status == 'publish'){
+            $data->status = 'unpublish';
+        }else{
+            $data->status = 'publish';
+        }
+        $data->save();
+        return redirect()->back();
     }
 }

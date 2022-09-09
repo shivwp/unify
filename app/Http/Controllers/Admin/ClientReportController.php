@@ -14,8 +14,7 @@ class ClientReportController extends Controller
     {
         $q = Transaction::with('project')
             ->with('transaction_type')
-            ->with('income_source')
-            ->with('currency')
+          
             ->orderBy('transaction_date', 'desc');
 
         if ($request->has('project')) {
@@ -34,7 +33,7 @@ class ClientReportController extends Controller
                     $entries[$date] = [];
                 }
 
-                $currency = $row->currency->code;
+                // $currency = $row->currency->code;
 
                 if (!isset($entries[$date][$currency])) {
                     $entries[$date][$currency] = [
@@ -78,7 +77,7 @@ class ClientReportController extends Controller
         return view('admin.clientReports.index', compact(
             'entries',
             'projects',
-            'currentProject'
+          
         ));
     }
 }

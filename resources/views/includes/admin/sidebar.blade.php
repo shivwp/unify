@@ -1,8 +1,14 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
+        @php
+        $settings=App\SiteSetting::pluck('value','name');
+        @endphp
         <a href="{{url('admin/dashboard')}}" class="app-brand-link">
             <span class="app-brand-logo demo text-center pl-5">
-            <img width="80" height="40" src="{{url('/admin/assets/img/unify_branding.png')}}" alt="logo">
+                
+           @if(!empty($settings['business_logo1']))
+           <img width="80" height="40" src="{{ url('/images/logo').'/'.$settings['business_logo1'] ?? "" }}" alt="logo">
+           @endif
             </span>
             <!-- <span class="app-brand-text demo menu-text fw-bolder ms-2">Unify</span> -->
         </a>
@@ -108,7 +114,18 @@
 
             </ul>
         </li>
-      
+        @can('notification_access')
+        @php
+        $notification= App\Notification::where('status','0')->count();
+        @endphp
+        <li class="menu-item {{ request()->is('admin/notification') || request()->is('admin/notification/*') ? 'active' : '' }}">
+            <a href="{{ url("admin/notification") }}" class="menu-link">
+                <i class="menu-icon fa fa-bell-o"></i>
+                <div data-i18n="Analytics notification">Notification  @if($notification>0) ({{$notification}}) @endif</div>
+              
+            </a>
+        </li>
+        @endcan
         @can('client_access')
         <li class="menu-item {{ request()->is('admin/clients') || request()->is('admin/clients/*') ? 'active' : '' }}">
             <a href="{{ route("admin.clients.index") }}" class="menu-link">
@@ -134,12 +151,12 @@
         </li>
         @endcan
         @can('client_report_access')
-        <li class="menu-item {{ request()->is('admin/client-reports') || request()->is('admin/client-reports/*') ? 'active' : '' }}">
+        <!-- <li class="menu-item {{ request()->is('admin/client-reports') || request()->is('admin/client-reports/*') ? 'active' : '' }}">
             <a href="{{ route("admin.client-reports.index") }}" class="menu-link">
                 <i class="menu-icon fa fa-line-chart"></i>
                 <div data-i18n="Analytics">Reports</div>
             </a>
-        </li>
+        </li> -->
         @endcan
        
         @can('user_management_access')
@@ -179,6 +196,14 @@
             </ul>
         </li>
         @endcan
+        @can('support')
+        <li class="menu-item {{ request()->is('admin/support') || request()->is('admin/support/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.support.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-ticket"></i>
+                <div data-i18n="Analytics">Support</div>
+            </a>
+        </li>
+        @endcan
         @can('client_management_setting_access')
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -215,3 +240,14 @@
 
     </ul>
 </aside>
+<style>
+    span.unseen_notification {
+    border: 1px solid #d1c2c2;
+    border-radius: 24px;
+    font-size: 12px;
+    padding: 0px 5px 0px 5px;
+    margin: -3px -4px 6px -6px;
+    color: #000;
+    background-color: #696cff;
+}
+</style>

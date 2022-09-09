@@ -5,20 +5,66 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12 ">
             
 @can('project_status_create')
 <div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-12">
-        <a class="btn btn-success" href="{{ route("admin.proposal.create") }}">
+    <div class="col-lg-6 mt-2">
+        <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('/admin/proposal')}}">Back
+                        </a>
+        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.proposal.create") }}">
             Add Proposal
         </a>
     </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 mt-2">
+    <form action="" method="GET" id="project_filter">
+    <?php 
+            if(!empty($_GET['project'])){$project_filter= $_GET['project'];}else{ $project_filter='';}
+            if(!empty($_GET['freelancer'])){$freelancer_filter= $_GET['freelancer'];}else{ $freelancer_filter='';}
+            ?>
+    <select class="form-select" name="project" ud="project_filter" style="width: 99%; font-size: 11px;  height: 32px;" aria-label="Default select example">
+                        <option value="">Select Project</option> 
+                          @foreach($project as $item)
+                            <option value="{{$item->id}}" @if($project_filter==$item->id) selected @endif>{{$item->name}}</option>
+                            @endforeach
+                        </select>
+    </form>
+            </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 mt-2">
+                      <form action="" method="GET" id="freelancer_filter">
+                      <select class="form-select" name="freelancer" id="freelancer_filter" style="width: 99%; font-size: 11px;  height: 32px;" aria-label="Default select example">
+                        <option value=""> Select Freelancer</option> 
+                        @foreach($freelancer as $item)
+                            <option value="{{$item->id}}" @if(!empty($freelancer_filter==$item->id)) selected @endif>{{$item->name}}</option>
+                            @endforeach
+                        </select>
+                      </form>
+     </div>
 </div>
 @endcan
 <div class="card">
 <div class="card-header">
-    Proposal List
+   <div class="row">
+   <div class="col-lg-6">  <h5 class="m-0 mb-1">Proposal</h5>
+    <p class="m-0"><a href="">Project</a> / list</p></div>
+    <div class="col-lg-6">  
+        <div class="items" style="margin-left: 1px; width: 85px !important; float: right;">
+
+            <form action="" id="pagination" method="get">
+            <select class="form-select m-0" name="pagination" style="width: 94%; font-size: 11px;  height: 32px;" id="pagination" aria-label="Default select example">
+              
+                  <option value="10" @if($pagination=='10') selected @endif>10</option>
+                  <option  value='20' @if($pagination=='20') selected @endif>20</option>
+                  <option value='30' @if($pagination=='30') selected @endif>30</option>
+                  <option value='40' @if($pagination=='40') selected @endif>40</option>
+                  <option value='50' @if($pagination=='50') selected @endif>50</option>
+                  
+              </select>
+            </form>
+              </div>
+    </div>
+   </div>
+   
 </div>
 
 <div class="card-body">

@@ -9,7 +9,9 @@
                 @can('role_create')
                 <div style="margin-bottom: 10px;" class="row">
                     <div class="col-lg-12">
-                        <a class="btn btn-success" href="{{ route("admin.roles.create") }}">
+                        <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/roles')}}">Back
+                        </a>
+                        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.roles.create") }}">
                             Add Roles
                         </a>
                     </div>

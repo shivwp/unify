@@ -21,9 +21,9 @@ class ClientController extends Controller
 
         $clients =DB::table('users')
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
-        ->where('role_user.role_id', '=', 2)
+        ->where('role_user.role_id', '=', 3)
         ->where('users.deleted_at','=',null)->paginate(10);
-
+//  return $clients;
         return view('admin.clients.index', compact('clients'));
     }
 
@@ -66,13 +66,13 @@ class ClientController extends Controller
 
     public function show($id)
     {
+       
         abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clients =DB::table('users')
-        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
-        ->where('role_user.role_id', '=', 2)
-        ->where('users.deleted_at','=',null)
+      
         ->where('users.id',$id)->first();
+  
         $Projects=Project::where('client_id',$id)->get();
      
 

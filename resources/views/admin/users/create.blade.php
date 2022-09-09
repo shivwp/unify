@@ -11,10 +11,14 @@
                     <div class="card-header">
                         {{ trans('global.create') }} {{ trans('cruds.user.title_singular') }}
                     </div>
-                
+                    @php
+                        $date = date('Y-m-d H:i:s');
+                    @endphp
                     <div class="card-body">
                         <form action="{{ route("admin.users.store") }}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            <input type="hidden" name="status" value="publish">
+                            <input type="hidden" name="email_verified_at" value="{{$date}}">
                             <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                 <label for="name">{{ trans('cruds.user.fields.name') }}*</label>
                                 <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($user) ? $user->name : '') }}" required>
