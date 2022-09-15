@@ -10,9 +10,9 @@
 @can('project_status_create')
 <div style="margin-bottom: 10px;" class="row">
     <div class="col-lg-12">
-        <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/plan')}}">Back
-                        </a>
-        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.plan.create") }}">
+        {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/plan')}}">Back
+                        </a>--}}
+        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.plan.create") }}">
             Add Plan
         </a>
     </div>
@@ -30,7 +30,7 @@
                 <tr>
                   
                     <th>
-                        Id
+                        S No.
                     </th>
                     <th>
                     Plans Name
@@ -50,11 +50,14 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $i=1
+                @endphp
              @foreach($plans as $key => $item)
                     <tr data-entry-id="{{ $item->id }}">
                        
                         <td>
-                            {{ $item->id ?? '' }}
+                           {{$i++}}
                         </td>
                        
                          <td>
@@ -96,8 +99,8 @@
                                 @endcan -->
 
                             @can('project_category_edit')
-                                <a class="btn btn-xs btn-info" href="plan-update/{{$item->id}}">
-                                    {{ trans('global.edit') }}
+                                <a href="plan-update/{{$item->id}}">
+                                    <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
                                 </a>
                             @endcan
 
@@ -108,7 +111,7 @@
                                 <input type="hidden" name="_method" value="DELETE">
                                     
                                     <input type="hidden" name="id" value="{{$item->id}}">
-                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                     <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
                                 </form>
                             @endcan
 

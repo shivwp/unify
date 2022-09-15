@@ -75,7 +75,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('/project-delete/{id}', 'ProjectController@destroy');
     Route::POST('/project-multi-delete', 'ProjectController@project_multi_delete');
 
-  
+    Route::resource('jobs', 'JobController');
+
+    Route::get('/jobs-delete/{id}', 'JobController@destroy');
     //subscription
       
     Route::post('service/{id}', 'ServicesController@destroy')->name('service');

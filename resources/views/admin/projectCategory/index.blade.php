@@ -19,7 +19,7 @@
 <div class="card-header">
 <div class="row">
    <div class="col-lg-6">  <h5 class="m-0 mb-1">Category</h5>
-    <p class="m-0"><a href="">Category</a> / list</p></div>
+</div>
     <div class="col-lg-6">  
         <div class="items" style="margin-left: 1px; width: 85px !important; float: right;">
 
@@ -42,18 +42,18 @@
 
 <div class="card-body">
     <div class="table-responsive">
-        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus">
+        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
             <thead>
                 <tr>
                   
                     <th>
-                        Id
+                       S No.
                     </th>
                     <th>
-                        Name
+                        Project Platform
                     </th>
                     <th>
-                    Parent
+                    Project Category
                     </th>
                     <th>
                         Number of projects going on
@@ -64,6 +64,7 @@
                 </tr>
             </thead>
             <tbody>
+            @php $i=1 @endphp
                 @foreach($projectCategory as $key => $projectCate)
 
                     @php
@@ -71,9 +72,8 @@
                     @endphp
                     <tr data-entry-id="{{ $projectCate->id }}">
                        
-                        <td>
-                            {{ $projectCate->id ?? '' }}
-                        </td>
+                    <td>{{$i++}}</td>
+   
                        
                          <td>
                             {{ $projectCate->name ?? '' }}
@@ -91,26 +91,29 @@
                         </td>
                         <td>
                             @can('project_category_show')
-                                <a class="btn btn-xs btn-primary" href="{{ route('admin.project-category.show', $projectCate->id) }}">
-                                    {{ trans('global.view') }}
+                                <a href="{{ route('admin.project-category.show', $projectCate->id) }}">
+                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>" ><i class="bx bx-show mx-1"></i></button>
                                 </a>
                             @endcan
 
                             @can('project_category_edit')
-                                <a class="btn btn-xs btn-info" href="{{ route('admin.project-category.edit', $projectCate->id) }}">
-                                    {{ trans('global.edit') }}
+                                <a  href="{{ route('admin.project-category.edit', $projectCate->id) }}">
+                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>" ><i class="bx bx-edit"></i></button>
                                 </a>
                             @endcan
                             @if($record <= 0)
                                 @can('project_category_delete')
+                                
                                     <form action="{{ route('admin.project-category.destroy', $projectCate->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                        <button type="submit" class="btn btn-sm  btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"><i class="bx bx-trash"></i></button>
+                                        
                                     </form>
                                 @endcan
                                 @else
-                                <button data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}" class="category_re  btn btn-xs btn-danger">Delete</button>
+                                <button type="submit" data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}"  class="btn btn-sm category_re btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" ><i class="bx bx-trash"></i></button>
+                                <!-- <button data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}" class="category_re "><i class="bx bx-trash"></button> -->
                             @endif
 
                         </td>

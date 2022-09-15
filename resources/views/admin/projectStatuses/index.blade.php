@@ -10,8 +10,8 @@
                 @can('project_status_create')
                 <div style="margin-bottom: 10px;" class="row">
                     <div class="col-lg-12">
-                        <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-statuses')}}">Back
-                        </a>
+                        <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-statuses')}}">Back
+                        </a> -->
                         <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.project-statuses.create") }}">
                             {{ trans('global.add') }} {{ trans('cruds.projectStatus.title_singular') }}
                         </a>
@@ -25,41 +25,42 @@
             
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
                             <thead>
                                 <tr>
                                     
                                     <th>
-                                        {{ trans('cruds.projectStatus.fields.id') }}
+                                        S No.
                                     </th>
                                     <th>
                                         {{ trans('cruds.projectStatus.fields.name') }}
                                     </th>
                                     <th>
-                                        &nbsp;
+                                      Action
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
+                            @php $i=1 @endphp
                                 @foreach($projectStatuses as $key => $projectStatus)
                                     <tr data-entry-id="{{ $projectStatus->id }}">
                                         
-                                        <td>
-                                            {{ $projectStatus->id ?? '' }}
-                                        </td>
+                                    <td>{{$i++}}</td>
                                         <td>
                                             {{ $projectStatus->name ?? '' }}
                                         </td>
                                         <td>
                                             @can('project_status_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.project-statuses.show', $projectStatus->id) }}">
-                                                    {{ trans('global.view') }}
+                                                <a  href="{{ route('admin.project-statuses.show', $projectStatus->id) }}">
+                                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
+
                                                 </a>
                                             @endcan
             
                                             @can('project_status_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.project-statuses.edit', $projectStatus->id) }}">
-                                                    {{ trans('global.edit') }}
+                                                <a href="{{ route('admin.project-statuses.edit', $projectStatus->id) }}">
+                                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"><i class="bx bx-edit"></i></button>
+
                                                 </a>
                                             @endcan
             
@@ -67,7 +68,7 @@
                                                 <form action="{{ route('admin.project-statuses.destroy', $projectStatus->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                                     <input type="hidden" name="_method" value="DELETE">
                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                                    <button  type="submit" class="btn btn-sm btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"><i class="bx bx-trash"></i></button>
                                                 </form>
                                             @endcan
             

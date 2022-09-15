@@ -1,6 +1,11 @@
-<footer class="content-footer footer bg-footer-theme">
+<style>
+    a.footer-link.fw-bolder {
+    padding-left: 282px;
+}
+</style>
+<footer class="content-footer footer bg-footer-theme text-center">
     <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-        <div class="mb-2 mb-md-0">
+        <div class="mb-2 mb-md-0 ">
            
            
        
@@ -34,6 +39,11 @@
 <script src="{{ URL::asset('admin/assets/vendor/libs/popper/popper.js') }}"></script>
 <script src="{{ URL::asset('admin/assets/vendor/js/bootstrap.js') }}"></script>
 <script src="{{ URL::asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+
+<!-- datatable -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
 
 <script src="{{ URL::asset('admin/assets/vendor/js/menu.js') }}"></script>
 <!-- endbuild -->
@@ -103,6 +113,31 @@
 });
     
 </script>
+
+<script type="text/javascript">
+    $( document ).ready(function() {
+        $("#Enddate").change(function () {
+           
+        var start_date = $("#Startdate").val();
+        var end_date = $("#Enddate").val();
+
+        var date1 = new Date(start_date); 
+        var date2 = new Date(end_date); 
+  
+        var Time = date2.getTime() - date1.getTime(); 
+        var Days = Time / (1000 * 3600 * 24);
+  
+
+            if(Days<0){
+                alert("End date should be greater than Start date");
+                $("#Enddate").val('');
+            }else{
+                
+            }
+        });
+    });
+</script> 
+
 <script>
     $('#paymethod').on('change', function() {
   var paymethod=(this.value );
@@ -293,5 +328,27 @@
      });
 </script>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+   
+     $(".example").dataTable({
+        aaSorting: [[0, 'asc']],
+        bPaginate: false,
+        bFilter: false,
+        bInfo: false,
+        bSortable: true,
+        bRetrieve: true,
+        aoColumnDefs: [
+            { "aTargets": [ 0 ], "bSortable": true },
+            { "aTargets": [ 1 ], "bSortable": true },
+            { "aTargets": [ 2 ], "bSortable": true },
+            { "aTargets": [ 3 ], "bSortable": false }
+        ]
+    }); 
+});
+</script>
+<script>
+    
+</script>
 
 </html>

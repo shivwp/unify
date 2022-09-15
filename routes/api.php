@@ -1,5 +1,13 @@
 <?php
 
+//register api
+Route::post('signup', [App\Http\Controllers\Api\AuthController::class, 'signup']);
+Route::post('verifysignup', [App\Http\Controllers\Api\AuthController::class, 'verifysignup']);
+//login api
+Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+//countryb list
+Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
+
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:api']], function () {
     // Permissions
     Route::apiResource('permissions', 'PermissionsApiController');

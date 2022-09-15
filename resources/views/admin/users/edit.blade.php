@@ -16,6 +16,23 @@
                         <form action="{{ route("admin.users.update", [$user->id]) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
+
+                            @if(!empty($user->profileimage))
+                                <div class="even mt-3" style="display: flex; flex-wrap: wrap; justify-content: flex-start;">
+                                    
+                                    <div class="parc">
+                                        <span class="pip" data-title="{{$user->profileimage}}">
+                                            <img src="{{ url('/profileimage').'/'.$user->profileimage ?? "" }}" alt="" width="100" height="100">
+                                        </span>
+                                    </div>
+                                    
+                                </div>
+                            @endif
+
+                            <div class="form-group">
+                                <label class="form-label mt-3">Profile</label>
+                                <input type="file" class="form-control" name="profileimage" value="">
+                            </div>
                             <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
                                 <label for="name">{{ trans('cruds.user.fields.name') }}*</label>
                                 <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($user) ? $user->name : '') }}" required>

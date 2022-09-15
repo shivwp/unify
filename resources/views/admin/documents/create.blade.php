@@ -18,7 +18,7 @@
             @csrf
             <div class="form-group {{ $errors->has('project_id') ? 'has-error' : '' }}">
                 <label for="project">{{ trans('cruds.document.fields.project') }}*</label>
-                <select name="project_id" id="project" class="form-control select2" required>
+                <select name="project_id" id="project" class="form-control " required>
                     @foreach($projects as $id => $project)
                         <option value="{{ $id }}" {{ (isset($document) && $document->project ? $document->project->id : old('project_id')) == $id ? 'selected' : '' }}>{{ $project }}</option>
                     @endforeach
@@ -29,10 +29,10 @@
                     </p>
                 @endif
             </div>
-            <div class="form-group {{ $errors->has('document_file') ? 'has-error' : '' }}">
+            <div class="form-group {{ $errors->has('document_file') ? 'has-error' : '' }} mt-2">
                 <label for="document_file">{{ trans('cruds.document.fields.document_file') }}*</label>
                 <div class="needsclick dropzone" id="document_file-dropzone">
-
+                        <input type="file" name="document_file" class="form-control">
                 </div>
                 @if($errors->has('document_file'))
                     <p class="help-block">

@@ -13,18 +13,37 @@
         <div class="row">
             <div class="col-lg-12">
                
-                <div style="margin-bottom: 10px;" class="row">
+                <!-- <div style="margin-bottom: 10px;" class="row">
                     <div class="col-lg-12"> 
                         <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('/admin/users')}}">Back
                         </a>
                         @can('user_create')
-                        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.users.create") }}">
+                        <a class="btn-sm btn-success" style="height: 30px; margin-left: 8px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.users.create") }}">
                             {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
                         </a>
                         @endcan
                     </div>
-                </div>
-            
+                </div> -->
+                <div style="margin-bottom: 10px;" class="row p-0">
+                    <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
+                        @can('user_create')
+                        <a class="btn-sm btn-success pt-2" style="height: 38px; margin-left: 8px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.users.create") }}">
+                            {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
+                        </a>
+                        @endcan
+                      <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button>
+
+                      </div>
+                  
+                      <div class="col-lg-6 col-md-6 col-sm-12 pl-2">
+                        <div style="float:right;">
+                            <a href="{{url('/admin/users')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
+                        </div>
+                         
+                     
+                  </div>
+
+              </div>
             <div class="card">
                 <div class="card-header">
               <div class="row">
@@ -41,14 +60,14 @@
                         <div class="col-xl-6">
                             <form action="" method="get" id="filter_form">
                             <select class="form-control" id="user_filter" name="user_filter">
-                            <option value="" class="text-center">User Filter</option>
+                            <option value="" class="text-center">Select Role</option>
                                 <option value="Client" class="text-center" @if($filter=="Client") selected @endif>Client</option>
                                 <option value="Freelancer" class="text-center"  @if($filter=="Freelancer") selected @endif>Freelancer</option>
                                 </select>
                             </form> </div>
                         <div class="col-xl-6">
                             <form action="" class="d-flex" method="get">
-                                <input type="text" name="search" class="form-control" value="{{$search}}">
+                                <input type="text" name="search" class="form-control" value="{{$search}}" placeholder="Search user">
                               <button class="search-btn" type="submit"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
                             </form>
                         </div>
@@ -60,12 +79,12 @@
             
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-User">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-User example">
                             <thead>
                                 <tr>
                                   
                                     <th>
-                                        {{ trans('cruds.user.fields.id') }}
+                                        S No.
                                     </th>
                                     <th>
                                         {{ trans('cruds.user.fields.name') }}
@@ -86,11 +105,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php
+                                    $i=1
+                                @endphp
                                 @foreach($users as $key => $user)
                                     <tr data-entry-id="{{ $user->id }}">
                                       
                                         <td>
-                                            {{ $user->id ?? '' }}
+                                            {{$i++}}
                                         </td>
                                         <td>
                                             {{ $user->name ?? '' }}
@@ -110,14 +132,14 @@
                                         </td>
                                         <td>
                                             @can('user_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.users.show', $user->id) }}">
-                                                    {{ trans('global.view') }}
+                                                <a href="{{ route('admin.users.show', $user->id) }}">
+                                                    <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
                                                 </a>
                                             @endcan
             
                                             @can('user_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.users.edit', $user->id) }}">
-                                                    {{ trans('global.edit') }}
+                                                <a href="{{ route('admin.users.edit', $user->id) }}">
+                                                    <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
                                                 </a>
                                             @endcan
             
@@ -125,7 +147,8 @@
                                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                                     <input type="hidden" name="_method" value="DELETE">
                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                                    <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
+                                                    
                                                 </form>
                                             @endcan
             

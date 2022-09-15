@@ -56,15 +56,16 @@ class SupportController extends Controller
             $d['year']=$request->year;
            }
 
-           
-         
 
         }elseif(isset($request->start_date) && isset($request->end_date)){
             $q->whereBetween('created_at',[$request->start_date,$request->end_date]);
+        }elseif(isset($request->start_date)){
+                $q->where('created_at', 'like', '%' . $request->start_date . '%');
+                 
         }
 
         
-         $d['support']=$q->paginate(10);
+        $d['support']=$q->paginate(10);
         return view('admin.support.index', $d);
     }
 

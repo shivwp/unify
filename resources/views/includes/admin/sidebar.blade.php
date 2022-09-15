@@ -16,9 +16,30 @@
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
             <i class="bx bx-chevron-left bx-sm align-middle"></i>
         </a>
+        
     </div>
+ <div class="app-sidebar__user">
+                        <div class="dropdown user-pro-body text-center">
+                            <div class="user-pic mb-4">
+                                @php
+                                $userprofile_image = Auth::user()->profileimage;
+                                @endphp
+                                @if(isset($userprofile_image) && $userprofile_image != null)
+                                    <img width="50px" src="{{ url('/profileimage').'/'.$userprofile_image ?? "" }}" alt="user-img" class="avatar-xl rounded-circle ">
+                                @else
+                                    <img width="50px" src="{{ URL::asset('admin/assets/img/avatars/1.png') }}" alt="user-img" class="avatar-xl rounded-circle ">
+                                @endif
+                                
+                            </div>
+                            <div class="user-info >
+                                <h6 class="mb-0">{{ ucfirst(Auth::user()->name) }}</h6>
+                                
+                            </div>
+                            <hr class="mt-2">
+                        </div>
+                    </div>
 
-    <div class="menu-inner-shadow"></div>
+    
 
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
@@ -32,7 +53,7 @@
 
         <!-- Layouts -->
         @can('project_access')
-        <li class="menu-item {{ request()->is('admin/projects*') ? 'open' : '' }} {{ request()->is('admin/proposal*') ? 'open' : '' }}{{ request()->is('admin/project-category*') ? 'open' : '' }} {{ request()->is('admin/project-skill*') ? 'open' : '' }} {{ request()->is('admin/project-listing-type*') ? 'open' : '' }} {{ request()->is('admin/project-statuses*') ? 'open' : '' }}">
+        <li class="menu-item {{ request()->is('admin/projects*') ? 'open' : '' }} {{ request()->is('admin/jobs*') ? 'open' : '' }}{{ request()->is('admin/proposal*') ? 'open' : '' }}{{ request()->is('admin/project-category*') ? 'open' : '' }} {{ request()->is('admin/project-skill*') ? 'open' : '' }} {{ request()->is('admin/project-listing-type*') ? 'open' : '' }} ">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fa  fa-briefcase "></i>
                 <div data-i18n="Account Settings">Project</div>
@@ -43,6 +64,13 @@
                 <li class="menu-item {{ request()->is('admin/projects') || request()->is('admin/projects/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.projects.index") }}" class="menu-link">
                         <div data-i18n="Account">All Projects</div>
+                    </a>
+                </li>
+                @endcan
+                @can('project_access')
+                <li class="menu-item {{ request()->is('admin/jobs') || request()->is('admin/jobs/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.jobs.index") }}" class="menu-link">
+                        <div data-i18n="Account">Jobs</div>
                     </a>
                 </li>
                 @endcan
@@ -78,13 +106,7 @@
                 </li>
                 @endcan
 
-                @can('project_status_access')
-                <li class="menu-item {{ request()->is('admin/project-statuses') || request()->is('admin/project-statuses/*') ? 'active' : '' }}">
-                    <a href="{{ route("admin.project-statuses.index") }}" class="menu-link">
-                        <div data-i18n="Connections">Status</div>
-                    </a>
-                </li>
-                @endcan
+               
 
             </ul>
         </li>
@@ -92,7 +114,7 @@
     
         <li class="menu-item {{ request()->is('admin/service*') ? 'open' : '' }}{{ request()->is('admin/plan*') ? 'open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon fa  fa-briefcase "></i>
+                <i class="menu-icon fa  fa-money "></i>
                 <div data-i18n="Account Settings">Subscription </div>
             </a>
 
@@ -145,7 +167,7 @@
         @can('transaction_access')
         <li class="menu-item {{ request()->is('admin/transactions') || request()->is('admin/transactions/*') ? 'active' : '' }}">
             <a href="{{ route("admin.transactions.index") }}" class="menu-link">
-                <i class="menu-icon fa fa-credit-card-alt"></i>
+                <i class="menu-icon fa fa-usd"></i>
                 <div data-i18n="Analytics">Transactions</div>
             </a>
         </li>
@@ -160,7 +182,7 @@
         @endcan
        
         @can('user_management_access')
-        <li class="menu-item {{ request()->is('admin/users*') ? 'open' : '' }} {{ request()->is('admin/permissions*') ? 'open' : '' }} {{ request()->is('admin/project-skill*') ? 'open' : '' }} {{ request()->is('admin/project-listing-type*') ? 'open' : '' }} {{ request()->is('admin/project-statuses*') ? 'open' : '' }}{{ request()->is('admin/roles') || request()->is('admin/roles/*') ? 'open' : '' }}">
+        <li class="menu-item {{ request()->is('admin/users*') ? 'open' : '' }} {{ request()->is('admin/permissions*') ? 'open' : '' }} {{ request()->is('admin/roles') || request()->is('admin/roles/*') ? 'open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fa fa-users" aria-hidden="true"></i>
                 <div data-i18n="Layouts">User Management</div>
@@ -199,13 +221,13 @@
         @can('support')
         <li class="menu-item {{ request()->is('admin/support') || request()->is('admin/support/*') ? 'active' : '' }}">
             <a href="{{ route("admin.support.index") }}" class="menu-link">
-                <i class="menu-icon fa fa-ticket"></i>
+            <i class="menu-icon fa  fa-mobile "></i>
                 <div data-i18n="Analytics">Support</div>
             </a>
         </li>
         @endcan
         @can('client_management_setting_access')
-        <li class="menu-item">
+        <li class="menu-item {{ request()->is('admin/project-statuses*') ? 'open' : '' }}" >
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fa  fa-cog "></i>
                 <div data-i18n="Account Settings">Settings</div>
@@ -226,7 +248,13 @@
                     </a>
                 </li>
                 @endcan
-
+                @can('project_status_access')
+                <li class="menu-item {{ request()->is('admin/project-statuses') || request()->is('admin/project-statuses/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.project-statuses.index") }}" class="menu-link">
+                        <div data-i18n="Connections">Edit Status</div>
+                    </a>
+                </li>
+                @endcan
             </ul>
         </li>
         @endcan
@@ -236,6 +264,7 @@
                 <div data-i18n="Analytics">Logout</div>
             </a>
         </li>
+        
 
 
     </ul>

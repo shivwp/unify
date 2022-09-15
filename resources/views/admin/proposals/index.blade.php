@@ -10,9 +10,8 @@
 @can('project_status_create')
 <div style="margin-bottom: 10px;" class="row">
     <div class="col-lg-6 mt-2">
-        <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('/admin/proposal')}}">Back
-                        </a>
-        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.proposal.create") }}">
+        
+        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; margin-left: 10px;padding: 7px 8px 10px 10px;" href="{{ route("admin.proposal.create") }}">
             Add Proposal
         </a>
     </div>
@@ -22,7 +21,7 @@
             if(!empty($_GET['project'])){$project_filter= $_GET['project'];}else{ $project_filter='';}
             if(!empty($_GET['freelancer'])){$freelancer_filter= $_GET['freelancer'];}else{ $freelancer_filter='';}
             ?>
-    <select class="form-select" name="project" ud="project_filter" style="width: 99%; font-size: 11px;  height: 32px;" aria-label="Default select example">
+    <select class="form-select" name="project" ud="project_filter" style="width: 99%; font-size: 11px;  height: 38px;" aria-label="Default select example">
                         <option value="">Select Project</option> 
                           @foreach($project as $item)
                             <option value="{{$item->id}}" @if($project_filter==$item->id) selected @endif>{{$item->name}}</option>
@@ -30,15 +29,16 @@
                         </select>
     </form>
             </div>
-    <div class="col-lg-3 col-md-3 col-sm-6 mt-2">
+    <div class="col-lg-3 col-md-3 col-sm-6 mt-2 d-flex">
                       <form action="" method="GET" id="freelancer_filter">
-                      <select class="form-select" name="freelancer" id="freelancer_filter" style="width: 99%; font-size: 11px;  height: 32px;" aria-label="Default select example">
+                      <select class="form-select" name="freelancer" id="freelancer_filter" style="width: 99%; font-size: 11px;  height: 38px;" aria-label="Default select example">
                         <option value=""> Select Freelancer</option> 
                         @foreach($freelancer as $item)
                             <option value="{{$item->id}}" @if(!empty($freelancer_filter==$item->id)) selected @endif>{{$item->name}}</option>
                             @endforeach
                         </select>
                       </form>
+                      <a href="{{url('/admin/proposal')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
      </div>
 </div>
 @endcan
@@ -46,7 +46,7 @@
 <div class="card-header">
    <div class="row">
    <div class="col-lg-6">  <h5 class="m-0 mb-1">Proposal</h5>
-    <p class="m-0"><a href="">Project</a> / list</p></div>
+</div>
     <div class="col-lg-6">  
         <div class="items" style="margin-left: 1px; width: 85px !important; float: right;">
 
@@ -69,18 +69,18 @@
 
 <div class="card-body">
     <div class="table-responsive">
-        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus">
+        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
             <thead>
                 <tr>
                     
                     <th>
-                      Id
+                      S No.
                     </th>
                     <th>
-                  Project
+                  Projects
                     </th>
                     <th>
-                  Freelancer
+                  Freelancers
                     </th>
                     <th>
                   Status
@@ -94,12 +94,12 @@
                 </tr>
             </thead>
             <tbody>
+            @php $i=1 @endphp
              @foreach($proposal as $key => $item)
                     <tr data-entry-id="{{ $item->id }}">
                       
-                        <td>
-                            {{ $item->id ?? '' }}
-                        </td>
+                    <td>{{$i++}}</td>
+   
                        
                          <td>
                             {{ $item->project->name ?? '' }}
@@ -119,13 +119,13 @@
                         <td>
                                
                         @can('project_show')
-                                <a class="btn btn-xs btn-primary" href="/admin/proposal-show/{{$item->id}}">
-                                    {{ trans('global.view') }}
+                                <a  href="/admin/proposal-show/{{$item->id}}">
+                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
                                 </a>
                             @endcan
                             @can('project_category_edit')
-                                <a class="btn btn-xs btn-info" href="proposal-update/{{$item->id}}">
-                                    {{ trans('global.edit') }}
+                                <a  href="proposal-update/{{$item->id}}">
+                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"><i class="bx bx-edit"></i></button>
                                 </a>
                             @endcan
 
@@ -135,7 +135,7 @@
                                 <input type="hidden" name="_method" value="DELETE">
                                     
                                     <input type="hidden" name="id" value="{{$item->id}}">
-                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                    <button  type="submit" class="btn btn-sm btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"><i class="bx bx-trash"></i></button>
                                 </form>
                             @endcan
 

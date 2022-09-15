@@ -36,7 +36,7 @@ class DocumentController extends Controller
     }
 
     public function store(StoreDocumentRequest $request)
-    {
+{
         $document = Document::create($request->all());
 
         if ($request->input('document_file', false)) {

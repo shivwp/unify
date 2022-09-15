@@ -14,12 +14,47 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-            
+                
+                <div style="margin-bottom: 10px;" class="row p-0">
+                    <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
+                              @can('project_create')
+                            <a class="btn-sm btn-success text-center" style="height: 37px; font-size: 10px; padding: 9px 3px 4px 8px;" href="{{ route("admin.support.create") }}">
+                             Add Ticket
+                         </a>
+                         @endcan
+                         <!-- <a class="btn-sm btn-info" style="margin-left: 1px; height: 30px; font-size: smaller;" href="{{url('/admin/projects-pdf')}}">
+                          Export to Pdf
+                      </a> -->
+                      <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button>
 
-<div style="margin-bottom: 10px;" class="row">
+                      </div>
+                  
+                      <div class="col-lg-6 col-md-6 col-sm-12 pl-2">
+
+                          <form action="" method="GET" class="d-flex">
+                            <div class="mb-3">
+                               
+                                <div class="input-group input-daterange" class="daterange">
+                                  <input type="text" name="start_date"  id="Startdate" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date" class="form-control" />
+                                  <span class="input-group-text">To</span>
+                                  <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date" class="form-control" />
+                                </div>
+                                </div>
+                          <div class="d-flex" style="margin-left: 8px;">
+                            <button class="btn-sm search-btn" type="submit" style="height: 37px; margin-right:2px;border:none;">  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                            <a href="{{url('/admin/support')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
+                           
+                        </div>
+                      </form>
+                     
+                  </div>
+
+              </div>
+
+{{--<div style="margin-bottom: 10px;" class="row">
     <div class="col-lg-6 d-flex">
         <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('/admin/support')}}">
-            Back
+            Clear
         </a>
     @can('transaction_create')
         <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;margin-left: 5px;" href="{{ route("admin.support.create") }}">
@@ -84,16 +119,15 @@
     <form action="" method="GET" class="d-flex">
         
         <div class="col-xl-4 pr-5 mt-2" style="margin-right: 9px;">
-            <label>Start date</label>
-            <input type="date" name="start_date" value="{{Request::get('start_date') ?? ''}}">
+            
+            <input type="text" name="start_date" id="Startdate" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date">
         </div>
-         <h6 class="mt-4">To</h6>
         <div class="col-xl-4  mt-2 " style="margin-left: 33px;">
-            <label>End date</label>
-          <input type="date" name="end_date" value="{{Request::get('end_date') ?? ''}}">
+
+          <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date">
       </div>
-      <div class="col-xl-4  mt-4" style="margin-left: 8px;">
-          <button class="btn-sm btn-info filter_btn" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; border:none" >Submit</button>
+      <div class="col-xl-4  mt-4" style="margin-left: 40px;">
+          <button class="btn-sm btn-info filter_btn" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; border:none" >Search</button>
       </div>
   </form>
 </div>
@@ -101,7 +135,7 @@
 
 </div>
 
-</div>
+</div>--}}
 
 <div class="card">
 <div class="card-header">
@@ -110,12 +144,12 @@
 
 <div class="card-body">
     <div class="table-responsive">
-        <table class=" table table-bordered table-striped table-hover datatable datatable-Transaction">
+        <table class=" table table-bordered table-striped table-hover datatable datatable-Transaction example" >
             <thead>
                 <tr>
                      
                     <th>
-                        {{ trans('cruds.transaction.fields.id') }}
+                        S No.
                     </th>
                     <th>
                         Ticket ID
@@ -146,13 +180,16 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $i=1
+                @endphp
                 @foreach($support as $key => $item)
                     <tr data-entry-id="{{ $item->id }}">
                        
                         <td>
-                            {{ $item->id ?? '' }}
+                           {{$i++}}
                         </td>
-                         <td>
+                        <td>
                             {{ $item->ticket ?? '' }}
                         </td>
                         <td>
@@ -170,7 +207,7 @@
                         {{ $item->source ?? '' }}
                         </td>
                         <td>
-                      {{ date('j \\ F Y', strtotime($item->created_at)) }}
+                      {{ $item->created_at->toFormattedDateString() }}
                         </td>
                         <td>
                        @if($item->status=="closed")
@@ -182,14 +219,15 @@
                       
                         <td>
                             @can('transaction_show')
-                                <a class="btn btn-xs btn-primary" href="{{ route('admin.support.show', $item->id) }}">
-                                    {{ trans('global.view') }}
+                                <a href="{{ route('admin.support.show', $item->id) }}">
+                                   <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1"
+                                    data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
                                 </a>
                             @endcan
 
                             @can('transaction_edit')
-                                <a class="btn btn-xs btn-info" href="/admin/support-edit/{{$item->id}}">
-                                    {{ trans('global.edit') }}
+                                <a href="/admin/support-edit/{{$item->id}}">
+                                     <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
                                 </a>
                                
                             @endcan
@@ -198,12 +236,12 @@
                                 <form action="/admin/support-delete/{{$item->id}}" method="get" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                   
                                     
-                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                    <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
                                 </form>
                             @endcan
                            @if($item->status!="closed")
-                           <a class="btn btn-xs btn-success" onclick="return confirm('{{ trans('Are You Sure To Closed This Ticket') }}');" href="/admin/support-closed/{{$item->id}}">
-                                  Closed
+                           <a onclick="return confirm('{{ trans('Are You Sure To Closed This Ticket') }}');" href="/admin/support-closed/{{$item->id}}">
+                                   <button class="btn btn-sm btn-icon me-2"><i class="bx bx-check-double" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Closed</span>"></i></button>
                                 </a>
                            @endif
                         </td>

@@ -10,8 +10,8 @@
                 @can('project_status_create')
                 <div style="margin-bottom: 10px;" class="row">
                     <div class="col-lg-12">
-                        <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-listing-type')}}">Back
-                        </a>
+                        <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-listing-type')}}">Back
+                        </a> -->
                         <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.project-listing-type.create") }}">
                             Add Listing Type
                         </a>
@@ -25,41 +25,40 @@
             
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
                             <thead>
                                 <tr>
                                     
                                     <th>
-                                        Id
+                                       S No.
                                     </th>
                                     <th>
                                         Name
                                     </th>
                                     <th>
-                                        &nbsp;
+                                       Action
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
+                            @php $i=1 @endphp
                                 @foreach($projectListingType as $key => $projectListing)
                                     <tr data-entry-id="{{ $projectListing->id }}">
                                      
-                                        <td>
-                                            {{ $projectListing->id ?? '' }}
-                                        </td>
+                                    <td>{{$i++}}</td>
                                         <td>
                                             {{ $projectListing->name ?? '' }}
                                         </td>
                                         <td>
                                             @can('project_listing_type_show')
-                                                <a class="btn btn-xs btn-primary" href="{{ route('admin.project-listing-type.show', $projectListing->id) }}">
-                                                    {{ trans('global.view') }}
+                                                <a href="{{ route('admin.project-listing-type.show', $projectListing->id) }}">
+                                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
                                                 </a>
                                             @endcan
             
                                             @can('project_listing_type_edit')
-                                                <a class="btn btn-xs btn-info" href="{{ route('admin.project-listing-type.edit', $projectListing->id) }}">
-                                                    {{ trans('global.edit') }}
+                                                <a href="{{ route('admin.project-listing-type.edit', $projectListing->id) }}">
+                                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"><i class="bx bx-edit"></i></button>
                                                 </a>
                                             @endcan
             
@@ -67,7 +66,7 @@
                                                 <form action="{{ route('admin.project-listing-type.destroy', $projectListing->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                                     <input type="hidden" name="_method" value="DELETE">
                                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                                    <button type="submit" class="btn btn-sm btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"><i class="bx bx-trash"></i></button>
                                                 </form>
                                             @endcan
             

@@ -23,12 +23,12 @@
 
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class=" table table-bordered table-striped table-hover datatable datatable-Client">
+                            <table class=" table table-bordered table-striped table-hover datatable datatable-Client example">
                                 <thead>
                                     <tr>
                                         
                                         <th>
-                                            {{ trans('cruds.client.fields.id') }}
+                                            S No.
                                         </th>
                                         <th>
                                           Name
@@ -43,11 +43,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $i=1
+                                    @endphp
                                     @foreach($clients as $key => $client)
                                     <tr data-entry-id="{{ $client->id }}">
                                        
                                         <td>
-                                            {{ $client->id ?? '' }}
+                                             {{$i++}}
                                         </td>
                                         <td>
                                             {{ $client->name ?? '' }}
@@ -58,9 +61,8 @@
                                        
                                         <td>
                                             @can('client_show')
-                                            <a class="btn btn-xs btn-primary"
-                                                href="clients-show/{{$client->id}}">
-                                                {{ trans('global.view') }}
+                                            <a href="clients-show/{{$client->id}}">
+                                                <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
                                             </a> 
                                             <!-- @endcan @can('client_edit')
                                             <a class="btn btn-xs btn-info"

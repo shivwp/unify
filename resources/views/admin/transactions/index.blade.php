@@ -13,15 +13,68 @@
             <div class="col-lg-12">
             
 
-<div style="margin-bottom: 10px;" class="row">
+            <div style="margin-bottom: 10px;" class="row p-0">
+                <div class="col-lg-2 col-md-2 col-sm-12 d-flex">
+                      {{--@can('project_create')
+                    <a class="btn-sm btn-success text-center" style="height: 37px; font-size: 10px;" href="{{ route("admin.projects.create") }}">
+                     Add Project
+                 </a>
+                 @endcan--}}
+                 <!-- <a class="btn-sm btn-info" style="margin-left: 1px; height: 30px; font-size: smaller;" href="{{url('/admin/projects-pdf')}}">
+                  Export to Pdf
+              </a> -->
+              <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button>
+
+          </div>
+          <div class="col-lg-5 col-md-5 col-sm-12 "> 
+            {{--<?php 
+            if(!empty($_GET['search'])){$search= $_GET['search'];}else{ $search='';}
+            ?>
+            
+            <div class="right-item" >
+                
+                <form action="" class="d-flex" method="get">
+                    <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Enter project/job name">
+                  <button class="btn-sm search-btn" type="submit"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                </form>
+             </div>--}}
+            </div>
+          <div class="col-lg-5 col-md-5 col-sm-12 pl-2">
+
+              <form action="" method="GET" class="d-flex">
+                <div class="mb-3">
+                   
+                    <div class="input-group input-daterange" class="daterange">
+                      <input type="text" name="start_date"  id="Startdate" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date" class="form-control" />
+                      <span class="input-group-text">To</span>
+                      <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date" class="form-control" />
+                    </div>
+                    </div>
+              <div class="d-flex" style="margin-left: 8px;">
+                <button class="btn-sm search-btn" type="submit" style="height: 37px; border: none;
+                margin-right:2px">  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                <a href="{{url('/admin/transactions')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
+               
+            </div>
+          </form>
+         
+      </div>
+
+  </div>
+
+
+
+
+
+{{--<div style="margin-bottom: 10px;" class="row">
     <div class="col-lg-6 d-flex">
-    {{--@can('transaction_create')
+    @can('transaction_create')
         <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.transactions.create") }}">
          Add Transactions
      </a>
-     @endcan--}}
+     @endcan
         <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('/admin/transactions')}}">
-            Back
+            Clear
         </a>
      <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('/admin/transaction-pdf')}}">
       Export to Pdf
@@ -81,24 +134,28 @@
     <form action="" method="GET" class="d-flex">
         
         <div class="col-xl-4 pr-5 mt-2" style="margin-right: 9px;">
-            <label>Start date</label>
-            <input type="date" name="start_date" value="{{Request::get('start_date') ?? ''}}">
+            
+            <input type="text" name="start_date" id="Startdate" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date">
         </div>
-         <h6 class="mt-4">To</h6>
         <div class="col-xl-4  mt-2 " style="margin-left: 33px;">
-<label>End date</label>
-          <input type="date" name="end_date" value="{{Request::get('end_date') ?? ''}}">
+
+          <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date">
       </div>
-      <div class="col-xl-4  mt-4" style="margin-left: 8px;">
-          <button class="btn-sm btn-info filter_btn" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; border:none" >Submit</button>
+      <div class="col-xl-4  mt-4" style="margin-left: 40px;">
+          <button class="btn-sm btn-info filter_btn" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; border:none" >Search</button>
       </div>
   </form>
 </div>
+        
+
+    
+
+
 
 
 </div>
 
-</div>
+</div>--}}
 
 <div class="card">
 <div class="card-header">
@@ -107,12 +164,12 @@
 
 <div class="card-body">
     <div class="table-responsive">
-        <table class=" table table-bordered table-striped table-hover datatable datatable-Transaction">
+        <table class=" table table-bordered table-striped table-hover datatable datatable-Transaction example">
             <thead>
                 <tr>
                     
                     <th>
-                        {{ trans('cruds.transaction.fields.id') }}
+                        S No.
                     </th>
                     <th>
                         {{ trans('cruds.transaction.fields.project') }}
@@ -135,7 +192,7 @@
                     {{ trans('cruds.transaction.fields.transaction_date') }}
                     </th>
                     <th>
-                        {{ trans('cruds.transaction.fields.description') }}
+                       Short Description
                     </th>
                     <th>
                         Action
@@ -143,6 +200,9 @@
                 </tr>
             </thead>
             <tbody>
+                 @php
+                    $i=1
+                @endphp
                 @foreach($transactions as $key => $transaction)
                     @php
                         $userdata = App\User::where('id',$transaction->user_id)->first();
@@ -157,7 +217,7 @@
                     <tr data-entry-id="{{ $transaction->id }}">
                        
                         <td>
-                            {{ $transaction->id ?? '' }}
+                            {{$i++}}
                         </td>
                         <td>
                             {{ $transaction->project->name ?? '' }}
@@ -176,7 +236,7 @@
                         {{ $transaction->transaction_type->name ?? '' }}
                         </td>
                         <td>
-                            {{ date('j \\ F Y', strtotime($transaction->created_at)) }}
+                            {{ $transaction->created_at->toFormattedDateString() }}
                             
                         </td>
                        
@@ -185,14 +245,14 @@
                         </td>
                         <td>
                             @can('transaction_show')
-                                <a class="btn btn-xs btn-primary" href="{{ route('admin.transactions.show', $transaction->id) }}">
-                                    {{ trans('global.view') }}
+                                <a href="{{ route('admin.transactions.show', $transaction->id) }}">
+                                     <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
                                 </a>
                             @endcan
 
                             @can('transaction_edit')
-                                <a class="btn btn-xs btn-info" href="{{ route('admin.transactions.edit', $transaction->id) }}">
-                                    {{ trans('global.edit') }}
+                                <a href="{{ route('admin.transactions.edit', $transaction->id) }}">
+                                   <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
                                 </a>
                             @endcan
 
@@ -200,7 +260,7 @@
                                 <form action="{{ route('admin.transactions.destroy', $transaction->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                     <input type="hidden" name="_method" value="DELETE">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+                                    <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
                                 </form>
                             @endcan
 
@@ -261,5 +321,6 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 });
 })
 
-</script> 
+</script>
+
 @endsection

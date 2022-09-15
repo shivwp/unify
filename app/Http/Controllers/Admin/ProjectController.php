@@ -70,7 +70,12 @@ class ProjectController extends Controller
 
         }elseif(isset($request->start_date) && isset($request->end_date)){
             $q->whereBetween('created_at',[$request->start_date,$request->end_date]);
+        }elseif(isset($request->start_date)){
+                $q->where('created_at', 'like', '%' . $request->start_date . '%');
+                 
         }
+
+        
         if($request->search){
         
             $q->where('name', 'like', "%$request->search%");

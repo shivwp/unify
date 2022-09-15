@@ -10,6 +10,8 @@ use App\Role;
 use App\User;
 use Gate;
 use DB;
+use Carbon\Carbon;
+use Hash;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -50,7 +52,25 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $user = User::create($request->all());
+        //$user = User::create($request->all());
+
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->email_verified_at =  Carbon::now()->toDateTimeString();
+        $user->status = $request->status;
+        $user->email = $request->email;
+
+        if(!empty($request->file('profileimage'))){
+            $file = $request->file('profileimage');
+            $name =$file->getClientOriginalName();
+            $destinationPath = 'profileimage';
+            $file->move($destinationPath, $name);
+            $user->profileimage = $name;
+        }
+        $user->save();
+
         $user->roles()->sync($request->input('roles', []));
 
         return redirect()->route('admin.users.index');
@@ -69,7 +89,26 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        $user->update($request->all());
+       
+        //$user->update($request->all());
+
+        $user = User::where('id',$user->id)->first();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->email = $request->email;
+
+        if(!empty($request->file('profileimage'))){
+            $file = $request->file('profileimage');
+            $name =$file->getClientOriginalName();
+            $destinationPath = 'profileimage';
+            $file->move($destinationPath, $name);
+            $user->profileimage = $name;
+        }
+        $user->save();
+
+
+
         $user->roles()->sync($request->input('roles', []));
 
         return redirect()->route('admin.users.index');
@@ -102,10 +141,10 @@ class UsersController extends Controller
     public function statusupdate(Request $request, $id){
         $data = User::where('id',$id)->first();
         $status =  $data->status;
-        if($status == 'publish'){
-            $data->status = 'unpublish';
+        if($status == 'accept'){
+            $data->status = 'decline';
         }else{
-            $data->status = 'publish';
+            $data->status = 'accept';
         }
         $data->save();
         return redirect()->back();

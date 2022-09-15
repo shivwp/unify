@@ -38,12 +38,14 @@ class User extends Authenticatable
         'deleted_at',
         'remember_token',
         'email_verified_at',
-        'status'
+        'status',
+        'profileimage'
     ];
 
     public function getEmailVerifiedAtAttribute($value)
     {
-        return $value ? Carbon::createFromFormat('Y-m-d H:i:s', $value)->format(config('panel.date_format') . ' ' . config('panel.time_format')) : null;
+        
+        return $value ? $value : null;
     }
 
     public function setEmailVerifiedAtAttribute($value)
