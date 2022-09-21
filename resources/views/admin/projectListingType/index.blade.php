@@ -8,19 +8,19 @@
             <div class="col-lg-12">
 
                 @can('project_status_create')
-                <div style="margin-bottom: 10px;" class="row">
-                    <div class="col-lg-12">
+                <div class="row tabelhed">
+                    <div class="col-lg-12" style="margin-bottom:23px">
                         <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-listing-type')}}">Back
                         </a> -->
-                        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.project-listing-type.create") }}">
-                            Add Listing Type
+                        <a class="btn-sm ad-btn" style="height: 30px; font-size: smaller; padding: 9px 11px 11px 12px;" href="{{ route("admin.project-listing-type.create") }}">
+                            Add
                         </a>
                     </div>
                 </div>
             @endcan
             <div class="card">
                 <div class="card-header">
-                    listing Type List
+                    Listing Type List
                 </div>
             
                 <div class="card-body">

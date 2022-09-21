@@ -9,11 +9,11 @@
             
 @can('project_status_create')
 <div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-12">
-        {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/service')}}">Back
+    <div class="col-lg-12" style="margin-bottom: 23px;">
+        {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 9px 10px 10px 12px; margin-left: 11px;" href="{{url('admin/service')}}">Back
                         </a>--}}
-        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.service.create") }}">
-            Add Service
+        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 9px 10px 10px 12px;" href="{{ route("admin.service.create") }}">
+            Add
         </a>
     </div>
 </div>
@@ -29,16 +29,16 @@
             <thead>
                 <tr>
                   
-                    <th>
+                    <th class="wd-15p">
                         S No.
                     </th>
-                    <th>
+                    <th class="wd-15p">
                     Service Name
-                    </th>
+                    </th class="wd-15p">
                     <th>
                     Description
-                    </th>
-                    <th>
+                    </th class="wd-15p">
+                    <th class="wd-15p">
                       Action
                     </th>
                 </tr>

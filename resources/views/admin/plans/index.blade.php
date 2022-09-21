@@ -9,11 +9,11 @@
             
 @can('project_status_create')
 <div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-12">
+    <div class="col-lg-12" style="margin-bottom: 32px;">
         {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/plan')}}">Back
                         </a>--}}
-        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.plan.create") }}">
-            Add Plan
+        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.plan.create") }}">
+            Add
         </a>
     </div>
 </div>
@@ -29,21 +29,21 @@
             <thead>
                 <tr>
                   
-                    <th>
-                        S No.
-                    </th>
-                    <th>
+                    <th class="wd-15p">
+                     S No.
+                    </th class="wd-15p">
+                    <th class="wd-15p">
                     Plans Name
-                    </th>
+                    </th class="wd-15p">
                     <th>
                    Services
-                    </th>
-                    <th>
+                    </th class="wd-15p">
+                    <th class="wd-15p">
                     Validity
                     </th>
-                    <th>
+                    <th class="wd-15p">
                     Amount
-                    </th>
+                    </th class="wd-15p">
                     <th>
                       Action
                     </th>
@@ -91,7 +91,7 @@
                             {{$item->amount}}
                             @endif
                         </td>
-                        <td>
+                        <td class="d-flex">
                                 <!-- @can('project_category_show')
                                     <a class="btn btn-xs btn-primary" href="{{ route('admin.project-category.show', $item->id) }}">
                                         {{ trans('global.view') }}

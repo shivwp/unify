@@ -2,130 +2,120 @@
 
 <div class="content-wrapper">
   <div class="container-xxl flex-grow-1 container-p-y">
-        <div class="row">
-            <div class="col-lg-12">
-            
-@can('project_status_create')
-<div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-12">
-        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.project-category.create") }}">
-            Add Category
-        </a>
-    </div>
-</div>
-@endcan
-<div class="card">
-   
-<div class="card-header">
-<div class="row">
-   <div class="col-lg-6">  <h5 class="m-0 mb-1">Category</h5>
-</div>
-    <div class="col-lg-6">  
-        <div class="items" style="margin-left: 1px; width: 85px !important; float: right;">
+        <div class="row ">
+            <div class="col-lg-12" >
+            @can('project_status_create')
+            <div class="row tabelhed">
+                <div class="col-lg-12" style="margin-bottom: 23px !important;">
+                    <a class="btn-sm ad-btn" style="height: 30px; font-size: smaller; padding: 9px 11px 11px 12px;" href="{{ route("admin.project-category.create") }}">
+                        Add
+                    </a>
+                </div>
+            </div>
+            @endcan
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-lg-6">  
+                            <h5 class="m-0 mb-1">Category List</h5>
+                        </div>
+                        <div class="col-lg-6">  
+                            <div class="items" style="margin-left: 1px; width: 85px !important; float: right;">
+                                <form action="" id="pagination" method="get">
+                                    <select class="form-select m-0" name="pagination" style="width: 94%; font-size: 11px;  height: 32px;" id="pagination" aria-label="Default select example">
+                                        <option value="10" @if($pagination=='10') selected @endif>10</option>
+                                        <option  value='20' @if($pagination=='20') selected @endif>20</option>
+                                        <option value='30' @if($pagination=='30') selected @endif>30</option>
+                                        <option value='40' @if($pagination=='40') selected @endif>40</option>
+                                        <option value='50' @if($pagination=='50') selected @endif>50</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table">
+                        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
+                            <thead>
+                                <tr>
+                                    <th class="wd-15p">S No.</th>
+                                    <th class="wd-15p">
+                                        Project Platform</th>
+                                    <th class="wd-15p">
+                                    Project Category
+                                    </th>
+                                    <th class="wd-15p">
+                                        Number of projects going on
+                                    </th>
+                                    <th class="wd-15p">
+                                      Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @php $i=1 @endphp
+                                @foreach($projectCategory as $key => $projectCate)
 
-            <form action="" id="pagination" method="get">
-            <select class="form-select m-0" name="pagination" style="width: 94%; font-size: 11px;  height: 32px;" id="pagination" aria-label="Default select example">
-              
-                  <option value="10" @if($pagination=='10') selected @endif>10</option>
-                  <option  value='20' @if($pagination=='20') selected @endif>20</option>
-                  <option value='30' @if($pagination=='30') selected @endif>30</option>
-                  <option value='40' @if($pagination=='40') selected @endif>40</option>
-                  <option value='50' @if($pagination=='50') selected @endif>50</option>
-                  
-              </select>
-            </form>
-              </div>
-    </div>
-   </div>
-   
-</div>
+                                    @php
+                                        $record = App\ProjectProjectCategory::where('project_category_id',$projectCate->id)->count();
+                                    @endphp
+                                    <tr data-entry-id="{{ $projectCate->id }}">
+                                       
+                                    <td>{{$i++}}</td>
+                   
+                                       
+                                         <td>
+                                            {{ $projectCate->name ?? '' }}
+                                        </td>
+                                        <td>
+                                           
+                                            @if(!empty($projectCate->parentcategory))
+                                            {{ $projectCate->parentcategory->name ?? '' }}
+                                            @else
+                                            No Parent
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{ $record ?? '' }}
+                                        </td>
+                                        <td>
+                                            @can('project_category_show')
+                                                <a href="{{ route('admin.project-category.show', $projectCate->id) }}">
+                                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>" ><i class="bx bx-show mx-1"></i></button>
+                                                </a>
+                                            @endcan
 
-<div class="card-body">
-    <div class="table-responsive">
-        <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
-            <thead>
-                <tr>
-                  
-                    <th>
-                       S No.
-                    </th>
-                    <th>
-                        Project Platform
-                    </th>
-                    <th>
-                    Project Category
-                    </th>
-                    <th>
-                        Number of projects going on
-                    </th>
-                    <th>
-                      Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-            @php $i=1 @endphp
-                @foreach($projectCategory as $key => $projectCate)
+                                            @can('project_category_edit')
+                                                <a  href="{{ route('admin.project-category.edit', $projectCate->id) }}">
+                                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>" ><i class="bx bx-edit"></i></button>
+                                                </a>
+                                            @endcan
+                                            @if($record <= 0)
+                                                @can('project_category_delete')
+                                                
+                                                    <form action="{{ route('admin.project-category.destroy', $projectCate->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                        <input type="hidden" name="_method" value="DELETE">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                        <button type="submit" class="btn btn-sm  btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"><i class="bx bx-trash"></i></button>
+                                                        
+                                                    </form>
+                                                @endcan
+                                                @else
+                                                <button type="submit" data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}"  class="btn btn-sm category_re btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" ><i class="bx bx-trash"></i></button>
+                                                <!-- <button data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}" class="category_re "><i class="bx bx-trash"></button> -->
+                                            @endif
 
-                    @php
-                        $record = App\ProjectProjectCategory::where('project_category_id',$projectCate->id)->count();
-                    @endphp
-                    <tr data-entry-id="{{ $projectCate->id }}">
-                       
-                    <td>{{$i++}}</td>
-   
-                       
-                         <td>
-                            {{ $projectCate->name ?? '' }}
-                        </td>
-                        <td>
-                           
-                            @if(!empty($projectCate->parentcategory))
-                            {{ $projectCate->parentcategory->name ?? '' }}
-                            @else
-                            No Parent
-                            @endif
-                        </td>
-                        <td>
-                            {{ $record ?? '' }}
-                        </td>
-                        <td>
-                            @can('project_category_show')
-                                <a href="{{ route('admin.project-category.show', $projectCate->id) }}">
-                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>" ><i class="bx bx-show mx-1"></i></button>
-                                </a>
-                            @endcan
+                                        </td>
 
-                            @can('project_category_edit')
-                                <a  href="{{ route('admin.project-category.edit', $projectCate->id) }}">
-                                <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>" ><i class="bx bx-edit"></i></button>
-                                </a>
-                            @endcan
-                            @if($record <= 0)
-                                @can('project_category_delete')
-                                
-                                    <form action="{{ route('admin.project-category.destroy', $projectCate->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="btn btn-sm  btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"><i class="bx bx-trash"></i></button>
-                                        
-                                    </form>
-                                @endcan
-                                @else
-                                <button type="submit" data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}"  class="btn btn-sm category_re btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" ><i class="bx bx-trash"></i></button>
-                                <!-- <button data-bs-toggle="modal" data-bs-target="#basicModal" value="{{$projectCate->id}}" class="category_re "><i class="bx bx-trash"></button> -->
-                            @endif
-
-                        </td>
-
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        {!! $projectCategory->links() !!}
-    </div>
-</div>
-</div>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        {!! $projectCategory->links() !!}
+                    </div>
+                </div>
+                </div>
 
 <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog" role="document">

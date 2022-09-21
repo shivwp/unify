@@ -53,13 +53,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
 <!-- Main JS -->
 <script src="{{ URL::asset('admin/assets/js/main.js') }}"></script>
-
+<script src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <!-- Page JS -->
 <script src="{{ URL::asset('admin/assets/js/dashboards-analytics.js') }}"></script>
 
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+       $('.ckeditor').ckeditor();
+    });
+</script>
+
 <script>
       
     $( document ).ready(function() {
@@ -350,5 +359,29 @@
 <script>
     
 </script>
+<script>
+  var maxGroup = 100;
+  
+  $(".addMore").click(function(){
 
+   var Qus=$("#Qus_no_replace").val();
+
+    if($('body').find('.fieldGroup').length < maxGroup){
+        var fieldHTML = '<div class="fieldGroup">'+$(".fieldGroupCopy").html()+'</div>';
+        $('body').find('.fieldGroup:last').after(fieldHTML);
+        var new_qus=parseInt(Qus) +1;
+        $("#Qus_no_replace").val(new_qus);
+        
+        // $(".Qus_no").html('Qus'+ new_qus);
+          
+       
+       
+    }else{
+        alert('Maximum '+maxGroup+' groups are allowed.');
+    }
+});
+$("body").on("click",".remove",function(){
+    $(this).parents(".fieldGroup").remove();
+});
+  </script>
 </html>

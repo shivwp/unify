@@ -23,12 +23,24 @@
                                 <label class="form-label mt-3">Profile</label>
                                 <input type="file" class="form-control" name="profileimage" value="">
                             </div>
-                            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
-                                <label for="name">{{ trans('cruds.user.fields.name') }}*</label>
+                            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }} mt-2">
+                                <label for="name" class="mt-2"> First name</label>
                                 <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($user) ? $user->name : '') }}" required>
                                 @if($errors->has('name'))
                                     <p class="help-block">
                                         {{ $errors->first('name') }}
+                                    </p>
+                                @endif
+                                <p class="helper-block">
+                                    {{ trans('cruds.user.fields.name_helper') }}
+                                </p>
+                            </div>
+                            <div class="form-group {{ $errors->has('last_name') ? 'has-error' : '' }}">
+                                <label for="name">Last name</label>
+                                <input type="text" id="name" name="last_name" class="form-control" value="{{ old('name', isset($user) ? $user->last_name : '') }}" required>
+                                @if($errors->has('name'))
+                                    <p class="help-block">
+                                        {{ $errors->first('last_name') }}
                                     </p>
                                 @endif
                                 <p class="helper-block">
@@ -61,8 +73,7 @@
                             </div>
                             <div class="form-group {{ $errors->has('roles') ? 'has-error' : '' }}">
                                 <label for="roles">{{ trans('cruds.user.fields.roles') }}*
-                                    <span class="btn btn-info btn-xs select-all">{{ trans('global.select_all') }}</span>
-                                    <span class="btn btn-info btn-xs deselect-all">{{ trans('global.deselect_all') }}</span></label>
+                                   </label>
                                 <select name="roles[]" id="roles" class="form-control select2" multiple="multiple" required>
                                     @foreach($roles as $id => $roles)
                                         <option value="{{ $id }}" {{ (in_array($id, old('roles', [])) || isset($user) && $user->roles->contains($id)) ? 'selected' : '' }}>{{ $roles }}</option>
@@ -76,6 +87,18 @@
                                 <p class="helper-block">
                                     {{ trans('cruds.user.fields.roles_helper') }}
                                 </p>
+                            </div>
+                            
+
+                            <div class="form-group {{ $errors->has('roles') ? 'has-error' : '' }}">
+                                <label for="roles">Skills
+                                   </label>
+                                <select name="skills[]" id="roles" class="form-control select2" multiple="multiple" required>
+                                    @foreach($ProjectSkill as $item)
+                                        <option value="{{ $item->id }}" >{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                               
                             </div>
                             
                             <div>

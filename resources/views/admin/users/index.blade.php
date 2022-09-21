@@ -27,11 +27,11 @@
                 <div style="margin-bottom: 10px;" class="row p-0">
                     <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
                         @can('user_create')
-                        <a class="btn-sm btn-success pt-2" style="height: 38px; margin-left: 8px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.users.create") }}">
-                            {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
+                        <a class="btn-sm btn-success pt-2" style="height: 38px; margin-left: 8px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.users.create") }}">
+                           Add
                         </a>
                         @endcan
-                      <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button>
+                      <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 13px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span>Excel</button>
 
                       </div>
                   
@@ -57,7 +57,7 @@
                   
                     <div class="right-item" style="float:right;">
                     <div class="row">
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 p-0">
                             <form action="" method="get" id="filter_form">
                             <select class="form-control" id="user_filter" name="user_filter">
                             <option value="" class="text-center">Select Role</option>
@@ -68,7 +68,7 @@
                         <div class="col-xl-6">
                             <form action="" class="d-flex" method="get">
                                 <input type="text" name="search" class="form-control" value="{{$search}}" placeholder="Search user">
-                              <button class="search-btn" type="submit"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                              <button class="search-btn" style="margin-left:8px;" type="submit"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
                             </form>
                         </div>
                     </div>

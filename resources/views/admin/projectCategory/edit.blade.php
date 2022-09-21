@@ -6,7 +6,11 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-            
+            <div class="row tabelhed">
+            <div class="col-lg-12" style="margin-bottom: 23px !important;">
+                Category/Edit
+            </div>
+</div>
 <div class="card">
     <div class="card-header">
         Edit Category List
@@ -45,7 +49,7 @@
                 @endif
             </div>
             <div class="mt-3">
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                <input class="btn ad-btn" type="submit" value="{{ trans('global.save') }}">
             </div>
         </form>
 

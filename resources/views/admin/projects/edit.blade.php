@@ -2,7 +2,120 @@
 
 <div class="content-wrapper">
     <!-- Content -->
+   
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row">
+            <div class="col-lg-12">
+                <div class="">
+                    <div class="nav-align-top mb-4">
+                        <ul class="nav nav-tabs nav-fill" role="tablist">
+                          <li class="nav-item">
+                            <button
+                              type="button"
+                              class="nav-link active"
+                              role="tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#navs-justified-home"
+                              aria-controls="navs-justified-home"
+                              aria-selected="true"
+                            >
+                              Proposals
+                              <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-label-danger">{{count($proposals)}}</span>
+                            </button>
+                          </li>
+                          <li class="nav-item">
+                            <button
+                              type="button"
+                              class="nav-link"
+                              role="tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#navs-justified-profile"
+                              aria-controls="navs-justified-profile"
+                              aria-selected="false"
+                            >
+                             Messages
+                            </button>
+                          </li>
+                          <li class="nav-item">
+                            <button
+                              type="button"
+                              class="nav-link"
+                              role="tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#navs-justified-messages"
+                              aria-controls="navs-justified-messages"
+                              aria-selected="false"
+                            >
+                              Hired
+                            </button>
+                          </li>
+                        </ul>
+                        <div class="tab-content">
+                          <div class="tab-pane fade show active" id="navs-justified-home" role="tabpanel">
+                            <h5 class="card-header">Proposals/Bids</h5>
+                            <div class="table-responsive text-nowrap">
+                                @if(count($proposals)>0)
+                              <table class="table">
+                                <thead>
+                                  <tr class="ml-3">
+                                    
+                                    <th class="" style="padding-left: 21px;">Freelancer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Submit Date</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                  @foreach($proposals as $item)
+                                  <tr>
+                                    <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>
+                                      @if(!empty($item->freelancer->name)) {{$item->freelancer->name}} @endif
+                                    </strong> @if(!empty($item->freelancer->name)) ({{$item->freelancer->email}}) @endif</td>
+                                    <td>{{ number_format((float)$item->amount, 2, '.', '') }}$</td>
+                                    
+                                    <td> @if($item->status=="pending") <span class="badge bg-label-warning me-1">Pending</span> @endif 
+                                        @if($item->status=="hold") <span class="badge bg-label-primary me-1">On-Hold</span> @endif
+                                       </td>
+                                    <td>
+                                        {{$item->created_at->toFormattedDateString()}}
+                                    </td>
+                                  </tr>
+                                  @endforeach
+                                 
+                                </tbody>
+                                
+                              </table>
+                              {!! $proposals->links() !!}
+                              @else
+                              <h6 class="card-header">No Proposal On This Job</h6>
+                              
+                              @endif
+                            </div>
+                          </div>
+                          <div class="tab-pane fade" id="navs-justified-profile" role="tabpanel">
+                            <p>
+                                You don't have any Messages yet
+                             </p>
+                            <p class="mb-0">
+                              
+                           
 
+                            </p>
+                          </div>
+                          <div class="tab-pane fade" id="navs-justified-messages" role="tabpanel">
+                            <p>
+                               You don't have any offers yet
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                   
+                  </div>
+            </div>
+            </div>
+        
+          </div>
+       
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">

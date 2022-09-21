@@ -188,6 +188,53 @@
                     </p>
                 @endif
             </div>
+            <hr class="mt-5 mb-2">
+            <div class="col-md-12 mt-3">
+              <div class="row">
+                <div class="col-md-8 mt-3">
+                Add Questions
+                </div>
+               
+                <div class="col-md-4 mt-3">
+                    <div class="mr-0 ml-auto" style="float: right;">
+                        <a href="javascript:void(0)" class="btn btn-success ml-5 mr-0  addMore add_btnnn"><span class="glyphicon glyphicon glyphicon-plus" aria-hidden="true"></span> Add</a>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="fieldGroup"> 
+                          <div class="col-md-12 pr-1 pl-1">
+                         <div class="form-group">
+                            <input type="hidden" id="Qus_no_replace" value="1" id="">
+                       <label class="form-label" >Qus</label><input type="text" class="form-control" name="slider_title[]" placeholder="Title" value=""></div>
+                      </div>
+                   </div>
+                                                
+               
+             
+            <div class="fieldGroupCopy" style="display: none; margin-top: 12px;">
+                <div class="col-md-12 pr-1 pl-1 mt-3">
+
+                    <div class="form-group">
+
+                        <label class="form-label Qus_no">Qus</label>
+
+                        <input type="text" class="form-control" name="slider_title[]" placeholder="Title" value="">
+
+                    </div>
+                </div>
+                   
+              <div class="row">
+                <div class="col-12">
+                     <div class="col-2 pl-0">
+                        <div class="mr-0 ml-auto">
+                            <a href="javascript:void(0)" class="btn btn-success ml-0 mt-2 mr-0  remove add_btnnn"><span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span>Remove</a>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+             </div>       
+             <hr class="mt-5 mb-2">                      
             {{--@if(!empty($property->gallery_image))
                 @php
                 $value = json_decode($property->gallery_image);
@@ -212,6 +259,7 @@
                 <input class="btn btn-danger" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
             </div>
         </form>
+    </div>  
     </div>
 </div> 
 @endsection

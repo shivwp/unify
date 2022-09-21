@@ -18,14 +18,14 @@
                 <div style="margin-bottom: 10px;" class="row p-0">
                     <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
                               @can('project_create')
-                            <a class="btn-sm btn-success text-center" style="height: 37px; font-size: 10px; padding: 9px 3px 4px 8px;" href="{{ route("admin.support.create") }}">
-                             Add Ticket
+                            <a class="btn-sm btn-success text-center" style="height: 37px; font-size: 13px; padding: 9px 9px 10px 12px;" href="{{ route("admin.support.create") }}">
+                             Add
                          </a>
                          @endcan
                          <!-- <a class="btn-sm btn-info" style="margin-left: 1px; height: 30px; font-size: smaller;" href="{{url('/admin/projects-pdf')}}">
                           Export to Pdf
                       </a> -->
-                      <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button>
+                      <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 13  px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span>Excel</button>
 
                       </div>
                   
@@ -41,7 +41,7 @@
                                 </div>
                                 </div>
                           <div class="d-flex" style="margin-left: 8px;">
-                            <button class="btn-sm search-btn" type="submit" style="height: 37px; margin-right:2px;border:none;">  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                            <button class="btn-sm search-btn" type="submit" style="height: 37px; margin-right:6px;border: 1px solid #c7adadad;border-radius: 6px">  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
                             <a href="{{url('/admin/support')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
                            
                         </div>

@@ -32,7 +32,7 @@
                             <div class="col-xl-8">
                                 <form action="" class="d-flex" method="get">
                                     <input type="text" name="search" class="form-control" value="{{$search}}">
-                                  <button class="search-btn" type="submit"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                                  <button class="search-btn " style="margin-left:7px;" type="submit"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
                                 </form>
                             </div>
                         </div>

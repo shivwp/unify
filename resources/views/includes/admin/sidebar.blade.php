@@ -1,12 +1,12 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-    <div class="app-brand demo">
+    <div class="app-brand demo row text-center mt-3">
+      <div class="col-12" style="margin-left: 41px;margin-top :-5px;">
         @php
         $settings=App\SiteSetting::pluck('value','name');
         @endphp
         <a href="{{url('admin/dashboard')}}" class="app-brand-link">
             <span class="app-brand-logo demo text-center pl-5">
-                
-           @if(!empty($settings['business_logo1']))
+            @if(!empty($settings['business_logo1']))
            <img width="80" height="40" src="{{ url('/images/logo').'/'.$settings['business_logo1'] ?? "" }}" alt="logo">
            @endif
             </span>
@@ -16,28 +16,35 @@
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
             <i class="bx bx-chevron-left bx-sm align-middle"></i>
         </a>
+
+      </div>
+
+       <div class="col-12" style="margin-bottom :-68px;">
+        <div class="app-sidebar__user">
+            <div class="dropdown user-pro-body text-center">
+                <div class="user-pic mb-4">
+                    @php
+                    $userprofile_image = Auth::user()->profileimage;
+                    @endphp
+                    @if(isset($userprofile_image) && $userprofile_image != null)
+                        <img width="50px" src="{{ url('/profileimage').'/'.$userprofile_image ?? '' }}" alt="user-img" class="avatar-xl rounded-circle ">
+                    @else
+                        <img width="50px" src="{{ URL::asset('admin/assets/img/avatars/1.png') }}" alt="user-img" class="avatar-xl rounded-circle ">
+                    @endif
+                    
+                </div>
+                <div class="user-info >
+                    <h6 class="mb-0">{{ ucfirst(Auth::user()->name) }}</h6>
+                    
+                </div>
+                <hr class="mt-2">
+            </div>
+        </div>
+       </div>
         
     </div>
- <div class="app-sidebar__user">
-                        <div class="dropdown user-pro-body text-center">
-                            <div class="user-pic mb-4">
-                                @php
-                                $userprofile_image = Auth::user()->profileimage;
-                                @endphp
-                                @if(isset($userprofile_image) && $userprofile_image != null)
-                                    <img width="50px" src="{{ url('/profileimage').'/'.$userprofile_image ?? "" }}" alt="user-img" class="avatar-xl rounded-circle ">
-                                @else
-                                    <img width="50px" src="{{ URL::asset('admin/assets/img/avatars/1.png') }}" alt="user-img" class="avatar-xl rounded-circle ">
-                                @endif
-                                
-                            </div>
-                            <div class="user-info >
-                                <h6 class="mb-0">{{ ucfirst(Auth::user()->name) }}</h6>
-                                
-                            </div>
-                            <hr class="mt-2">
-                        </div>
-                    </div>
+
+    
 
     
 
@@ -70,7 +77,7 @@
                 @can('project_access')
                 <li class="menu-item {{ request()->is('admin/jobs') || request()->is('admin/jobs/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.jobs.index") }}" class="menu-link">
-                        <div data-i18n="Account">Jobs</div>
+                        <div data-i18n="Account">Contracts</div>
                     </a>
                 </li>
                 @endcan
@@ -148,14 +155,14 @@
             </a>
         </li>
         @endcan
-        @can('client_access')
+       <!--  @can('client_access')
         <li class="menu-item {{ request()->is('admin/clients') || request()->is('admin/clients/*') ? 'active' : '' }}">
             <a href="{{ route("admin.clients.index") }}" class="menu-link">
                 <i class="menu-icon fa fa-user-plus"></i>
                 <div data-i18n="Analytics">Clients</div>
             </a>
         </li>
-        @endcan
+        @endcan -->
         @can('document_access')
         <li class="menu-item {{ request()->is('admin/documents') || request()->is('admin/documents/*') ? 'active' : '' }}">
             <a href="{{ route("admin.documents.index") }}" class="menu-link">
@@ -227,7 +234,7 @@
         </li>
         @endcan
         @can('client_management_setting_access')
-        <li class="menu-item {{ request()->is('admin/project-statuses*') ? 'open' : '' }}" >
+        <li class="menu-item {{ request()->is('admin/project-statuses*') ? 'open' : '' }} {{ request()->is('admin/business_size') ? 'open' : '' }} {{ request()->is('admin/mail*') ? 'open' : '' }} {{ request()->is('admin/site-settings') ? 'open' : '' }}" >
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon fa  fa-cog "></i>
                 <div data-i18n="Account Settings">Settings</div>
@@ -235,16 +242,23 @@
             <ul class="menu-sub">
 
                 @can('site_setting_access')
-                <li class="menu-item">
+                <li class="menu-item {{ request()->is('admin/site-setting') || request()->is('admin/site-setting/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.site-setting.index") }}" class="menu-link">
                         <div data-i18n="Account">Site Settings</div>
                     </a>
                 </li>
                 @endcan
                 @can('mail_setting_acccess')
-                <li class="menu-item">
-                    <a href="" class="menu-link">
+                <li class="menu-item {{ request()->is('admin/mail') || request()->is('admin/mail/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.mail.index") }}" class="menu-link">
                         <div data-i18n="Notifications">Mail Settings</div>
+                    </a>
+                </li>
+                @endcan
+                @can('business_acccess')
+                <li class="menu-item {{ request()->is('admin/business_size') || request()->is('admin/business_size/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.business_size.index") }}" class="menu-link">
+                        <div data-i18n="Notifications">Business Size</div>
                     </a>
                 </li>
                 @endcan

@@ -17,20 +17,10 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
-
-
-          
-            <div style="margin-bottom: 10px;" class="row p-0">
+            <div class="row tabelhed">
                 <div class="col-lg-2 col-md-2 col-sm-12 d-flex">
-                      @can('project_create')
-                    <a class="btn-sm btn-success text-center" style="height: 37px; font-size: 10px;" href="{{ route("admin.jobs.create") }}">
-                     Add Job
-                 </a>
-                 @endcan
-                 {{-- <a class="btn-sm btn-info" style="margin-left: 1px; height: 30px; font-size: smaller;" href="{{url('/admin/projects-pdf')}}">
-                  Export to Pdf
-              </a> --}}
-              <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button> 
+                    <a class="btn-sm ad-btn text-center pt-2" href="{{ route("admin.jobs.create") }}">Add</a>
+                    <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button> 
 
           </div>
           <div class="col-lg-5 col-md-5 col-sm-12 "> <?php 
@@ -45,170 +35,105 @@
                   </form>
                </div>--}}
               </div> 
-           <div class="col-lg-5 col-md-5 col-sm-12 pl-2">
+            <div class="col-lg-5 col-md-5 col-sm-12 pl-2">
 
-           <form action="" method="GET" class="d-flex">
+            <form action="" method="GET" class="d-flex">
                 <div class="mb-3">
-                   
                     <div class="input-group input-daterange" class="daterange">
                       <input type="text" name="start_date"  id="Startdate" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date" class="form-control" />
                       <span class="input-group-text">To</span>
                       <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date" class="form-control" />
                     </div>
-                    </div>
-              <div class="d-flex" style="margin-left: 8px;">
-                <button class="btn-sm search-btn" type="submit" style="height: 37px; margin-right:2px">  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
-                <a href="{{url('admin/jobs')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
-               
-            </div>
-          </form>
-         
-      </div>
-
-  </div>
-
- 
- 
-  <div class="card">
-    <div class="card-header">
-     <div class="row">
-        <div class="col-xl-6">
-          <h5 class="m-0 mb-1">Jobs</h5>
-         
+                </div>
+                <div class="d-flex" style="margin-left: 8px;">
+                <button class="btn-sm search-btn" type="submit" >  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                <a href="{{url('admin/jobs')}}"><i class="fa fa-refresh pl-3 redirect-icon"  aria-hidden="true"></i></a>
+                </div>
+            </form>
         </div>
-      
-        <div class="col-xl-6 ">
-        <div class="row" style="float:right">
-         
-         <div class="col-xl-12 d-flex" style="float: right">
-         <div class="items" style="margin-left: 1px; width: 75px !important;">
-
-          <form action="" id="pagination" method="get">
-          <select class="form-select m-0" name="pagination" style="width: 94%; font-size: 11px;  height: 32px;" id="pagination" aria-label="Default select example">
-            
-                <option value="10" @if($pagination=='10') selected @endif>10</option>
-                <option  value='20' @if($pagination=='20') selected @endif>20</option>
-                <option value='30' @if($pagination=='30') selected @endif>30</option>
-                <option value='40' @if($pagination=='40') selected @endif>40</option>
-                <option value='50' @if($pagination=='50') selected @endif>50</option>
-                
-            </select>
-          </form>
-            </div>
-         <form action="{{url('/admin/project-multi-delete')}}" method="POST">
-            @csrf
-        <!-- <div class="selected_delete" style="float:right;">
-            <button type="submit" class="btn-sm btn-danger">Delete Selected</button>
-        </div> -->
-         </div>
-        </div>
-        </div>
-
-     </div>
- </div>
-
- <div class="card-body">
-    <div class="table-responsive card-datatable">
-       
-      <table id="exportToTable" class=" datatables-basic table border-top table table-bordered table-striped table-hover datatable datatable-Project">
-        <thead>
-            <tr>
-                <!--   <th>
-                <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="materialUnchecked">
-                    </div>
-                </th> -->
-                <th>
-               S No.
-             </th>
-             <th>
-                User Name
-             </th>
-             <th>
-                 Email
-             </th>
-             <th>
-            Project
-          </th>
-         
-          <th>
-           Publish date
-        </th>
-       
-      <th>
-          Status
-      </th>
-      <th>
-         Action
-     </th>
- </tr>
-</thead>
-<tbody id="">
-@if(count($jobs)>0)
-@php $i=1 @endphp
-@foreach($jobs as $key => $item)
-<tr data-entry-id="{{ $item->id }}">
-<!-- <th>
-
-   <div class="form-check">
-   <input type="checkbox" class="form-check-input" id="materialUnchecked" name="multi_delete[]" value="{{$item->id}}">
     </div>
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-xl-6">
+                    <h5 class="m-0 mb-1">Jobs</h5>
+                </div>
+                <div class="col-xl-6 ">
+                    <div class="row" style="float:right">
+                        <div class="col-xl-12 d-flex" style="float: right">
+                            <div class="items" style="margin-left: 1px; width: 75px !important;">
+                                <form action="" id="pagination" method="get">
+                                    <select class="form-select m-0" name="pagination" style="width: 94%; font-size: 11px;  height: 32px;" id="pagination" aria-label="Default select example">
+                                        <option value="10" @if($pagination=='10') selected @endif>10</option>
+                                        <option  value='20' @if($pagination=='20') selected @endif>20</option>
+                                        <option value='30' @if($pagination=='30') selected @endif>30</option>
+                                        <option value='40' @if($pagination=='40') selected @endif>40</option>
+                                        <option value='50' @if($pagination=='50') selected @endif>50</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive card-datatable">
+                <table id="exportToTable" class=" datatables-basic table border-top table table-bordered table-striped table-hover datatable datatable-Project">
+                    <thead>
+                        <tr>
+                            <th>S No.</th>
+                            <th>User Name</th>
+                            <th>Email</th>
+                            <th>Project</th>
+                            <th>Publish date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="">
+                        @if(count($jobs)>0)
+                            @php $i=1 @endphp
+                            @foreach($jobs as $key => $item)
+                            <tr data-entry-id="{{ $item->id }}">
+                                <td>{{$i++}}</td>
+                                <td>{{ $item->user->name ?? '' }}</td>
+                                <td>{{ $item->user->email ?? '' }}</td>
+                                <td>{{ $item->project->name ?? '' }}</td>
+                                <td>{{$item->created_at->toFormattedDateString()}}</td>
+                                <td>{{ $item->status->name ?? '' }}</td>
+                                <td>
+                                    @if($item->status->name == "Publish")
+                                        <span class="badge badge-publish">{{ $item->status->name ?? '' }}</span>
+                                    @elseif($item->status->name == "Unpublish")
+                                        <span class="badge badge-info">{{ $item->status->name ?? '' }}</span>
+                                    @elseif($item->status->name == "On-Hold")
+                                        <span class="badge badge-hold">{{ $item->status->name ?? '' }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <!-- <a  href="{{ route('admin.jobs.show', $item->id) }}">
+                                    <i class="bx bx-show mx-1"  data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i>
+                                    </a> -->
+                                    <a  href="{{ route('admin.jobs.edit', $item->id) }}">
+                                        <i class="bx bx-edit"  data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i>
+                                    </a>
+                                    <a href="jobs-delete/{{$item->id}}">
+                                        <i class="bx bx-trash"data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach 
+                        @else
+                        <tr class="mb-3">
 
+                        No Record Found
 
-</th> -->
-<td>{{$i++}}</td>
-    <td>
-        {{ $item->user->name ?? '' }}
-    </td>
-    <td>
-        {{ $item->user->email ?? '' }}
-    </td>
-   
-    <td>
-        {{ $item->project->name ?? '' }}
-    </td>
-  <td>
-   {{$item->created_at->toFormattedDateString()}}
-</td>
-
-<td>
-    {{ $item->status->name ?? '' }}
-    
-</td>
-<td>
-    @can('project_show')
-    <!-- <a  href="{{ route('admin.jobs.show', $item->id) }}">
- <i class="bx bx-show mx-1"  data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i>
-    </a> -->
-    @endcan
-
-    @can('project_edit')
-    <a  href="{{ route('admin.jobs.edit', $item->id) }}">
-    <i class="bx bx-edit"  data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i>
-    </a>
-    @endcan
-
-    @can('project_delete')
-  
-        
-       <a href="jobs-delete/{{$item->id}}"><i class="bx bx-trash"data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"></i></a>
-
-    @endcan
-
-</td>
-
-</tr>
-@endforeach 
-@else
-<tr class="mb-3">
-
-No Record Found
-
-</tr>
-@endif
-</form>
-</tbody>
-</table>
+                        </tr>
+                        @endif
+                        </form>
+                        </tbody>
+                        </table>
           
 {!! $jobs->links() !!}
 </div>

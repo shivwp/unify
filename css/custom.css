@@ -70,3 +70,50 @@ table.dataTable thead .sorting_desc {
     padding-left: 0px;
     padding-right: 0px;
 }
+.row.tabelhed{
+    background-color: white !important;
+    margin: 0px 0px 10px 0px;
+    padding: 25px 25px 10px 20px;
+    border-radius: 12px;
+}
+.ad-btn{
+    color: #fff;
+    background-color: #696cff !important;
+    border-color: #696cff !important;
+    box-shadow: 0 0.125rem 0.25rem 0 rgb(118 125 185);
+    height: 37px; 
+    font-size: 13px;
+}
+.table th {
+    font-size: 14px;
+}
+.table td {
+    font-size: 14px !important;
+}
+#btnExport{
+    margin-left: 5px;
+    border:none;
+}
+.search-btn{
+    height: 37px; 
+    margin-right:6px
+}
+.redirect-icon{
+    border: 1px solid #beb3b3; 
+    padding:10px; 
+    border-radius:6px
+}
+.paginatee{
+    width: 75px !important;"
+}
+.C_nme{
+    color: #697a8d;
+}
+.badge.badge-publish{
+    margin: 1px;
+   background-color: #42c712cc;
+}
+.badge.badge-hold{
+    margin: 1px;
+   background-color: #ffc107;
+}

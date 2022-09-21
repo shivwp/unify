@@ -9,11 +9,11 @@
              
 @can('document_create')
 <div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-6" >
         <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/documents')}}">Back
                         </a> -->
-        <a class="btn-sm btn-success" style="height: 30px; margin-left: 10px;font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.documents.create") }}">
-            {{ trans('global.add') }} {{ trans('cruds.document.title_singular') }}
+        <a class="btn-sm btn-success" style="height: 30px; margin-left: 10px;font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.documents.create") }}">
+            Add
         </a>
     </div>
     <div class="col-lg-6">

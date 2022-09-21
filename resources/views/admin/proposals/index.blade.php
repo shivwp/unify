@@ -6,16 +6,15 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12 ">
+
+    <div style="margin-bottom: 10px;" class="row">
+        <div class="col-lg-6 mt-2 col-md-6 col-sm-6 col-6">
             
-@can('project_status_create')
-<div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-6 mt-2">
-        
-        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; margin-left: 10px;padding: 7px 8px 10px 10px;" href="{{ route("admin.proposal.create") }}">
-            Add Proposal
-        </a>
-    </div>
-    <div class="col-lg-3 col-md-3 col-sm-6 mt-2">
+            <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; margin-left: 10px;padding: 8px 10px 10px 11px;" href="{{ route("admin.proposal.create") }}">
+                Add
+            </a>
+        </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-3 mt-2 p-0">
     <form action="" method="GET" id="project_filter">
     <?php 
             if(!empty($_GET['project'])){$project_filter= $_GET['project'];}else{ $project_filter='';}
@@ -29,8 +28,8 @@
                         </select>
     </form>
             </div>
-    <div class="col-lg-3 col-md-3 col-sm-6 mt-2 d-flex">
-                      <form action="" method="GET" id="freelancer_filter">
+    <div class="col-lg-3 col-md-3 col-sm-3 mt-2 col-3  d-flex">
+                      <form action="" method="GET" id="freelancer_filter" style="margin-right: 6px;width: 100%;">
                       <select class="form-select" name="freelancer" id="freelancer_filter" style="width: 99%; font-size: 11px;  height: 38px;" aria-label="Default select example">
                         <option value=""> Select Freelancer</option> 
                         @foreach($freelancer as $item)
@@ -41,7 +40,7 @@
                       <a href="{{url('/admin/proposal')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
      </div>
 </div>
-@endcan
+
 <div class="card">
 <div class="card-header">
    <div class="row">

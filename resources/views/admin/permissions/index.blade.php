@@ -17,14 +17,14 @@
             <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
                 @can('permission_create')
                 <a class="btn-sm btn-success pt-2
-                " style="margin-left: 10px;height: 38px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.permissions.create") }}">
-                    {{ trans('global.add') }} {{ trans('cruds.permission.title_singular') }}
+                " style="margin-left: 10px;height: 38px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.permissions.create") }}">
+                  Add
                 </a>
                 @endcan
              <!-- <a class="btn-sm btn-info" style="margin-left: 1px; height: 30px; font-size: smaller;" href="{{url('/admin/projects-pdf')}}">
               Export to Pdf
           </a> -->
-          <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 9px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix"><span class="fa fa-file-excel-o"></span> Export to Excel</button>
+          <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 13px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix">Excel</button>
 
       </div>
    

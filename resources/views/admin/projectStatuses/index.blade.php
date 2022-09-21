@@ -5,15 +5,15 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12 ">
 
                 @can('project_status_create')
                 <div style="margin-bottom: 10px;" class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" style="margin-bottom: 32px;">
                         <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-statuses')}}">Back
                         </a> -->
-                        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px;" href="{{ route("admin.project-statuses.create") }}">
-                            {{ trans('global.add') }} {{ trans('cruds.projectStatus.title_singular') }}
+                        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.project-statuses.create") }}">
+                          Add
                         </a>
                     </div>
                 </div>
