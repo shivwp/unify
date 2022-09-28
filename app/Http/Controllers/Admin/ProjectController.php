@@ -7,16 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyProjectRequest;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
-use App\Project;
-use App\ProjectStatus;
+use App\Models\Project;
+use App\Models\ProjectStatus;
 use App\Exports\ProjectExport;
 use Maatwebsite\Excel\Facades\Excel;    
-use App\ProjectCategory;
-use App\ProjectListingType;
-use App\ProjectSkill;
-use App\ProjectProjectSkill;
-use App\ProjectProjectCategory;
-use App\ProjectProjectListingType;
+use App\Models\ProjectCategory;
+use App\Models\ProjectListingType;
+use App\Models\ProjectSkill;
+use App\Models\ProjectProjectSkill;
+use App\Models\ProjectProjectCategory;
+use App\Models\ProjectProjectListingType;
 use Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ use Intervention\Image\ImageManagerStatic as Image;
 use DateTime;
 use PDF;
 use DB;
-use App\Project_proposals;
+use App\Models\Project_proposals;
 class ProjectController extends Controller
 {
     public function index(Request $request)
@@ -194,13 +194,13 @@ class ProjectController extends Controller
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 3)
         ->where('users.deleted_at','=',null)->get();
-        
+        $proposals=Project_proposals::where('project_id',$project->id)->orderby('id','desc');
         $d['statuses'] = ProjectStatus::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $d['category'] = ProjectCategory::all();
         $d['skill'] = ProjectSkill::all();
         $d['listing'] = ProjectListingType::all();
         $project->load('client', 'status','categories','skills','listingtypes');
-        
+        $d['proposals']=$proposals->paginate(5);
         $d['project'] = $project;
 
         

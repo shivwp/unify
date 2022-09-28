@@ -7,6 +7,32 @@
     border: 1px solid #0043ff !important;
     color: white !important;
 }
+.btn-success {
+    color: #fff;
+    background-color: #f6a4cc !important;
+    border-color: #f6a4cc !important;
+    box-shadow: 0 0.125rem 0.25rem 0 rgb(185 118 158);
+    /* box-shadow: 0 0.125rem 0.25rem 0 rgb(113 221 55 / 40%); */
+}
+.btn-success:hover {
+    color: #fff;
+    background-color: #f1a2d1 !important;
+    border-color: #f1a2d1 !important;
+    transform: translateY(-1px);
+}
+.btn-secondary{
+    color: #fff;
+    background-color: #f6a4cc !important;
+    border-color: #f6a4cc !important;
+    box-shadow: 0 0.125rem 0.25rem 0 rgb(185 118 158);
+    /* box-shadow: 0 0.125rem 0.25rem 0 rgb(113 221 55 / 40%); */
+}
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #f1a2d1 !important;
+    border-color: #f1a2d1 !important;
+    transform: translateY(-1px);
+}
 .bx-show{
     color: #696cff !important;
 }
@@ -20,8 +46,8 @@
     color: red !important;
 }
 .menu .app-brand.demo {
-    height: 64px;
-    margin-top: 12px;
+   
+    margin-top: 12	px;
 }
 .menu:not(.menu-no-animation) .menu-link {
     transition-duration: 0s !important;
@@ -31,6 +57,10 @@ li.select2-selection__choice {
     /* background-color: #e51010 !important; */
     color: #000000;
 }
+.app-brand.demo.row.text-center {
+    margin-bottom: 19px !important;
+}
+
 .app-brand-logo.demo svg {
     width: 22px;
     height: 38px;
@@ -145,6 +175,12 @@ span.badge.badge-info {
 
 .layout-demo-placeholder img {
     width: 900px;
+}
+.bg-footer-theme {
+    background-color: #f5f5f9 !important;
+    color: #697a8d;
+    position: fixed;
+    bottom: 0px;
 }
 
 .layout-demo-info {

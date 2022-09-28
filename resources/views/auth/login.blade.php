@@ -72,7 +72,7 @@
               </div>
               
               <h4 class="mb-2">Welcome to Unify! 👋</h4>
-              <p class="mb-4">Please sign-in to your account and start the adventure</p>
+              <p class="mb-4">Please sign-in to your account</p>
 
               <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
               <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">

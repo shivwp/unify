@@ -7,16 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyProjectRequest;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
-use App\Project;
-use App\ProjectStatus;
+use App\Models\Project;
+use App\Models\ProjectStatus;
 use App\Exports\ProjectExport;
 use Maatwebsite\Excel\Facades\Excel;    
-use App\ProjectCategory;
-use App\ProjectListingType;
-use App\ProjectSkill;
-use App\ProjectProjectSkill;
-use App\ProjectProjectCategory;
-use App\ProjectProjectListingType;
+use App\Models\ProjectCategory;
+use App\Models\ProjectListingType;
+use App\Models\ProjectSkill;
+use App\Models\ProjectProjectSkill;
+use App\Models\ProjectProjectCategory;
+use App\Models\ProjectProjectListingType;
 use Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -25,9 +25,9 @@ use Intervention\Image\ImageManagerStatic as Image;
 use DateTime;
 use PDF;
 use DB;
-use App\Jobs;
-use App\User;
-use App\Project_proposals;
+use App\Models\Jobs;
+use App\Models\User;
+use App\Models\Project_proposals;
 class JobController extends Controller
 {
     public function index(Request $request)

@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyProjectStatusRequest;
 use App\Http\Requests\StoreProjectStatusRequest;
 use App\Http\Requests\UpdateProjectStatusRequest;
-use App\ProjectCategory;
+use App\Models\ProjectCategory;
 use Gate;
-use App\ProjectProjectCategory;
+use App\Models\ProjectProjectCategory;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

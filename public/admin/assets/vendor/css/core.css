@@ -1959,7 +1959,7 @@ progress {
 }
 .table > :not(caption) > * > * {
   /*padding: 0.625rem 1.25rem;*/
-  padding: 10px;
+  padding: 7px;
   background-color: var(--bs-table-bg);
   border-bottom-width: 1px;
   box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
@@ -15683,7 +15683,7 @@ html:not(.layout-footer-fixed) .content-wrapper {
 
 .menu-vertical .app-brand {
   padding-right: 2rem;
-  padding-left: 6rem;
+  padding-left: 3rem;
 }
 
 .menu-horizontal .app-brand,

@@ -58,7 +58,7 @@
                                 @foreach($projectCategory as $key => $projectCate)
 
                                     @php
-                                        $record = App\ProjectProjectCategory::where('project_category_id',$projectCate->id)->count();
+                                        $record = App\Models\ProjectProjectCategory::where('project_category_id',$projectCate->id)->count();
                                     @endphp
                                     <tr data-entry-id="{{ $projectCate->id }}">
                                        

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Client;
-use App\ClientStatus;
+use App\Models\Client;
+use App\Models\Freelancer;
+use App\Models\ClientStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyClientRequest;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use Gate;
-use App\Project;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use DB;
@@ -23,7 +25,6 @@ class ClientController extends Controller
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 3)
         ->where('users.deleted_at','=',null)->paginate(10);
-//  return $clients;
         return view('admin.clients.index', compact('clients'));
     }
 
@@ -79,13 +80,14 @@ class ClientController extends Controller
         return view('admin.clients.show',compact('clients','Projects'));
     }
 
-    public function destroy(Client $client)
+    public function destroy(User $client)
     {
         abort_if(Gate::denies('client_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        Client::where('user_id', $client->id)->delete();
+        User::where('id',$client->id)->delete();
 
-        $client->delete();
-
-        return back();
+        session()->flash('success','User Deleted successfully');
+        return redirect()->back();
     }
 
     public function massDestroy(MassDestroyClientRequest $request)

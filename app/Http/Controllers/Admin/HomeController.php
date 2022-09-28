@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use Auth;
-use App\Notification;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 class HomeController
 {

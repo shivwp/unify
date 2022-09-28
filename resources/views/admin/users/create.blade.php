@@ -1,14 +1,16 @@
 @extends('layouts.master') @section('content')
-
 <div class="content-wrapper">
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
+        @if(Session::has('error'))
+            <p class="alert {{ Session::get('alert-class', 'alert-danger') }}">{{ Session::get('error') }}</p>
+        @endif
         <div class="row">
             <div class="col-lg-12">
 
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header border-bottom">
                         {{ trans('global.create') }} {{ trans('cruds.user.title_singular') }}
                     </div>
                     @php
@@ -17,18 +19,18 @@
                     <div class="card-body">
                         <form action="{{ route("admin.users.store") }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <input type="hidden" name="status" value="accept">
+                            <input type="hidden" name="status" value="approve">
                             <input type="hidden" name="email_verified_at" value="{{$date}}">
                             <div class="form-group">
-                                <label class="form-label mt-3">Profile</label>
-                                <input type="file" class="form-control" name="profileimage" value="">
+                                <label class="form-label mt-3">Profile Image</label>
+                                <input type="file" class="form-control" name="profile_image" value="">
                             </div>
-                            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }} mt-2">
-                                <label for="name" class="mt-2"> First name</label>
-                                <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($user) ? $user->name : '') }}" required>
-                                @if($errors->has('name'))
+                            <div class="form-group {{ $errors->has('first_name') ? 'has-error' : '' }} mt-2">
+                                <label for="name" class="mt-2"> First name *</label>
+                                <input type="text" id="name" name="first_name" class="form-control" value="{{ old('first_name', isset($user) ? $user->first_name : '') }}" required>
+                                @if($errors->has('first_name'))
                                     <p class="help-block">
-                                        {{ $errors->first('name') }}
+                                        {{ $errors->first('first_name') }}
                                     </p>
                                 @endif
                                 <p class="helper-block">
@@ -36,7 +38,7 @@
                                 </p>
                             </div>
                             <div class="form-group {{ $errors->has('last_name') ? 'has-error' : '' }}">
-                                <label for="name">Last name</label>
+                                <label for="name">Last name *</label>
                                 <input type="text" id="name" name="last_name" class="form-control" value="{{ old('name', isset($user) ? $user->last_name : '') }}" required>
                                 @if($errors->has('name'))
                                     <p class="help-block">
@@ -48,7 +50,7 @@
                                 </p>
                             </div>
                             <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
-                                <label for="email">{{ trans('cruds.user.fields.email') }}*</label>
+                                <label for="email">Email *</label>
                                 <input type="email" id="email" name="email" class="form-control" value="{{ old('email', isset($user) ? $user->email : '') }}" required>
                                 @if($errors->has('email'))
                                     <p class="help-block">
@@ -60,8 +62,8 @@
                                 </p>
                             </div>
                             <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-                                <label for="password">{{ trans('cruds.user.fields.password') }}</label>
-                                <input type="password" id="password" name="password" class="form-control" required>
+                                <label for="password">Password *</label>
+                                <input type="password" id="password" name="password" min="8" class="form-control" required>
                                 @if($errors->has('password'))
                                     <p class="help-block">
                                         {{ $errors->first('password') }}
@@ -72,11 +74,12 @@
                                 </p>
                             </div>
                             <div class="form-group {{ $errors->has('roles') ? 'has-error' : '' }}">
-                                <label for="roles">{{ trans('cruds.user.fields.roles') }}*
+                                <label for="roles">Role *
                                    </label>
-                                <select name="roles[]" id="roles" class="form-control select2" multiple="multiple" required>
+                                <select name="roles" id="roles" class="form-control form-select" required>
+                                    <option value="">Select Role</option>
                                     @foreach($roles as $id => $roles)
-                                        <option value="{{ $id }}" {{ (in_array($id, old('roles', [])) || isset($user) && $user->roles->contains($id)) ? 'selected' : '' }}>{{ $roles }}</option>
+                                        <option value="{{ $id }}">{{ $roles }}</option>
                                     @endforeach
                                 </select>
                                 @if($errors->has('roles'))
@@ -88,21 +91,21 @@
                                     {{ trans('cruds.user.fields.roles_helper') }}
                                 </p>
                             </div>
-                            
-
-                            <div class="form-group {{ $errors->has('roles') ? 'has-error' : '' }}">
-                                <label for="roles">Skills
-                                   </label>
-                                <select name="skills[]" id="roles" class="form-control select2" multiple="multiple" required>
-                                    @foreach($ProjectSkill as $item)
-                                        <option value="{{ $item->id }}" >{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                               
+                           <div class="form-group {{ $errors->has('referal_code') ? 'has-error' : '' }}">
+                                <label for="name">Invitation Code</label>
+                                <input type="text" id="name" name="referal_code" class="form-control" value="{{ old('referal_code', isset($user) ? $user->referal_code : '') }}" placeholder="if any referral">
+                                @if($errors->has('name'))
+                                    <p class="help-block">
+                                        {{ $errors->first('referal_code') }}
+                                    </p>
+                                @endif
+                                <p class="helper-block">
+                                    {{ trans('cruds.user.fields.name_helper') }}
+                                </p>
                             </div>
                             
                             <div>
-                                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn btn-success btn_back" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

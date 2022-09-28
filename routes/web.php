@@ -10,24 +10,24 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('dashboard', 'HomeController@dashboard')->name('dashboard');
     Route::get('category-replace', 'ProjectCategoryController@category_replace')->name('category');
     Route::POST('category-delete-replace', 'ProjectCategoryController@category_delete_replace')->name('replace');
+
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionsController');
 
     // Roles
     Route::delete('roles/destroy', 'RolesController@massDestroy')->name('roles.massDestroy');
-    
     Route::resource('roles', 'RolesController');
 
     // Users
     Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
     Route::resource('users', 'UsersController');
-
     Route::get('user/statusupdate/{id}', 'UsersController@statusupdate');
 
     // Currencies
     Route::delete('currencies/destroy', 'CurrencyController@massDestroy')->name('currencies.massDestroy');
     Route::resource('currencies', 'CurrencyController');
+
     // Transactiontypes
     Route::delete('transaction-types/destroy', 'TransactionTypeController@massDestroy')->name('transaction-types.massDestroy');
     Route::resource('transaction-types', 'TransactionTypeController');
@@ -43,8 +43,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Projectstatuses
     Route::delete('project-statuses/destroy', 'ProjectStatusController@massDestroy')->name('project-statuses.massDestroy');
     Route::resource('project-statuses', 'ProjectStatusController');
-
     
+    //Mail
+    Route::resource('mail', 'MailController');
 
     // Projectscategory
     Route::delete('project-category/destroy', 'ProjectCategoryController@massDestroy')->name('project-category.massDestroy');
@@ -67,6 +68,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('clients', 'ClientController');
     Route::get('clients-show/{id}','ClientController@show')->name('client');
 
+    //Freelancer
+    Route::resource('freelancer', 'FreelancerController');
+
     // Projects
     Route::delete('projects/destroy', 'ProjectController@massDestroy')->name('projects.massDestroy');
     Route::resource('projects', 'ProjectController');
@@ -75,23 +79,26 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('/project-delete/{id}', 'ProjectController@destroy');
     Route::POST('/project-multi-delete', 'ProjectController@project_multi_delete');
 
+    //Jobs
     Route::resource('jobs', 'JobController');
-
     Route::get('/jobs-delete/{id}', 'JobController@destroy');
-    //subscription
+
       
+    // Business
+    Route::resource('business_size', 'Business_sizeController');
+    Route::get('/business-delete/{id}', 'Business_sizeController@destroy');
+
+    //subscription
     Route::post('service/{id}', 'ServicesController@destroy')->name('service');
     Route::get('service-update/{id}', 'ServicesController@edit')->name('service');
     Route::resource('service', 'ServicesController');
 
     // Notes
-
     Route::post('plan/{id}', 'SubscriptionPlansController@destroy')->name('plan');
     Route::get('plan-update/{id}', 'SubscriptionPlansController@edit')->name('plan');
     Route::resource('plan', 'SubscriptionPlansController');
 
     //proposals
-
     Route::post('proposal/{id}', 'ProposalController@destroy')->name('proposal');
     Route::get('proposal-update/{id}', 'ProposalController@edit')->name('proposal');
     Route::get('proposal-show/{id}', 'ProposalController@show')->name('proposal');    
@@ -110,17 +117,16 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('transactions/destroy', 'TransactionController@massDestroy')->name('transactions.massDestroy');
     Route::resource('transactions', 'TransactionController');
     Route::get('/transaction-pdf', 'TransactionController@createPDF');
-   //Support
-   Route::get('support-edit/{id}','SupportController@edit')->name('support');
-   Route::get('support-closed/{id}', 'SupportController@ticket_close')->name('support');
-   Route::get('support-delete/{id}', 'SupportController@destroy')->name('support');
-   Route::resource('support', 'SupportController'); 
-   Route::get('/support-pdf', 'SupportController@createPDF');
 
+    //Support
+    Route::get('support-edit/{id}','SupportController@edit')->name('support');
+    Route::get('support-closed/{id}', 'SupportController@ticket_close')->name('support');
+    Route::get('support-delete/{id}', 'SupportController@destroy')->name('support');
+    Route::resource('support', 'SupportController'); 
+    Route::get('/support-pdf', 'SupportController@createPDF');
 
     //Notification
     Route::get('/notification', 'HomeController@notification');
-
 
     // Clientreports
     Route::delete('client-reports/destroy', 'ClientReportController@massDestroy')->name('client-reports.massDestroy');

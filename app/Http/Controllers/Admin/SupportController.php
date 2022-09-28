@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyTransactionRequest;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
-use App\IncomeSource;
-use App\Project;
-use App\Transaction;
+use App\Models\IncomeSource;
+use App\Models\Project;
+use App\Models\Transaction;
 use Intervention\Image\ImageManagerStatic as Image;
 
 

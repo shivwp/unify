@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\SiteSetting;
-use Intervention\Image\ImageManagerStatic as Image;
+use App\Models\SiteSetting;
 
 class SiteSettingController extends Controller
 {
@@ -19,37 +18,38 @@ class SiteSettingController extends Controller
 
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
       
-       if ($request->hasfile('business_logo1')) {
-        $file1 = $request->file('business_logo1');
-        $name = $file1->getClientOriginalName();
-          $filename = time() . '_' . $name;
-          $image_resize = Image::make($file1->getRealPath());
-        
-          $image_resize->save('images/logo/' . $filename);
-          
-          $setting_data = SiteSetting::updateOrCreate([
-            'name' => 'business_logo1',
-        ],
-        [
-            'value' => $filename,
-        ]);
-      }
-      if ($request->hasfile('business_logo2')) {
-        $file = $request->file('business_logo2');
-        $name2 = $file->getClientOriginalName();
-          $filename1 = time() . '_' . $name2;
-          $image_resize = Image::make($file->getRealPath());
-          $image_resize->save('images/logo/' . $filename1);
-          
-          $setting_data = SiteSetting::updateOrCreate([
-            'name' => 'business_logo2',
-        ],
-        [
-            'value' => $filename1,
-        ]);
-      }
+        if($request->hasfile('business_logo1'))
+        {
+            $file = $request->file('business_logo1');
+            $extention = $file->getClientOriginalExtension();
+            $filename = time().'.'.$extention;
+            $file->move('images/logo/', $filename);
+
+            $setting_data = SiteSetting::updateOrCreate([
+                'name' => 'business_logo1',
+            ],
+            [
+                'value' => $filename,
+            ]);
+        }
+    
+        if ($request->hasfile('business_logo2')) 
+        {
+            $file2 = $request->file('business_logo2');
+            $extention2 = $file2->getClientOriginalExtension();
+            $filename2 = time().'.'.$extention2;
+            $file2->move('images/logo/', $filename2);
+
+            $setting_data = SiteSetting::updateOrCreate([
+                'name' => 'business_logo2',
+            ],
+            [
+                'value' => $filename2,
+            ]);
+        }
  
         $setting_data = '';
         foreach ($request->setting as $value) {

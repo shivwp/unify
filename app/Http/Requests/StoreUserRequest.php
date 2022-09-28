@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\User;
+use App\Models\User;
 use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +33,6 @@ class StoreUserRequest extends FormRequest
             ],
             'roles'    => [
                 'required',
-                'array',
             ],
         ];
     }

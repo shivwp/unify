@@ -35,27 +35,26 @@
 <!-- Core JS -->
 <!-- build:js assets/vendor/js/core.js -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="{{ URL::asset('admin/assets/vendor/libs/jquery/jquery.js') }}"></script>
-<script src="{{ URL::asset('admin/assets/vendor/libs/popper/popper.js') }}"></script>
-<script src="{{ URL::asset('admin/assets/vendor/js/bootstrap.js') }}"></script>
-<script src="{{ URL::asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+<script src="{{asset('admin/assets/vendor/libs/jquery/jquery.js') }}"></script>
+<script src="{{asset('admin/assets/vendor/libs/popper/popper.js') }}"></script>
+<script src="{{asset('admin/assets/vendor/js/bootstrap.js') }}"></script>
+<script src="{{asset('admin/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 
 <!-- datatable -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
 
-<script src="{{ URL::asset('admin/assets/vendor/js/menu.js') }}"></script>
+<script src="{{asset('admin/assets/vendor/js/menu.js') }}"></script>
 <!-- endbuild -->
-<script src="assets/vendor/libs/select2/select2.js"></script>
 <!-- Vendors JS -->
-<script src="{{ URL::asset('admin/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+<script src="{{asset('admin/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
 <!-- Main JS -->
-<script src="{{ URL::asset('admin/assets/js/main.js') }}"></script>
+<script src="{{asset('admin/assets/js/main.js') }}"></script>
 <script src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
 <!-- Page JS -->
-<script src="{{ URL::asset('admin/assets/js/dashboards-analytics.js') }}"></script>
+<script src="{{asset('admin/assets/js/dashboards-analytics.js') }}"></script>
 
 <!-- Place this tag in your head or just before your close body tag. -->
 <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -191,10 +190,10 @@
   
     $amount_value=$(this).val();
     $unify_service_fee=$("#servicefee").val();
-  $service_fee= ($amount_value*$unify_service_fee)/100;
-  $freelance_amount=$amount_value-$service_fee;
-  $("#unify_service_fee").val($service_fee);
-  $("#freelancr_amount").val($freelance_amount);
+    $service_fee= ($amount_value*$unify_service_fee)/100;
+    $freelance_amount=$amount_value-$service_fee;
+    $("#unify_service_fee").val($service_fee);
+    $("#freelancr_amount").val($freelance_amount);
     })
 </script>
 

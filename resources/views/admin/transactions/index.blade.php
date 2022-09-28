@@ -205,7 +205,7 @@
                 @endphp
                 @foreach($transactions as $key => $transaction)
                     @php
-                        $userdata = App\User::where('id',$transaction->user_id)->first();
+                        $userdata = App\Models\User::where('id',$transaction->user_id)->first();
                         if($userdata){
                             $username = $userdata->name;
                             $useremail = $userdata->email;

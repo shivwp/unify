@@ -2,119 +2,155 @@
 
 namespace App\Http\Controllers\Api;
 
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\Admin\UserResource;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
+use App\Helper\ResponseBuilder;
+use Illuminate\Http\Request;
+use App\Models\UserReferal;
+use App\Helper\Helper;
+use App\Mail\SendMail;
+use App\Models\Mails;
+use App\Models\User;
+use App\Models\Client;
+use App\Models\Freelancer;
 use Carbon\Carbon;
-use Validator;
-use Str;
-use Config;
-use DB;
 use Socialite;
-use App\User;
-use App\UserReferal;
+use Exception;
+use Validator;
+use Config;
+use Str;
+use DB;
 class AuthController extends Controller
 {
 
-    public function signup(Request $request)
+    public function signup(Request $request): Response
     {
-       
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-                
-        ]);
-       
-        if ($validator->fails()) {   
-            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);   
-        }   
-        $token = random_int(100000, 999999);
-        if($request->user_type == 'Freelancer'){
-            $role = 2;
-        }else{
-            $role = 3;
-        }
-        
-        $password = Hash::make($request->password);
+       try{
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required',
+                'last_name'  => 'required',
+                'email'     => 'required|email',
+                'password' => 'required|min:8',
+                'country'   =>'required',
+                    
+            ]);
+            if ($validator->fails()) {   
+                return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);  
+            }   
 
-        $user_data = new User;
-        $user_data->name=$request->name;
-        $user_data->last_name=$request->last_name;
-        $user_data->email=$request->email;
-        $user_data->password= $password; 
-        $user_data->country = $request->country;
-        $user_data->status ='decline';
-        $user_data->referal_code = $token;
-        //$user_data->social_login_id= $request->social_login_id;
-        //$user_data->socail_login_type= $request->provider;
-        $user_data->save();
-        $user_data->roles()->sync($role);
-        if($request->referal_code){
-            $referalrecord = User::where('referal_code',$request->referal_code)->first();
-            if($referalrecord){
-                $referaldata = new UserReferal;
-                $referaldata->refer_coder_id = $referalrecord->id;
-                $referaldata->user_id  = $user_data->id;
-                $referaldata->save();
+            $user = User::where('email',$request->email)->withTrashed()->first();
+
+            if($user){
+                if($user->deleted_at == null){
+                    if($user->email_verified_at){
+                        return ResponseBuilder::error(__("User Already Exist with this email"), $this->badRequest);
+                    }else{
+                        return ResponseBuilder::success($this->response, __("Please verify your email"));
+                    }
+                }else{
+                    $user->name=$request->first_name.' '.$request->last_name;
+                    $user->first_name=$request->first_name;
+                    $user->last_name=$request->last_name;
+                    $user->email=$request->email;
+                    $user->password= Hash::make($request->password);
+                    $user->country = $request->country;
+                    $user->status ='pending';
+                    $user->referal_code = $request->referal_code;
+                    $user->agree_terms = $request->agree_terms;
+                    $user->deleted_at = null;
+                    $user->otp = Helper::generateOtp();
+                    $user->otp_created_at = now()->addMinutes(3);
+                    $user->email_verified_at = null;
+                    $user->update();
+
+                    $token = $user->createToken('Token')->accessToken;
+                }
+            }
+            else{
+                $user = User::create([
+                    'name' => $request->first_name.' '.$request->last_name,
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'country' => $request->country,
+                    'status' => 'pending',
+                    'referal_code' => $request->referal_code,
+                    'agree_terms' => $request->agree_terms,
+                    'send_email' => $request->send_email,
+                ]);
+                
+                $token = $user->createToken('Token')->accessToken;
+
 
             }
+            //create client or freelancer
+            if(!empty($user)){
+                if($request->user_type == 'freelancer'){
+                    $role = 2;
+                    $freelancer = new Freelancer;
+                    $freelancer->user_id = $user->id;
+                    $freelancer->save();
+                }
+                if($request->user_type == 'client'){
+                    $role = 3;
+                    $client = new Client;
+                    $client->user_id = $user->id;
+                    $client->save();
+                }
+                $user->roles()->sync($role);
+                if($request->referal_code){
+                    $referalrecord = User::where('referal_code',$request->referal_code)->first();
+                    if($referalrecord){
+                        $referaldata = new UserReferal;
+                        $referaldata->refer_coder_id = $referalrecord->id;
+                        $referaldata->user_id  = $user_data->id;
+                        $referaldata->save();
+                    }
+                }
+                //mail to user
+                   
+                    $mail_data = Mails::where('user_category', 'user')->where('mail_category', 'signupverification')->first();
+                    $basicinfo = [
+                        '{otp}'=>$token,
+                        '{password}'=>$request->password,
+                        '{username}'=>$request->first_name.' '.$request->last_name,
+                    ];
+
+                    $msg = $mail_data->message;
+                    foreach($basicinfo as $key=> $info){
+                        $msg = str_replace($key,$info,$msg);
+                    }
+                    
+                    $config = ['from_email' => $mail_data->mail_from,
+                        "reply_email" => $mail_data->reply_email,
+                        'subject' => $mail_data->subject, 
+                        'name' => $mail_data->name,
+                        'message' => $msg,
+                    ];
+
+                    Mail::to($request->email)->send(new SendMail($config));
+            }
+            // generate OTP
+            $user->update([
+                'otp' => Helper::generateOtp(),
+                'otp_created_at' => now()->addMinutes(3),
+                'deleted_at' => null
+            ]);
+            $this->response->email = $user->email;
+            $this->response->otp = $user->otp;
+
+            return ResponseBuilder::success($this->response);
+            
         }
-            //mail to user
-           
-            // $mail_data = Mails::where('user_type', 'user')->where('msg_category', 'otp_verify')->first();
-            // $basicinfo = [
-            //     '{otp}'=>$token,
-            //     '{password}'=>$request->password,
-            //     '{username}'=>$request->name,
-            // ];
-
-            // $msg = $mail_data->message;
-            // foreach($basicinfo as $key=> $info){
-            //     $msg = str_replace($key,$info,$msg);
-            // }
-            
-            // $config = ['from_email' => $mail_data->mail_from,
-            //     "reply_email" => $mail_data->reply_email,
-            //     'subject' => $mail_data->subject, 
-            //     'name' => $mail_data->name,
-            //     'message' => $msg,
-            // ];
-
-            // Mail::to($request->email)->send(new SendMail($config));
-                
-            
-                // $udata = Setting::first();
-               
-                // $adminmail = $udata->email;
-               
-                // //mail to admin
-               
-                // $mail_data = Mails::where('user_type', 'admin')->where('msg_category', 'signup')->first();
-                // $basicinfo = [
-                //     '{username}'=>$request->name,
-                //     '{email}'=>$request->email,
-                // ];
-
-                // $msg = $mail_data->message;
-                // foreach($basicinfo as $key=> $info){
-                //     $msg = str_replace($key,$info,$msg);
-                // }
-                
-                // $config = ['from_email' => $mail_data->mail_from,
-                //     "reply_email" => $mail_data->reply_email,
-                //     'subject' => $mail_data->subject, 
-                //     'name' => $mail_data->name,
-                //     'message' => $msg,
-                // ];
-
-                // Mail::to($adminmail)->send(new SendMail($config));
-            
-
-        return response()->json(['status' => true, 'otp' => $token, 'message' => "You Are registered succcessfully."]);
+        catch (exception $e) {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        }
     }
 
     public function verifysignup(Request $request)
@@ -144,13 +180,11 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
              'email' => 'required|email',
              'password' => 'required',
-             //'fcm_token' => 'required'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
         }
-        
         $user = User::where('email', $request->email)->first();
         if($user){
              if($user->email_verified_at){
@@ -177,86 +211,114 @@ class AuthController extends Controller
                        return response()->json(['status' => false,'message' => '** These credentials do not match our records.', 'user' => Null,'token'=> ""], 200);
                     }
                 }else{
-                    return response()->json(['status' => false,'message' => '** Your Account not Approved', 'user' => Null,'token'=> ""], 200);
+                    return response()->json(['status' => false,'message' => 'Your Account not Approved', 'user' => Null,'token'=> ""], 200);
                 }
             }else{
-                return response()->json(['status' => false,'message' => '** Your Account not verified', 'user' => Null,'token'=> ""], 200);
+                return response()->json(['status' => false,'message' => 'Your Account not verified', 'user' => Null,'token'=> ""], 200);
             }
         }else{
-               return response()->json(['status' => false,'message' => '** These credentials do not match our records.', 'user' => Null,'token'=> ""], 200);
+               return response()->json(['status' => false,'message' => 'These credentials do not match our records.', 'user' => Null,'token'=> ""], 200);
         }
 
     }
     
-  
-
-
     
-    
-    // public function forget_password_otp(Request $request){
+    public function forget_password_otp(Request $request){
 
-    //      $validator = Validator::make($request->all(), [
-    //         'email'  => 'required|email',
-    //         ]);
-    //     $token      = random_int(100000, 999999);
-    //     if ($validator->fails()) {
-    //          return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all()), 'user' => Null], 200);
-    //     }
+        $validator = Validator::make($request->all(), [
+            'email'  => 'required|email',
+        ]);
 
-    //     $user = User::where('email', '=', $request->email)->first();
-    //     if ($user == '') {
-    //         return response()->json(['status' => false, 'message' => 'This email is not registered with us , please recheck it.' , 'user' => Null], 200);
-    //     }else{
-    //         $mail_data = Mails::where('user_type', 'user')->where('msg_category', 'forgot password')->first();
-    //         $basicinfo = [
-    //              '{name}'=>$user->first_name,
-    //             '{password}'=>$token,
-    //             '{email}'=>$request->email,
-    //         ];
+        $token = random_int(100000, 999999);
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all()), 'user' => Null], 200);
+        }
 
-    //         $msg = $mail_data->message;
-    //         foreach($basicinfo as $key=> $info){
-    //             $msg = str_replace($key,$info,$msg);
-    //         }
+        $user = User::where('email', '=', $request->email)->first();
+        if(empty($user)){
+            return response()->json(['status' => false, 'message' => 'This email is not registered with us , please recheck it.' , 'user' => Null], 200);
+        }
+        else{
+
+            $mail_data = Mails::where('user_category', 'user')->where('mail_category', 'forgetpassword')->first();
+            $basicinfo = [
+                '{otp}'=>$token,
+                
+            ];
+
+            $msg = $mail_data->message;
+            foreach($basicinfo as $key=> $info){
+                $msg = str_replace($key,$info,$msg);
+            }
             
-    //         $config = ['from_email' => $mail_data->mail_from,
-    //             "reply_email" => $mail_data->reply_email,
-    //             'subject' => $mail_data->subject, 
-    //             'name' => $mail_data->name,
-    //             'message' => $msg,
-    //         ];
-
-    //         Mail::to($request->email)->send(new SendMail($config));
-    //     }
+            $config = ['from_email' => $mail_data->mail_from,
+                "reply_email" => $mail_data->reply_email,
+                'subject' => $mail_data->subject, 
+                'name' => $mail_data->name,
+                'message' => $msg,
+            ];
+         
+            Mail::to($request->email)->send(new SendMail($config));
+            return response()->json(['status' => true, 'otp' => $token, 'message' => "We have Send You An 6 Digit Password To Your Registred Mail Id."]);
+        }
         
-    //    return response()->json(['status' => true, 'token' => $token, 'message' => "We have Send You An 6 Digit Password To Your Registred Mail Id."]);
+     
 
-    // }
+    }
 
-    // public function reset_password(Request $request){
+    public function reset_password(Request $request){
+        
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:8',
+        ]);
 
-    //     $validator = Validator::make($request->all(), [
-    //         'password' => 'required|min:8',
-    //     ]);
+        if($validator->fails()) {   
+            return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+        }
 
-    //     if($validator->fails()) {   
-    //         return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
-    //     }
+            $data = User::where('email',$request->email)->first();
 
-    //         $data3 = User::where('email',$request->email)->first();
-    //         if(!empty($data3)){
-    //             $password = Hash::make($request->password);
-    //             $user_id = $data3->id;
-    //             $user = User::findOrFail($user_id);           
-    //             $user->password = $password;
-    //             $user->save();
-    //         }else{
-    //             return response()->json(['status'=>false,'message'=>'invalid email'], 200);
-    //         }
+            if(!empty($data)){
+                $password = Hash::make($request->password);
+                $user_id = $data->id;
+                $user = User::findOrFail($user_id);           
+                $user->password = $password;
+                $user->save();
+            }else{
+                return response()->json(['status'=>false,'message'=>'invalid email'], 200);
+            }
            
-    //     return response()->json(['status' => true,'message' => "Your password has been changed successfully, Please do login"], 200);
+        return response()->json(['status' => true,'message' => "Your password has been changed successfully, Please login"], 200);
            
-    // }   
+    }   
+
+    public function changePassword(Request $request){
+        if(Auth::guard('api')->id()){
+            $validator = Validator::make($request->all(), [
+                'current_password' => 'required',
+                'new_password' => 'required', 
+                'confirm_pass' => 'required|same:new_password',
+            ]);
+            if ($validator->fails()) {   
+                    return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
+                }else{
+                $user_id = Auth::guard('api')->user()->id;
+                $data =  User::where('id',$user_id)->first();                                                  
+                if(Hash::check($request->current_password,$data->password)){
+                    $data->password = Hash::make($request->new_password);
+                    $data->save();
+                    
+                    return response()->json(['status'=>true,'message'=>'password change succesfully'], 200);
+                }else{
+                    return response()->json([ 'status'=>false,'message'=>'current password is not match'], 200);
+                }                                          
+                
+            }
+        }else{
+            return response()->json([ 'status'=>false,'message'=>'Please login'], 200);
+        }
+
+    }
     
     // public function userProfile(Request $request){
     //     $user_id = Auth::user()->id;
@@ -324,30 +386,7 @@ class AuthController extends Controller
     //     }
     // }
 
-    // public function changePassword(Request $request){
-    //     $user_id = Auth::user()->id;
-    //     $validator = Validator::make($request->all(), [
-    //         'current_password' => 'required',
-    //         'new_password' => 'required', 
-    //         'confirm_pass' => 'required|same:new_password',
-    //     ]);
-    //     if ($validator->fails()) {   
-    //             return response()->json(['status' => false, 'message' => implode("", $validator->errors()->all())], 200);
-    //         }  else{
-    //         $user_id = Auth::user()->id;
-    //         $data =  User::where('id',$user_id)->first();                                                  
-    //         if(Hash::check($request->current_password,$data->password)){
-    //             $data->password =  Hash::make($request->new_password);
-    //             $data->save();
-                
-    //             return response()->json(['status'=>true,'message'=>'password change succesfully'], 200);
-    //         }else{
-    //             return response()->json([ 'status'=>false,'message'=>'current password is not match'], 200);
-    //         }                                          
-            
-    //     }
-
-    // }
+   
 
     // // public function social(Request $request) {
     // //     try{

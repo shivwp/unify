@@ -3,10 +3,26 @@
 //register api
 Route::post('signup', [App\Http\Controllers\Api\AuthController::class, 'signup']);
 Route::post('verifysignup', [App\Http\Controllers\Api\AuthController::class, 'verifysignup']);
+
 //login api
 Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+
 //countryb list
 Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
+
+//forget password
+Route::post('forget-password', [App\Http\Controllers\Api\AuthController::class, 'forget_password_otp']);
+Route::post('reset-password', [App\Http\Controllers\Api\AuthController::class, 'reset_password']);
+
+Route::get('category_list', [App\Http\Controllers\Api\CommonController::class, 'categorylist']);
+Route::get('subcategory_list', [App\Http\Controllers\Api\CommonController::class, 'subcategorylist'] );
+
+//Route::middleware('auth:api')->group(function () {
+Route::post('change-password', [App\Http\Controllers\Api\AuthController::class, 'changepassword']);
+//});
+
+
+
 
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:api']], function () {
     // Permissions

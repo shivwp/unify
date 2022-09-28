@@ -1,14 +1,13 @@
 <?php return array (
-  'barryvdh/laravel-dompdf' => 
+  'barryvdh/laravel-debugbar' => 
   array (
     'providers' => 
     array (
-      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+      0 => 'Barryvdh\\Debugbar\\ServiceProvider',
     ),
     'aliases' => 
     array (
-      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
-      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'Debugbar' => 'Barryvdh\\Debugbar\\Facades\\Debugbar',
     ),
   ),
   'facade/ignition' => 
@@ -27,6 +26,13 @@
     'providers' => 
     array (
       0 => 'Fideloper\\Proxy\\TrustedProxyServiceProvider',
+    ),
+  ),
+  'fruitcake/laravel-cors' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Fruitcake\\Cors\\CorsServiceProvider',
     ),
   ),
   'intervention/image' => 

@@ -4,6 +4,9 @@
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
+      @if(Session::has('message'))
+      <p class="alert {{ Session::get('alert-class', 'alert-success') }}">{{ Session::get('message') }}</p>
+      @endif
         <div class="row">
             <div class="col-lg-12">
 
