@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\Admin\TimeZoneResource;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
+use App\Models\ProjectCategory;
+use App\Helper\ResponseBuilder;
+use Illuminate\Http\Request;
+use App\Models\ProjectSkill;
+use App\Models\TimeZone;
 use Carbon\Carbon;
 use Validator;
-use App\Models\ProjectCategory;
-use Str;
 use Config;
+use Str;
 use DB;
 
 class CommonController extends Controller
@@ -53,6 +58,28 @@ class CommonController extends Controller
          }
       }
 
+      public function TimeZone()
+      {
+         try{
+            $allTimezone = TimeZone::select('country_code','timezone')->get();
+            return ResponseBuilder::success($allTimezone, "TimeZone List");
 
-     
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function skillList()
+      {
+         try{
+            $skills = ProjectSkill::select('id','name')->get();
+            if(!empty($skills)){
+               return ResponseBuilder::success($skills, "Skills List");
+            }else{
+               return ResponseBuilder::success(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
 }

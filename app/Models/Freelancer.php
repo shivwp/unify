@@ -32,5 +32,10 @@ class Freelancer extends Model
         'city',
     ];
 
+    public function freelancer_meta()
+    {
+        return $this->hasMany(FreelancerMeta::class, 'user_id', 'user_id');
+    }
+
 
 }

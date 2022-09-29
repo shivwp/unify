@@ -21,11 +21,16 @@ class Client extends Model
         'user_id',
         'plan_id',
         'company_name',
+        'website',
+        'company_email',
+        'company_phone',
         'industry',
         'tagline',
         'description',
+        'company_address',
         'employee_no',
         'vat_id',
+        'timezone',
     ];
 
     public function projects()

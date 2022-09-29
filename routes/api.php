@@ -1,21 +1,27 @@
 <?php
 
-//register api
-Route::post('signup', [App\Http\Controllers\Api\AuthController::class, 'signup']);
-Route::post('verifysignup', [App\Http\Controllers\Api\AuthController::class, 'verifysignup']);
+    //register api
+    Route::post('signup', [App\Http\Controllers\Api\AuthController::class, 'signup']);
+    Route::post('verifysignup', [App\Http\Controllers\Api\AuthController::class, 'verifysignup']);
+    Route::post('resend-otp', [App\Http\Controllers\Api\AuthController::class, 'ResendOtp']);
+    Route::post('verify-forgot-otp', [App\Http\Controllers\Api\AuthController::class, 'verifyForgotPasswordOtp']);
 
-//login api
-Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+    //login api
+    Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
 
-//countryb list
-Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
+    //country list
+    Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
 
-//forget password
-Route::post('forget-password', [App\Http\Controllers\Api\AuthController::class, 'forget_password_otp']);
-Route::post('reset-password', [App\Http\Controllers\Api\AuthController::class, 'reset_password']);
+    //skill list
+    Route::get('skill-list', [App\Http\Controllers\Api\CommonController::class, 'skillList']);
 
-Route::get('category_list', [App\Http\Controllers\Api\CommonController::class, 'categorylist']);
-Route::get('subcategory_list', [App\Http\Controllers\Api\CommonController::class, 'subcategorylist'] );
+    //forget password
+    Route::post('forget-password', [App\Http\Controllers\Api\AuthController::class, 'forget_password_otp']);
+    Route::post('reset-password', [App\Http\Controllers\Api\AuthController::class, 'reset_password']);
+
+    Route::get('category_list', [App\Http\Controllers\Api\CommonController::class, 'categorylist']);
+    Route::get('timezone_list', [App\Http\Controllers\Api\CommonController::class, 'TimeZone']);
+    Route::get('subcategory_list', [App\Http\Controllers\Api\CommonController::class, 'subcategorylist'] );
 
 //Route::middleware('auth:api')->group(function () {
 Route::post('change-password', [App\Http\Controllers\Api\AuthController::class, 'changepassword']);

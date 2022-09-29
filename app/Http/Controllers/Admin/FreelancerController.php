@@ -20,13 +20,21 @@ use DB;
 
 class FreelancerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $d['freelance'] =DB::table('users')
+        $pagination=10;
+        if(isset($_GET['paginate'])){
+            $pagination=$_GET['paginate'];
+        }
+        $q =DB::table('users')
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 2)
-        ->where('users.deleted_at','=',null)->paginate(10);
-        // dd($d['freelance']);
+        ->where('users.deleted_at','=',null);
+
+        if($request->search){
+            $q->where('users.name', 'like', "%$request->search%");
+        }
+        $d['freelance']=$q->paginate($pagination)->withQueryString();
         return view('admin.freelancer.index',$d);
     }
 

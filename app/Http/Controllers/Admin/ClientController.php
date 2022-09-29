@@ -17,15 +17,24 @@ use Symfony\Component\HttpFoundation\Response;
 use DB;
 class ClientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clients =DB::table('users')
+        $pagination=10;
+        if(isset($_GET['paginate'])){
+            $pagination=$_GET['paginate'];
+        }
+        $q =DB::table('users')
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 3)
-        ->where('users.deleted_at','=',null)->paginate(10);
-        return view('admin.clients.index', compact('clients'));
+        ->where('users.deleted_at','=',null);
+
+        if($request->search){
+            $q->where('users.name', 'like', "%$request->search%");
+        }
+        $d['clients']=$q->paginate($pagination)->withQueryString();
+        return view('admin.clients.index', $d);
     }
 
     public function create()

@@ -37,7 +37,7 @@ class User extends Authenticatable
         'phone',
         'email_verified_at',
         'otp',
-        'otp_verified_at',
+        'otp_created_at',
         'status',
         'password',
         'referal_code',
@@ -84,10 +84,10 @@ class User extends Authenticatable
     }
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->hasOne(Client::class,'user_id');
     }
     public function freelancer()
     {
-        return $this->belongsTo(Freelancer::class);
+        return $this->hasOne(Freelancer::class,'user_id');
     }
 }

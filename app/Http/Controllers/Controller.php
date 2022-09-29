@@ -26,4 +26,13 @@ class Controller extends BaseController
     {
         $this->response = new stdClass();
     }
+
+    public function uploadProfile_image($profile_image)
+    {
+        $file = $profile_image;
+        $name =$file->getClientOriginalName();
+        $destinationPath = 'profile-image';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
 }
