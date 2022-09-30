@@ -36,6 +36,10 @@ class Freelancer extends Model
     {
         return $this->hasMany(FreelancerMeta::class, 'user_id', 'user_id');
     }
+    public function freelancer_portfolio()
+    {
+        return $this->hasMany(FreelancerPortfolio::class, 'user_id', 'user_id');
+    }
 
 
 }

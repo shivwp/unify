@@ -232,6 +232,7 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), [
                  'email' => 'required|email|exists:users',
                  'password' => 'required',
+                 'user_type' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -242,11 +243,17 @@ class AuthController extends Controller
                 if($user->email_verified_at){
                     if($user->status == 'approve'){
                         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
-
                             $user = Auth::user();
-                            $token = auth()->user()->createToken('API Token')->accessToken;
-                            $this->setAuthResponse($user);
-                            return ResponseBuilder::successWithToken($token, $this->response, 'Login Successfully');
+                            $userRole = strtolower($user->roles()->first()->title);
+
+                            if($userRole == $request->user_type){
+                                $token = auth()->user()->createToken('API Token')->accessToken;
+                                $this->setAuthResponse($user);
+                                return ResponseBuilder::successWithToken($token, $this->response, 'Login Successfully');
+                            }else{
+                                return ResponseBuilder::error( __("These credentials do not match our records"), $this->badRequest);
+                            }
+                            
                         }
                         else{
                            return ResponseBuilder::error( __("These credentials do not match our records"), $this->badRequest);

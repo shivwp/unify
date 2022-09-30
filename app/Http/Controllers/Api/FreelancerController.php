@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Storage;
 use App\Helper\ResponseBuilder;
 use App\Http\Resources\Admin\FreelancerResource;
+use App\Http\Resources\Admin\FreelancerPortfolioResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
-use App\Models\FreelancerMeta;
+use App\Models\FreelancerPortfolio;
 use App\Models\Freelancer;
 use App\Models\User;
 use Carbon\Carbon;
@@ -25,7 +26,19 @@ class FreelancerController extends Controller
 	{
 		try
 		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$freelancer_profile_data = $this->getFreelancerInfo($user_id);
 
+         	$this->response->freelancer = new FreelancerResource($freelancer_profile_data);
+         	$this->response->freelancer_portfolio = new FreelancerPortfolioResource($freelancer_profile_data->freelancer->freelancer_portfolio);
+         	
+         	return ResponseBuilder::success($this->response, "Freelancer All Profile Data");
 		}
 		catch(\Exception $e)
 		{
@@ -39,12 +52,7 @@ class FreelancerController extends Controller
 		{
 			if (Auth::guard('api')->check()) {
 	            $singleuser = Auth::guard('api')->user();
-	            // dd($singleuser->roles()->first()->title);
-	            if($singleuser->roles()->first()->title == "Freelancer"){
-	               $user_id = $singleuser->id;
-	            }else{
-	               return ResponseBuilder::error(__("Please Login with Valid Credentials"), $this->badRequest);
-	            }
+	            $user_id = $singleuser->id;
 	        } 
          	else{
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
@@ -71,12 +79,10 @@ class FreelancerController extends Controller
 			$user_name = User::where('id',$freelancer->user_id)->first();
          	$user_name->first_name = $request->first_name;
          	$user_name->last_name = $request->last_name;
-         	$user_name->profile_image = isset($request->profile_image) ? $this->uploadProfile_image($profile_image) : (($user_name->profile_image) ? $this->uploadProfile_image($user_name->profile_image) : '');
+         	$user_name->profile_image = !empty($request->hasFile('profile_image')) ? $this->uploadProfile_image($request->profile_image) : (($user_name->profile_image) ? $user_name->profile_image : '');
          	$user_name->save();
 
-         	$freelancer_profile_data = User::with('freelancer')->where('id',$user_id)->first();
-         	$this->response->freelancer = new FreelancerResource($freelancer_profile_data);
-         	return ResponseBuilder::success($this->response, "Update Successfully");
+         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
         }
         	catch(\Exception $e){
          	return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -89,12 +95,7 @@ class FreelancerController extends Controller
 		{
 			if (Auth::guard('api')->check()) {
 	            $singleuser = Auth::guard('api')->user();
-	            // dd($singleuser->roles()->first()->title);
-	            if($singleuser->roles()->first()->title == "Freelancer"){
-	               $user_id = $singleuser->id;
-	            }else{
-	               return ResponseBuilder::error(__("Please Login with Valid Credentials"), $this->badRequest);
-	            }
+	            $user_id = $singleuser->id;
 	        } 
          	else{
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
@@ -121,7 +122,7 @@ class FreelancerController extends Controller
 
          	$freelancer_profile_data = User::with('freelancer')->where('id',$user_id)->first();
          	$this->response->freelancer = new FreelancerResource($freelancer_profile_data);
-         	return ResponseBuilder::success($this->response, "Update Successfully");
+         	return ResponseBuilder::successMessage("Update Successfully",$this->success);
         }
         	catch(\Exception $e){
          	return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -144,7 +145,35 @@ class FreelancerController extends Controller
 	{
 		try
 		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'title'  => '',
+         		'image'	=>'',
+         	]);
 
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+         	$portfolioData = FreelancerPortfolio::updateOrCreate([
+         		'id'		=>	$request->id,
+         		'user_id'	=>	$user_id,
+         	],[
+         		'title'		=>	$request->title,
+         		'description'=>	$request->description,
+         		'image'		=>	isset($request->image) ? $this->freelancerPortfolioImage($request->image) : '',
+         	]);
+         	if(!empty($portfolioData)){
+         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	}
 		}
 		catch(\Exception $e)
 		{
