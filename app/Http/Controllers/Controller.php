@@ -109,10 +109,10 @@ class Controller extends BaseController
     }
 
     public function getFreelancerInfo($freelancer_id){
-        $freelancerData = User::with('freelancer.freelancer_portfolio')->where('id',$freelancer_id)->first();
+        $freelancerData = User::with('freelancer.freelancer_portfolio','freelancer.freelancer_testimonial','freelancer.freelancer_certificates','freelancer.freelancer_experiences','freelancer.freelancer_skills')->where('id',$freelancer_id)->first();
         return $freelancerData;
     }
-    
+
     public function getClientInfo($freelancer_id){
         
     }

@@ -23,9 +23,9 @@ class UserResource extends JsonResource
             'state'             =>(string)$this->state,
             'city'              =>(string)$this->city,
             'zip_code'          =>(string)$this->zip_code,
-            'profile_image'     =>(string)$this->profile_image,
-            'agree_terms'       =>(integer)$this->agree_terms,
-            'send_email'        =>(integer)$this->send_email,
+            'profile_image'     =>(string)isset($this->profile_image) ? url('/images/profile-image/'.$this->profile_image) : '',
+            'agree_terms'       =>boolval($this->agree_terms),
+            'send_email'        =>boolval($this->send_email),
         ];
     }
 }

@@ -40,6 +40,22 @@ class Freelancer extends Model
     {
         return $this->hasMany(FreelancerPortfolio::class, 'user_id', 'user_id');
     }
+    public function freelancer_testimonial()
+    {
+        return $this->hasMany(FreelancerTestimonial::class, 'user_id', 'user_id');
+    }
+    public function freelancer_certificates()
+    {
+        return $this->hasMany(FreelancerCertificate::class, 'user_id', 'user_id');
+    }
+    public function freelancer_experiences()
+    {
+        return $this->hasMany(FreelancerExperience::class, 'user_id', 'user_id');
+    }
+    public function freelancer_skills()
+    {
+        return $this->hasMany(FreelancerSkill::class, 'user_id', 'user_id');
+    }
 
 
 }

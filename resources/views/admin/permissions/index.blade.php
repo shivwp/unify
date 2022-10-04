@@ -6,38 +6,18 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-               
-
-<div style="margin-bottom: 10px;" class="row">
-    <div class="col-lg-12">
-        <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/permissions')}}">Back
-                        </a> -->
-       
-        <div style="margin-bottom: 10px;" class="row p-0">
-            <div class="col-lg-6 col-md-6 col-sm-12 d-flex">
-                @can('permission_create')
-                <a class="btn-sm btn-success pt-2
-                " style="margin-left: 10px;height: 38px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.permissions.create") }}">
-                  Add
-                </a>
-                @endcan
-             <!-- <a class="btn-sm btn-info" style="margin-left: 1px; height: 30px; font-size: smaller;" href="{{url('/admin/projects-pdf')}}">
-              Export to Pdf
-          </a> -->
-          <button id="btnExport" style="margin-left: 5px;  height: 38px; font-size: 13px; border:none;" onClick="fnExcelReport()" class="btn-sm btn-secondary clearfix">Excel</button>
-
-      </div>
-   
-      <div class="col-lg-6 col-md-6 col-sm-12 pl-2">
-<div style="float: right;">
-    <a href="{{url('admin/permissions')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
-
-</div>
-  </div>
-
-</div>
-    </div>
-</div>
+                <div class="row tabelhed d-flex justify-content-between">
+                <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
+                    <a class="btn-sm ad-btn text-center pt-2" href="{{ route("admin.permissions.create") }}"> Add</a>
+                    <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
+                </div>
+            </div>
+            @if(Session::has('error'))
+                <p class="alert {{ Session::get('alert-class', 'alert-danger') }}">{{ Session::get('error') }}</p>
+            @endif
+            @if(Session::has('success'))
+                <p class="alert {{ Session::get('alert-class', 'alert-success') }}">{{ Session::get('success') }}</p>
+            @endif
 
 <div class="card">
 <div class="card-header">

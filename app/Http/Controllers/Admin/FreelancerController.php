@@ -62,10 +62,10 @@ class FreelancerController extends Controller
         return redirect()->route('admin.freelancer.index');
     }
 
-    public function show(User $freelancer)
+    public function show($id)
     {
-        
-        return view('admin.freelancer.show');
+        $d['f_data'] = $this->getFreelancerInfo($id);
+        return view('admin.freelancer.show',$d);
     }
 
     public function destroy(User $freelancer)

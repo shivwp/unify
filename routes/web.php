@@ -47,6 +47,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //Mail
     Route::resource('mail', 'MailController');
 
+    //Close Reason
+    Route::resource('close-reason', 'CloseReasonController');
+
     // Projectscategory
     Route::delete('project-category/destroy', 'ProjectCategoryController@massDestroy')->name('project-category.massDestroy');
     Route::resource('project-category', 'ProjectCategoryController');

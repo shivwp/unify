@@ -19,16 +19,6 @@
                     @endcan
                     <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
                 </div>
-                <?php if(!empty($_GET['user_filter'])){$filter= $_GET['user_filter'];}else{ $filter='';} ?>
-                <div class="col-xl-2 p-0">
-                    <form action="" method="get" id="filter_form">
-                        <select class="form-control" id="user_filter" name="user_filter">
-                            <option value="" class="text-center">Select Role</option>
-                            <option value="Client" class="text-center" @if($filter=="Client") selected @endif>Client</option>
-                            <option value="Freelancer" class="text-center"  @if($filter=="Freelancer") selected @endif>Freelancer</option>
-                        </select>
-                    </form> 
-                </div>
                 <div class="col-lg-5 col-md-5 col-sm-5 "> 
                     <?php 
                     if(!empty($_GET['search'])){
@@ -40,7 +30,7 @@
                         <form action="" class="d-flex" method="get">
                             <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Search User" required>
                             <button class="btn-sm search-btn" type="submit"  style="margin-left:6px"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
-                            <a href="{{url('admin/users')}}">
+                            <a href="{{url('admin/freelancer')}}">
                                 <i class="fa fa-refresh pl-3 redirect-icon" aria-hidden="true"></i>
                             </a>
                         </form>
@@ -89,7 +79,7 @@
                                         </td>
                                         <td>
                                             @can('user_show')
-                                                <a href="{{ route('admin.users.show', $item->user_id) }}">
+                                                <a href="{{ route('admin.freelancer.show', $item->user_id) }}">
                                                     <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
                                                 </a>
                                             @endcan

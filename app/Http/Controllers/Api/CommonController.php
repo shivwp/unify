@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Models\AccountCloseReason;
 use App\Models\ProjectCategory;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
@@ -75,6 +76,20 @@ class CommonController extends Controller
             $skills = ProjectSkill::select('id','name')->get();
             if(!empty($skills)){
                return ResponseBuilder::success($skills, "Skills List");
+            }else{
+               return ResponseBuilder::success(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function accountCloseReasonList()
+      {
+         try{
+            $reason = AccountCloseReason::select('id','title')->get();
+            if(!empty($reason)){
+               return ResponseBuilder::success($reason, "Skills List");
             }else{
                return ResponseBuilder::success(__("No Data found"), $this->success);
             }

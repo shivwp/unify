@@ -76,17 +76,9 @@ class ClientController extends Controller
 
     public function show($id)
     {
-       
         abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-        $clients =DB::table('users')
-      
-        ->where('users.id',$id)->first();
-  
-        $Projects=Project::where('client_id',$id)->get();
-     
-
-        return view('admin.clients.show',compact('clients','Projects'));
+        $clients = User::with('client')->where('users.id',$id)->first();
+        return view('admin.clients.show',compact('clients'));
     }
 
     public function destroy(User $client)

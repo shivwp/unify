@@ -1,5 +1,6 @@
 @extends('layouts.master') @section('content')
-
+<style>
+</style>
 <div class="content-wrapper">
     <!-- Content -->
 
@@ -8,59 +9,258 @@
             <div class="col-lg-12">
 
                 <div class="card">
-                    <div class="card-header">
-                        Show Freelaner Details
+                    <div class="card-header border-bottom">
+                        Show Freelancer Details
                     </div>
-                
+                    <br>
                     <div class="card-body">
                         <div class="mb-2">
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                    <tr>
-                                        <th>
-                                            {{ trans('cruds.user.fields.id') }}
-                                        </th>
-                                        <td>
-                                            {{ $freelancer->id }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {{ trans('cruds.user.fields.name') }}
-                                        </th>
-                                        <td>
-                                            {{ $freelancer->name }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {{ trans('cruds.user.fields.email') }}
-                                        </th>
-                                        <td>
-                                            {{ $freelancer->email }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            {{ trans('cruds.user.fields.email_verified_at') }}
-                                        </th>
-                                        <td>
-                                            {{ $freelancer->email_verified_at }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                            Roles
-                                        </th>
-                                        <td>
-                                            @foreach($freelancer->roles as $id => $roles)
-                                                <span class="label label-info label-many">{{ $roles->title }}</span>
-                                            @endforeach
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a style="margin-top:20px;" class="btn btn-success" href="{{ url()->previous() }}">
+                            <div class="row">
+                                <h5><strong>Basic Information</strong></h5>
+                                <div class="col-md-6">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>First Name</strong></h6>
+                                        <p class="mb-0">{{ $f_data->first_name ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Last Name</strong></h6>
+                                        <p class="mb-0">{{ $f_data->last_name ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Email</strong></h6>
+                                        <p class="mb-0">{{ $f_data->email ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">  
+                                        <h6><strong>Status</strong></h6>
+                                        <p class="mb-0">{{ $f_data->status ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Referal Code</strong></h6>
+                                        <p class="mb-0">{{ $f_data->referal_code ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Profile Image</strong></h6>
+                                        @if(!empty($f_data->profile_image))
+                                            <div class="even mt-3">
+                                                
+                                                <div class="parc">
+                                                    <span class="pip" data-title="{{$f_data->profile_image}}">
+                                                        <img src="{{ url('/images/profile-image').'/'.$f_data->profile_image ?? "" }}" alt="" width="150" height="100">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                        <p class="mb-0"> No Image Found </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div> 
+                            <br>
+                            <div class="row">
+                                <h5><strong>Other info</strong></h5>
+                                <div class="col-md-3">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Total Earning</strong></h6>
+                                        <p class="mb-0">{{ $f_data->freelancer->total_earning ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Total Jobs</strong></h6>
+                                        <p class="mb-0">{{ $f_data->freelancer->total_jobs ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Total Hours</strong></h6>
+                                        <p class="mb-0">{{ $f_data->freelancer->total_jobs ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Pending Projects</strong></h6>
+                                        <p class="mb-0">{{ $f_data->freelancer->pending_project ?? '-'}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                            <div class="row">
+                                <h5><strong>Designation info</strong></h5>
+                                <div class="col-md-12">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Title</strong></h6>
+                                        <p class="mb-0">{{ $f_data->freelancer->occcuption ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Desciprion</strong></h6>
+                                        <p class="mb-0">{{ $f_data->freelancer->description ?? '-'}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <h5><strong>Portfolio info</strong></h5>
+                            @php
+                            $i = 1;
+                            @endphp
+                            @if(count($f_data->freelancer->freelancer_portfolio) > 0)
+                                @foreach($f_data->freelancer->freelancer_portfolio as $value)
+                                <h6><strong>{{'Portfolio'.$i}}</strong></h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Title</strong></h6>
+                                            <p class="mb-0">{{ $value->title ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Desciprion</strong></h6>
+                                            <p class="mb-0">{{ $value->description ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Image</strong></h6>
+                                            @if(!empty($value->image))
+                                                <div class="even mt-3">
+                                                    <div class="parc">
+                                                        <span class="pip" data-title="{{$value->image}}">
+                                                            <img src ="{{ url('/images/freelancer-portfolio/'.$value->image) ?? "" }}" alt="" width="150" height="100">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            @else
+                                            <p class="mb-0"> No Image Found </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @php
+                                $i++;
+                                @endphp
+                                @endforeach
+                            @else
+                            <p class="mb-0">{{"No Data Found"}}</p>
+                            @endif
+                            <br>
+                            <h5><strong>Testimonial info</strong></h5>
+                            @php
+                            $i = 1;
+                            @endphp
+                            @if(count($f_data->freelancer->freelancer_testimonial) > 0)
+                                @foreach($f_data->freelancer->freelancer_testimonial as $value)
+                                    <div class="row">
+                                        <h6><strong>{{'Testimonial'.$i}}</strong></h6>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Client Title</strong></h6>
+                                                <p class="mb-0">{{ $value->title ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Project Type</strong></h6>
+                                                <p class="mb-0">{{ $value->type ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Message to Client</strong></h6>
+                                                <p class="mb-0">{{ $value->description ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @php
+                                $i++;
+                                @endphp
+                                @endforeach
+                            @else
+                                <p class="mb-0">No data Found</p>
+                            @endif
+                            <br>
+                            <h5><strong>Certifications info</strong></h5>
+                            @php
+                            $i = 1;
+                            @endphp
+                            @if(count($f_data->freelancer->freelancer_certificates) > 0)
+                                @foreach($f_data->freelancer->freelancer_certificates as $value)
+                                <div class="row">
+                                    <h6><strong>{{'Certificate'.$i}}</strong></h6>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Certificate Name</strong></h6>
+                                            <p class="mb-0">{{ $value->name ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Certificate ID</strong></h6>
+                                            <p class="mb-0">{{ $value->certificate_id ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Issues Date</strong></h6>
+                                            <p class="mb-0">{{ $value->issue_date ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Expiration Date</strong></h6>
+                                            <p class="mb-0">{{ $value->expiry_date ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @php
+                                $i++;
+                                @endphp
+                                @endforeach
+                                @else
+                                <p class="mb-0">No data Found</p>
+                            @endif
+                            <br>
+                            <h5><strong>Experience info</strong></h5>
+                            @php
+                            $i = 1;
+                            @endphp
+                            @if(count($f_data->freelancer->freelancer_experiences) > 0)
+                                @foreach($f_data->freelancer->freelancer_experiences as $value)
+                                <div class="row">
+                                    <h6><strong>{{'Experience'.$i}}</strong></h6>
+                                    <div class="col-md-12">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Subject</strong></h6>
+                                            <p class="mb-0">{{ $value->subject ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Desciprion</strong></h6>
+                                            <p class="mb-0">{{ $value->description ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @php
+                                $i++;
+                                @endphp
+                                @endforeach
+                            @else
+                                <p class="mb-0">No data Found</p>
+                            @endif
+                            <a class="btn btn-success btn_back" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>

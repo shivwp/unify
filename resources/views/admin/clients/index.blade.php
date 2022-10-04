@@ -69,7 +69,7 @@
                                     </td>
                                     <td>
                                         @can('client_show')
-                                        <a href="{{ route('admin.users.show', $client->user_id) }}">
+                                        <a href="{{ route('admin.clients.show', $client->user_id) }}">
                                             <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
                                         </a> 
                                         @endcan 

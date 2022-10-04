@@ -269,6 +269,11 @@
                     </a>
                 </li>
                 @endcan
+                <li class="menu-item {{ request()->is('admin/close-reason') || request()->is('admin/close-reason/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.close-reason.index") }}" class="menu-link">
+                        <div data-i18n="Connections">Account Close Reason</div>
+                    </a>
+                </li>
             </ul>
         </li>
         @endcan

@@ -9,8 +9,14 @@
     //login api
     Route::post('login', [App\Http\Controllers\Api\AuthController::class, 'login']);
 
+    //Google login 
+    Route::post('social-login', [App\Http\Controllers\Api\AuthController::class, 'social']);
+
     //country list
     Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
+
+    //close account reason list
+    Route::get('close-account-reason-list', [App\Http\Controllers\Api\CommonController::class, 'accountCloseReasonList']);
 
     //skill list
     Route::get('skill-list', [App\Http\Controllers\Api\CommonController::class, 'skillList']);

@@ -1,183 +1,192 @@
 @extends('layouts.master') @section('content')
-
+<style>
+    h5 strong{
+        padding-left: 10px;
+    }
+</style>
 <div class="content-wrapper">
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
+
                 <div class="card">
-                    <div class="card-header">
-                        {{ trans('global.show') }} {{ trans('cruds.client.title') }}
+                    <div class="card-header border-bottom">
+                        Show Details
                     </div>
-                
+                    <br>
                     <div class="card-body">
                         <div class="mb-2">
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                    <tr>
-                                        <th>
-                                            {{ trans('cruds.client.fields.id') }}
-                                        </th>
-                                        <td>
-                                            {{ $clients->id }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                          Name
-                                        </th>
-                                        <td>
-                                            {{ $clients->name }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                           Email
-                                        </th>
-                                        <td>
-                                        {{ $clients->email }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>
-                                           Total Post Projects/Jobs
-                                        </th>
-                                        <td>
-                                        {{ count($Projects) }}
-                                        </td>
-                                    </tr>
-                                 
-                                 
-                                </tbody>
-                            </table>
-                            @if(count($Projects)>0)
-                            <div class="card-header p-0 mt-4 mb-2">
-                    Post Projects/Jobs
-                    </div>
- <div class="card-body p-0 mt-4">
-      <div class="table-responsive">
-        <table class=" table table-bordered table-striped table-hover datatable datatable-Project">
-            <thead>
-                <tr>
-                    <th width="10">
+                            <div class="row">
+                                <h5><strong>Basic Information</strong></h5>
+                                <div class="col-md-4 ">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>First Name</strong></h6>
+                                        <p class="mb-0">{{ $clients->first_name ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Last Name</strong></h6>
+                                        <p class="mb-0">{{ $clients->last_name ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Email</strong></h6>
+                                        <p class="mb-0">{{ $clients->email ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Email</strong></h6>
+                                        <p class="mb-0">{{ $clients->phone ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">  
+                                        <h6><strong>Status</strong></h6>
+                                        <p class="mb-0">{{ $clients->status ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Referal Code</strong></h6>
+                                        <p class="mb-0">{{ $clients->referal_code ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Profile Image</strong></h6>
+                                        @if(!empty($clients->profile_image))
+                                            <div class="even mt-3">
+                                                
+                                                <div class="parc">
+                                                    <span class="pip" data-title="{{$clients->profile_image}}">
+                                                        <img src="{{ url('/images/profile-image').'/'.$clients->profile_image ?? "" }}" alt="" width="100" height="100">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                        <p class="mb-0"> No Image Found </p>
+                                        @endif
+                                    </div>
+                                </div>
 
-                    </th>
-                    <th>
-                        {{ trans('cruds.project.fields.id') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.project.fields.name') }}
-                    </th>
-                  
-                    <th>
-                        {{ trans('cruds.project.fields.description') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.project.fields.start_date') }}
-                    </th>
-                    <th>
-                        End Date
-                    </th>
-                    <th>
-                        {{ trans('cruds.project.fields.budget') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.project.fields.status') }}
-                    </th>
-                    <th>
-                       Action
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($Projects as $key => $project)
-                    <tr data-entry-id="{{ $project->id }}">
-                        <td>
-
-                        </td>
-                        <td>
-                            {{ $project->id ?? '' }}
-                        </td>
-                        <td>
-                            {{ $project->name ?? '' }}
-                        </td>
-                      
-                        <td>
-                           {!! \Illuminate\Support\Str::limit($project->description, 40) !!}
-                        </td>
-                        <td>
-                            {{ $project->start_date ?? '' }}
-                        </td>
-                        <td>
-                            {{ $project->end_date ?? '' }}
-                        </td>
-                        <td>
-                        @if($project->payment_base=='fixed')
-                        {{ $project->total_budget }}
-                    
-                    @endif
-                    @if($project->payment_base=='hourly')
-                       {{ $project->per_hour_budget }}
-                    
-                    @endif
-                        </td>
-                        <td>
-                            {{ $project->status->name ?? '' }}
-                        </td>
-                        <td>
-                            @can('project_show')
-                                <a class="btn btn-xs btn-primary" href="{{ route('admin.projects.show', $project->id) }}">
-                                    {{ trans('global.view') }}
-                                </a>
-                            @endcan
-
-                            @can('project_edit')
-                                <a class="btn btn-xs btn-info" href="{{ route('admin.projects.edit', $project->id) }}">
-                                    {{ trans('global.edit') }}
-                                </a>
-                            @endcan
-
-                            @can('project_delete')
-                                <form action="{{ route('admin.projects.destroy', $project->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
-                                </form>
-                            @endcan
-
-                        </td>
-
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-                            @endif
-                            <a style="margin-top:20px;" class="btn btn-success" href="{{ url()->previous() }}">
+                            </div> 
+                            <br>
+                            <div class="row">
+                                <h5><strong>Other Information</strong></h5>
+                                <div class="col-md-4 ">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Address</strong></h6>
+                                        <p class="mb-0">{{ $clients->address ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Country</strong></h6>
+                                        <p class="mb-0">{{ $clients->country ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>State</strong></h6>
+                                        <p class="mb-0">{{ $clients->state ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>City</strong></h6>
+                                        <p class="mb-0">{{ $clients->city ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Zip Code</strong></h6>
+                                        <p class="mb-0">{{ $clients->zip_code ?? '-'}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <h5><strong>Company Information</strong></h5>
+                                <div class="col-md-4 ">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Company Name</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->company_name ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Company Email</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->company_email ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Company Phone</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->company_phone ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Company Address</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->company_address ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Website</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->website ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Industry</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->industry ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Tagline</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->tagline ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Employee No</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->employee_no ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Vat ID</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->vat_id ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Timezone</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->timezone ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Description</strong></h6>
+                                        <p class="mb-0">{{ $clients->client->description ?? '-'}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a class="btn btn-success btn_back" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>
                 
-                        <nav class="mb-3">
-                            <div class="nav nav-tabs">
                 
-                            </div>
-                        </nav>
-                        <div class="tab-content">
-                
-                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- / Content -->
-
-<!-- Footer -->
-
-
 
 @endsection

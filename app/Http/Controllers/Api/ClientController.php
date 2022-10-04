@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Storage;
 use App\Helper\ResponseBuilder;
 use App\Http\Resources\Admin\ClientResource;
+use App\Models\AccountCloseReason;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -36,9 +37,11 @@ class ClientController extends Controller
              return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          }
          $validator = Validator::make($request->all(), [
-            'profile_image'  => 'required',
+            'profile_image'  => 'required|image',
             'company_email'  => 'email|required',
-            'timezone'       =>  'exists:timezone'
+            'company_phone'  => 'digits_between:10,12',
+            'timezone'       =>  'exists:timezone',
+            'website'       =>  'url'
             
          ]);
 
@@ -105,5 +108,38 @@ class ClientController extends Controller
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
       }
    } 
-     
+   
+   public function close_account(Request $request){
+
+       try{
+         if (Auth::guard('api')->check()) {
+            $singleuser = Auth::guard('api')->user();
+            $user_id = $singleuser->id;
+         } 
+         else{
+             return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         }
+         $validator = Validator::make($request->all(), [
+            'reason_id'  => 'required|exists:account_close_reasons,id',
+         ]);
+
+         if ($validator->fails()) {
+            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+         }
+
+         $parameters = $request->all();
+         extract($parameters);
+
+         $reasonTitle = AccountCloseReason::where('id',$reason_id)->select('title')->first();
+         $userAccountStatus = User::where('id',$user_id)->first();
+         $userAccountStatus->close_status = $reasonTitle->title;
+         $userAccountStatus->deleted_at = now();
+         $userAccountStatus->save();
+
+         return ResponseBuilder::successMessage("Close Account successfulyy", $this->success);
+
+      }catch(\Exception $e){
+         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+      }
+   }
 }

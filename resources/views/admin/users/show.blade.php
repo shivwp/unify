@@ -66,7 +66,7 @@
                                                 
                                                 <div class="parc">
                                                     <span class="pip" data-title="{{$user->profile_image}}">
-                                                        <img src="{{ url('/profile-image').'/'.$user->profile_image ?? "" }}" alt="" width="100" height="100">
+                                                        <img src="{{ url('/images/profile-image').'/'.$user->profile_image ?? "" }}" alt="" width="150" height="100">
                                                     </span>
                                                 </div>
                                             </div>
