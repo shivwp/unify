@@ -13,6 +13,12 @@ class FreelancerExperience extends Model
 
     protected $fillable = [
         'user_id',
+        'company',
+        'city',
+        'country',
+        'start_date',
+        'end_date',
+        'currently_working',
         'subject',
         'description',
     ];

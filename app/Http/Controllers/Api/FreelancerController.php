@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Helper\ResponseBuilder;
 use App\Http\Resources\Admin\FreelancerResource;
 use App\Http\Resources\Admin\FreelancerPortfolioResource;
+use App\Http\Resources\Admin\FreelancerEducationCollection;
 use App\Http\Resources\Admin\FreelancerTestimonialResource;
 use App\Http\Resources\Admin\FreelancerCertificateResource;
 use App\Http\Resources\Admin\FreelancerExperienceResource;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
+use App\Models\FreelancerEducation;
 use App\Models\FreelancerCertificate;
 use App\Models\FreelancerTestimonial;
 use App\Models\FreelancerExperience;
@@ -49,6 +51,7 @@ class FreelancerController extends Controller
          	$this->response->testimonial = new FreelancerTestimonialResource($freelancer_profile_data->freelancer->freelancer_testimonial);
          	$this->response->certificates = new FreelancerCertificateResource($freelancer_profile_data->freelancer->freelancer_certificates);
          	$this->response->experiences = new FreelancerExperienceResource($freelancer_profile_data->freelancer->freelancer_experiences);
+         	$this->response->education = new FreelancerEducationCollection($freelancer_profile_data->freelancer->freelancer_education);
          	
          	return ResponseBuilder::success($this->response, "Freelancer Profile Data");
 		}
@@ -236,6 +239,10 @@ class FreelancerController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$validator = Validator::make($request->all(), [
+         		'first_name'  => 'required',
+         		'last_name'  => 'required',
+         		'email'  => 'required|email',
+         		'linkdin_url'  => 'nullable|url',
          		'title'  => 'required',
          		'type'	=>'required',
          		'description'	=>'required',
@@ -251,9 +258,13 @@ class FreelancerController extends Controller
          		'id'		=>	$request->id,
          		'user_id'	=>	$user_id,
          	],[
-         		'title'		=>	$request->title,
-         		'type'		=>	$request->type,
-         		'description'=>	$request->description,
+         		'first_name'	=>	$request->first_name,
+         		'last_name'		=>	$request->last_name,
+         		'email'			=>	$request->email,
+         		'linkdin_url'	=>	$request->linkdin_url,
+         		'title'			=>	$request->title,
+         		'type'			=>	$request->type,
+         		'description'	=>	$request->description,
          	]);
          	if(!empty($testimonialData)){
          		return ResponseBuilder::successMessage("Update Successfully", $this->success);
@@ -322,8 +333,12 @@ class FreelancerController extends Controller
          	}
          	$validator = Validator::make($request->all(), [
          		'id'				=>'exists:freelancer_experiences,id',
-         		'subject'  			=>'required',
-         		'description'		=>'required',
+         		'company'			=>'required',
+         		'city'				=>'required',
+         		'country'			=>'required',
+         		'start_date'		=>'required|date',
+         		'end_date'			=>'nullable|date|required_if:currently_working,=,0',
+         		'currently_working' =>'required_if:end_date,=,null|in:0,1',
          	]);
 
 	        if ($validator->fails()) {
@@ -337,6 +352,12 @@ class FreelancerController extends Controller
          		'id'				=>	$request->id,
          		'user_id'			=>	$user_id,
          	],[
+         		'company'			=>	$request->company,
+         		'city'				=>	$request->city,
+         		'country'			=>	$request->country,
+         		'start_date'		=>	$request->start_date,
+         		'end_date'			=>	$request->end_date,
+         		'currently_working' =>	isset($request->currently_working) ? $request->currently_working : '0',
          		'subject'			=>	$request->subject,
          		'description'		=>	$request->description,
          	]);
@@ -490,5 +511,125 @@ class FreelancerController extends Controller
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}
 	}
+	public function edit_video(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'video'	=>'required|mimes:mp4,mov,ogg,qt',
+         		'video_type'=>'required',
+         	]);
 
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+			
+			$video_meta = [];
+			$video_meta = [
+				'freelancer_video'=>$this->freelancervideo($request->video),
+				'freelancer_video_type'=>$request->video_type,
+			];
+			if(!empty($video_meta)){
+				$uploadvideo = $this->updateFreelancerAllMeta($user_id,$video_meta);
+				return ResponseBuilder::successMessage("Update Successfully", $this->success);
+			}else{
+				return ResponseBuilder::error("No Data available", $this->badRequest);
+			}
+		}catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+	public function edit_education_info(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'school'  => 'required',
+         		'date'  => 'nullable|date',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+         	$educationData = FreelancerEducation::updateOrCreate([
+         		'id'		=>	$request->id,
+         		'user_id'	=>	$user_id,
+         	],[
+         		'school'	=>	$request->school,
+         		'date'		=>	$request->date,
+         		'level'		=>	$request->level,
+         		'degree'	=>	$request->degree,
+         		'area_study'=>	$request->area_study,
+         		'description'=>	$request->description,
+         	]);
+         	if(!empty($educationData)){
+         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	}
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+	public function edit_language(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	// $validator = Validator::make($request->all(), [
+         	// 	'language'	=>'required',
+         	// 	'level'=>'required',
+         	// ]);
+
+	        // if ($validator->fails()) {
+	        //     return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        // }
+
+         	// $parameters = $request->all();
+         	// extract($parameters);
+			dd($request);
+			$language_meta = [];
+			$language_meta[$request->language] = $request->level;
+			
+			if(!empty($language_meta)){
+				$lang = 'language';
+				$lan_data = json_encode($language_meta);
+				$uploadvideo = $this->updateFreelancerMeta($user_id,$lang,$lan_data);
+				return ResponseBuilder::successMessage("Update Successfully", $this->success);
+			}else{
+				return ResponseBuilder::error("No Data available", $this->badRequest);
+			}
+		}catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+	
 }

@@ -12,7 +12,11 @@ class FreelancerTestimonialResource extends ResourceCollection
         return $this->collection->map(function($data) {
             return [
                 'id'         => $data->id,
-                'title'       => (string)$data->title,
+                'first_name' => (string)$data->first_name,
+                'last_name'  => (string)$data->last_name,
+                'email'      => (string)$data->email,
+                'linkdin_url'=> (string)$data->linkdin_url,
+                'title'      => (string)$data->title,
                 'type'       => (string)$data->type,
                 'description'=> (string)$data->description,
             ];

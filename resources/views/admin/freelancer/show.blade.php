@@ -166,6 +166,36 @@
                                         <h6><strong>{{'Testimonial'.$i}}</strong></h6>
                                         <div class="col-md-6">
                                             <div class="p-3 listViewclr">
+                                                <h6><strong>First Name</strong></h6>
+                                                <p class="mb-0">{{ $value->first_name ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Last Name</strong></h6>
+                                                <p class="mb-0">{{ $value->last_name ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Email</strong></h6>
+                                                <p class="mb-0">{{ $value->email ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Linkdin Profile URl</strong></h6>
+                                                <p class="mb-0">{{ $value->linkdin_url ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Client Title</strong></h6>
+                                                <p class="mb-0">{{ $value->title ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
                                                 <h6><strong>Client Title</strong></h6>
                                                 <p class="mb-0">{{ $value->title ?? '-'}}</p>
                                             </div>
@@ -176,7 +206,7 @@
                                                 <p class="mb-0">{{ $value->type ?? '-'}}</p>
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="p-3 listViewclr">
                                                 <h6><strong>Message to Client</strong></h6>
                                                 <p class="mb-0">{{ $value->description ?? '-'}}</p>
@@ -184,8 +214,8 @@
                                         </div>
                                     </div>
                                     @php
-                                $i++;
-                                @endphp
+                                    $i++;
+                                    @endphp
                                 @endforeach
                             @else
                                 <p class="mb-0">No data Found</p>
@@ -247,6 +277,59 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Desciprion</strong></h6>
+                                            <p class="mb-0">{{ $value->description ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @php
+                                $i++;
+                                @endphp
+                                @endforeach
+                            @else
+                                <p class="mb-0">No data Found</p>
+                            @endif
+                            <br>
+                            <h5><strong>Education info</strong></h5>
+                            @php
+                            $i = 1;
+                            @endphp
+                            @if(count($f_data->freelancer->freelancer_education) > 0)
+                                @foreach($f_data->freelancer->freelancer_education as $value)
+                                <div class="row">
+                                    <h6><strong>{{'Education'.$i}}</strong></h6>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>School</strong></h6>
+                                            <p class="mb-0">{{ $value->school ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Date</strong></h6>
+                                            <p class="mb-0">{{ $value->date ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Proficiency Level</strong></h6>
+                                            <p class="mb-0">{{ $value->level ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Degree</strong></h6>
+                                            <p class="mb-0">{{ $value->degree ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Area of Study</strong></h6>
+                                            <p class="mb-0">{{ $value->area_study ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
                                         <div class="p-3 listViewclr">
                                             <h6><strong>Desciprion</strong></h6>
                                             <p class="mb-0">{{ $value->description ?? '-'}}</p>
