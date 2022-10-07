@@ -62,19 +62,15 @@ class ClientController extends Controller
             'company_phone' => $company_phone,
             'vat_id' => $vat_id,
             'company_address' => $company_address,
-            'timezone' => $timezone,
          ]);
          $user_name = User::where('id',$client->user_id)->first();
          $user_name->first_name = $first_name;
          $user_name->last_name = $last_name;
+         $user_name->timezone = $timezone;
          $user_name->profile_image = $this->uploadProfile_image($profile_image);
          $user_name->save();
 
-         $client_profile_data = User::with('client')->where('id',$user_id)->first();
-
-         $this->response->client = new ClientResource($client_profile_data);
-
-         return ResponseBuilder::success($this->response, "Update Successfully");
+         return ResponseBuilder::successMessage("Update Successfully",$this->success);
 
       }catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -96,8 +92,8 @@ class ClientController extends Controller
          else{
             return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          }
-
-         $client_profile_data = User::with('client')->where('id',$user_id)->first();
+         
+         $client_profile_data = $this->getClientInfo($user_id);
 
          $this->response->client = new ClientResource($client_profile_data);
 

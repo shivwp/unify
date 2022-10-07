@@ -12,6 +12,9 @@
     //Google login 
     Route::post('social-login', [App\Http\Controllers\Api\AuthController::class, 'social']);
 
+    //Online status 
+    Route::post('online-status', [App\Http\Controllers\Api\AuthController::class, 'onlineStatus']);
+
     //country list
     Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
 

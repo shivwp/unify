@@ -16,6 +16,9 @@ class Freelancer extends Model
 
     protected $fillable = [
         'user_id',
+        'visibility',
+        'project_preference',
+        'experience_level',
         'occcuption',
         'description',
         'intro_video',

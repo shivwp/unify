@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use App\Models\Freelancer;
+use App\Models\FreelancerMeta;
 use App\Models\ClientStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyClientRequest;
@@ -29,7 +30,8 @@ class FreelancerController extends Controller
         $q =DB::table('users')
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 2)
-        ->where('users.deleted_at','=',null);
+        ->where('users.deleted_at','=',null)
+        ->orderBy('users.id','DESC');
 
         if($request->search){
             $q->where('users.name', 'like', "%$request->search%");
@@ -65,6 +67,8 @@ class FreelancerController extends Controller
     public function show($id)
     {
         $d['f_data'] = $this->getFreelancerInfo($id);
+        $lang_data = $this->getFreelancerMeta($id,'language');
+        $d['languages'] = json_decode($lang_data['language']);
         return view('admin.freelancer.show',$d);
     }
 

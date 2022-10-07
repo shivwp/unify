@@ -10,6 +10,9 @@ class FreelancerResource extends JsonResource
     {
         return [
             'profile_image'     =>isset($this->profile_image) ? url('/profile-image',$this->profile_image) : '',
+            'visibility'        =>(string)$this->freelancer->visibility,
+            'project_preference'=>(string)$this->freelancer->project_preference,
+            'experience_level'  =>(string)$this->freelancer->experience_level,
             'first_name'        =>(string)$this->first_name,
             'last_name'         =>(string)$this->last_name,
             'email'             =>(string)$this->email,

@@ -30,7 +30,6 @@ class Client extends Model
         'company_address',
         'employee_no',
         'vat_id',
-        'timezone',
     ];
 
     public function projects()

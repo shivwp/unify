@@ -44,7 +44,6 @@ class FreelancerController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$freelancer_profile_data = $this->getFreelancerInfo($user_id);
-
          	$this->response->basic_info = new FreelancerResource($freelancer_profile_data);
          	$this->response->skills = new FreelancerSkillResource($freelancer_profile_data->freelancer->freelancer_skills);
          	$this->response->portfolio = new FreelancerPortfolioResource($freelancer_profile_data->freelancer->freelancer_portfolio);
@@ -320,7 +319,7 @@ class FreelancerController extends Controller
 		}
 	}
 
-	public function edit_experience_info(Request $request)
+	public function edit_employment_info(Request $request)
 	{
 		try
 		{
@@ -335,7 +334,7 @@ class FreelancerController extends Controller
          		'id'				=>'exists:freelancer_experiences,id',
          		'company'			=>'required',
          		'city'				=>'required',
-         		'country'			=>'required',
+         		'country'			=>'required|exists:country_list,name',
          		'start_date'		=>'required|date',
          		'end_date'			=>'nullable|date|required_if:currently_working,=,0',
          		'currently_working' =>'required_if:end_date,=,null|in:0,1',
@@ -476,7 +475,7 @@ class FreelancerController extends Controller
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}
 	}
-	public function delete_experience_info(Request $request)
+	public function delete_employment_info(Request $request)
 	{
 		try
 		{
@@ -603,25 +602,13 @@ class FreelancerController extends Controller
          	else{
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
-         	// $validator = Validator::make($request->all(), [
-         	// 	'language'	=>'required',
-         	// 	'level'=>'required',
-         	// ]);
 
-	        // if ($validator->fails()) {
-	        //     return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
-	        // }
-
-         	// $parameters = $request->all();
-         	// extract($parameters);
-			dd($request);
-			$language_meta = [];
-			$language_meta[$request->language] = $request->level;
+         	$parameters = $request->all();
+         	extract($parameters);
 			
-			if(!empty($language_meta)){
+			if(!empty($request->languages)){
 				$lang = 'language';
-				$lan_data = json_encode($language_meta);
-				$uploadvideo = $this->updateFreelancerMeta($user_id,$lang,$lan_data);
+				$uploadvideo = $this->updateFreelancerMeta($user_id,$lang,$request->languages);
 				return ResponseBuilder::successMessage("Update Successfully", $this->success);
 			}else{
 				return ResponseBuilder::error("No Data available", $this->badRequest);
@@ -631,5 +618,157 @@ class FreelancerController extends Controller
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}
 	}
+
+	public function set_visibility(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'visibility'  => 'required|in:public,private,unify_users',
+         		'project_preference'  => 'required|in:both,long_term,short_term',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+
+         	$visibleData = Freelancer::where('user_id',$user_id)->first();
+         	$visibleData->visibility = $request->visibility;
+         	$visibleData->project_preference = $request->project_preference;
+         	$visibleData->save();
+
+         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+        }
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function edit_experience_level(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'experience_level'  => 'required|in:entry,intermediate,expert',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+
+         	$expData = Freelancer::where('user_id',$user_id)->first();
+         	$expData->experience_level = $request->experience_level;
+         	$expData->save();
+
+         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+        }
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
 	
+	public function edit_other_experience(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'id'				=>'exists:freelancer_experiences,id',
+         		'subject'			=>'required',
+         		'description'		=>'required',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+
+         	$expeData = FreelancerExperience::updateOrCreate([
+         		'id'				=>	$request->id,
+         		'user_id'			=>	$user_id,
+         	],[
+         		'subject'			=>	$request->subject,
+         		'description'		=>	$request->description,
+         	]);
+         	if(!empty($expeData)){
+         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	}
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function edit_location(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'phone'  	=> 'nullable|digits_between:10,12',
+            	'timezone'  => 'nullable|exists:timezone',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+
+         	$user = User::where('id',$user_id)->select('phone','address','timezone')->first();
+
+         	$locationData = User::updateOrCreate([
+         		'id'			=>	$user_id,
+         	],[
+         		'phone'			=>	isset($request->phone) ? $request->phone : (isset($user->phone) ? $user->phone : null),
+         		'timezone'		=>	isset($request->timezone) ? $request->timezone : (isset($user->timezone) ? $user->timezone : null),
+         		'address'		=>	isset($request->address) ? $request->address : (isset($user->address) ? $user->address : null),
+         	]);
+         	if(!empty($locationData)){
+         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	}
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
 }

@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Helper\ResponseBuilder;
-use App\Models\SocialAccount;
 use Illuminate\Http\Request;
 use App\Models\UserReferal;
 use App\Models\Freelancer;
-use App\Models\UserDevice;
 use App\Helper\Helper;
 use App\Models\Client;
 use App\Mail\SendMail;
@@ -39,7 +37,7 @@ class AuthController extends Controller
                 'email'     => 'required|email',
                 'password' => 'required|min:8',
                 'user_type' => 'in:freelancer,client',
-                'country'   =>'required|regex:/^[a-zA-Z]+$/u',
+                'country'   =>'required',
                 'agree_terms'   =>'in:0,1',
                 'send_email'   =>'in:0,1',
                     
@@ -77,7 +75,7 @@ class AuthController extends Controller
                     $user->referal_code = $request->referal_code;
                     $user->agree_terms = $request->agree_terms;
                     $user->deleted_at = null;
-                    $user->otp = Helper::generateOtp();
+                    $user->otp = $otpp;
                     $user->otp_created_at = now()->addMinutes(3);
                     $user->email_verified_at = null;
                     $user->update();
@@ -93,7 +91,7 @@ class AuthController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'country' => $request->country,
-                    'status' => 'pending',
+                    'status' => 'approve',
                     'referal_code' => $request->referal_code,
                     'agree_terms' => $request->agree_terms,
                     'send_email' => $request->send_email,
@@ -172,7 +170,7 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'email' => 'email|required|exists:users',
-                'otp' => 'required|digits:6'
+                'otp' => 'required|digits:4'
             ]);
            
             if ($validator->fails()) {   
@@ -219,11 +217,12 @@ class AuthController extends Controller
             $parameters = $request->all();
             extract($parameters);
 
+            $otpp = Helper::generateOtp();
             $user = User::where('email', $email)->withTrashed()->first();
 
             if($user){
                 $user->update([
-                    'otp' => Helper::generateOtp(),
+                    'otp' => $otpp,
                     'otp_created_at' => now()->addMinutes(3),
                     'deleted_at' => null
                 ]);
@@ -231,6 +230,28 @@ class AuthController extends Controller
 
             $this->response->email = $email;
             $this->response->otp = $user->otp;
+
+            //mail to user
+                   
+            $mail_data = Mails::where('user_category', 'user')->where('mail_category', 'resendotp')->first();
+            // dd($mail_data);
+            $basicinfo = [
+                '{otp}'=>$otpp,
+            ];
+
+            $msg = $mail_data->message;
+            foreach($basicinfo as $key=> $info){
+                $msg = str_replace($key,$info,$msg);
+            }
+            
+            $config = ['from_email' => $mail_data->mail_from,
+                "reply_email" => $mail_data->reply_email,
+                'subject' => $mail_data->subject, 
+                'name' => $mail_data->name,
+                'message' => $msg,
+            ];
+
+            Mail::to($request->email)->send(new SendMail($config));
 
             return ResponseBuilder::success($this->response,'Resend OTP Successfully');
         } catch (exception $e) {
@@ -242,6 +263,7 @@ class AuthController extends Controller
     {
         try
         {
+
             $validator = Validator::make($request->all(), [
                  'email' => 'required|email|exists:users',
                  'password' => 'required',
@@ -260,18 +282,13 @@ class AuthController extends Controller
                             $userRole = strtolower($user->roles()->first()->title);
 
                             if($userRole == $request->user_type){
-                                if (!empty($request->fcm_token)) {
-                                    UserDevice::create([
-                                        'user_id' => $user->id,
-                                        'device_id' => $request->fcm_token,
-                                    ]);
-                                }
                                 $token = auth()->user()->createToken('API Token')->accessToken;
                                 $this->setAuthResponse($user);
                                 return ResponseBuilder::successWithToken($token, $this->response, 'Login Successfully');
                             }else{
                                 return ResponseBuilder::error( __("These credentials do not match our records"), $this->badRequest);
                             }
+                            
                         }
                         else{
                            return ResponseBuilder::error( __("These credentials do not match our records"), $this->badRequest);
@@ -311,7 +328,7 @@ class AuthController extends Controller
             else
             {
                 $user->update([
-                    'otp' => Helper::generateOtp(),
+                    'otp' => $otp,
                     'otp_created_at' => now()->addMinutes(3),
                     'deleted_at' => null
                 ]);
@@ -348,7 +365,7 @@ class AuthController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'email' => 'required|email|exists:users',
-                'otp'   => 'required|digits:6'
+                'otp'   => 'required|digits:4'
             ]);
 
             if ($validator->fails()) {
@@ -456,6 +473,35 @@ class AuthController extends Controller
     public function setAuthResponse($user)
     {
         $this->response->user = new UserResource($user);
+    }
+
+    public function onlineStatus(Request $request)
+    {
+        try {
+            if (Auth::guard('api')->check()) {
+                $singleuser = Auth::guard('api')->user();
+                $user_id = $singleuser->id;
+            } 
+            else{
+                return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+            }
+            $validator = Validator::make($request->all(), [
+                'online_status'  =>  'required|in:online,invisible',
+            ]);
+
+            if ($validator->fails()) {
+                return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+            }
+
+            $user = User::where('id', $user_id)->first();
+            $user->online_status = $request->online_status;
+            $user->save();
+
+            return ResponseBuilder::successMessage(__("Status Update Successfully"), $this->success);
+                        
+        } catch (\Exception $e) {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        }
     }
 
     public function social(Request $request)

@@ -48,15 +48,6 @@ class Controller extends BaseController
         return $name;
     }
 
-    public function freelancervideo($video)
-    {
-        $file = $video;
-        $name =$file->getClientOriginalName();
-        $destinationPath = 'videos/';
-        $file->move($destinationPath, $name);
-        return $name;
-    }
-
     public function updateFreelancerMeta($id, $meta_key = "", $meta_value)
     {
         try {
@@ -87,7 +78,7 @@ class Controller extends BaseController
                 
                 $freelancer_details_add = FreelancerMeta::where('user_id', $id)->where('meta_key', $key)->first();
                 if (!empty($freelancer_details_add))
-                    return $freelancer_details_add->value;
+                    return $freelancer_details_add->meta_value;
                 else
                     return "";
             } else {
@@ -117,12 +108,22 @@ class Controller extends BaseController
         }
     }
 
+    public function getUserInfo($id)
+    {
+        $userData = User::where('id',$id)->first();
+        return $userData;
+    }
+
     public function getFreelancerInfo($freelancer_id){
-        $freelancerData = User::with('freelancer.freelancer_portfolio','freelancer.freelancer_testimonial','freelancer.freelancer_certificates','freelancer.freelancer_experiences','freelancer.freelancer_skills','freelancer.freelancer_education')->where('id',$freelancer_id)->first();
+        $freelancerData = User::with('freelancer.freelancer_portfolio','freelancer.freelancer_testimonial','freelancer.freelancer_certificates','freelancer.freelancer_experiences','freelancer.freelancer_skills')->where('id',$freelancer_id)->first();
         return $freelancerData;
     }
 
-    public function getClientInfo($freelancer_id){
-        
+    public function getClientInfo($clientId)
+    {
+        $clientData = User::with('client')->where('id',$clientId)->first();
+        return $clientData;
     }
+
+
 }

@@ -10,9 +10,10 @@ class Helper
 
     public static function generateOtp(): int
     {
-        $otp = rand(100000, 999999);
+        $otp = rand(1000, 9999);
         return $otp;
     }
+
     public static function validateGoogle($token)
     {
         try {

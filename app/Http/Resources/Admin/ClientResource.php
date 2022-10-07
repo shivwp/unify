@@ -19,7 +19,7 @@ class ClientResource extends JsonResource
             'company_email'     =>(string)$this->client->company_email,
             'company_phone'     =>(string)$this->client->company_phone,
             'vat_id'            =>(string)$this->client->vat_id,
-            'timezone'          =>(string)$this->client->timezone,
+            'timezone'          =>(string)$this->timezone,
             'company_address'   =>(string)$this->client->company_address,
         ];
     }

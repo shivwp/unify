@@ -28,7 +28,8 @@ class ClientController extends Controller
         $q =DB::table('users')
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 3)
-        ->where('users.deleted_at','=',null);
+        ->where('users.deleted_at','=',null)
+        ->orderBy('users.id','DESC');
 
         if($request->search){
             $q->where('users.name', 'like', "%$request->search%");

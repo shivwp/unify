@@ -17,6 +17,7 @@ class UserResource extends JsonResource
             'phone'             =>(string)$this->phone,
             'email_verified_at' =>boolval($this->email_verified_at),
             'status'            =>(string)$this->status,
+            'online_status'     =>(string)$this->online_status,
             'referal_code'      =>(string)$this->referal_code,
             'address'           =>(string)$this->address,
             'country'           =>(string)$this->country,
