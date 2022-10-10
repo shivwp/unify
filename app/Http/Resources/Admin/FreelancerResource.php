@@ -9,6 +9,7 @@ class FreelancerResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'                =>(string)$this->id,
             'profile_image'     =>isset($this->profile_image) ? url('/profile-image',$this->profile_image) : '',
             'visibility'        =>(string)$this->freelancer->visibility,
             'project_preference'=>(string)$this->freelancer->project_preference,

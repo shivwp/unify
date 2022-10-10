@@ -9,6 +9,7 @@ class ClientResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'id'                =>(string)$this->id,
             'profile_image'     =>isset($this->profile_image) ? url('/profile-image',$this->profile_image) : '',
             'first_name'        =>(string)$this->first_name,
             'last_name'         =>(string)$this->last_name,

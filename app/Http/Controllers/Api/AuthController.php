@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Admin\UserResource;
+// use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use App\Models\Freelancer;
 use App\Helper\Helper;
 use App\Models\Client;
 use App\Mail\SendMail;
+use App\Models\SocialAccount;
 use App\Models\Mails;
 use App\Models\User;
 use Carbon\Carbon;
@@ -507,71 +509,69 @@ class AuthController extends Controller
     public function social(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'type' => 'required|in:apple,google',
-                'token' => 'required',
-                'email' => 'nullable|email'
-            ]);
 
+            $validator = Validator::make($request->all(), [
+                'provider' => 'required|in:google,apple',
+                'access_token' => 'required',
+            ]);
             if ($validator->fails()) {
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
             }
+            $social_user = Socialite::driver($request->provider)->stateless()->userFromToken($request->input('access_token'));
 
-            // validate token
-            $token = $request->get('token');
+            if (!$social_user) {
+                throw new Error(Str::replaceArray('?', [$request->provider], __('messages.invalid_social')));
+            }
 
-            if ($request->get('type') === 'google') {
-                $social_id = 'google_id';
-                $socialUser = Helper::validateGoogle($token);
+            $token = Str::random(80);
+            $account = SocialAccount::where("provider_user_id", $social_user->getId())
+                ->where("provider", $request->provider)
+                ->with('user')->first();
+            if ($account) {
+                $user = User::where(["id" => $account->user->id])->first();
+                $user->api_token = hash('sha256', $token);
+                $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
+                $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
+                $user->save();
+                $data = new \stdClass();
+                $data->token = $user->createToken(env('APP_NAME'))->accessToken;
+                $this->setAuthResponse($user);
+                return ResponseBuilder::successWithToken($data->token, $this->response, 'Login Successfully');
+                // return response()->json(['data' => $data, 'status' => true, 'message' => 'verify_success', 'details' => $user]);
             } else {
-                $social_id = 'apple_id';
-                $socialUser = Helper::validateApple($token);
+                $fname = $social_user->getName() ? $social_user->getName() : "";
+                $lname = $social_user->getNickname() ? $social_user->getNickname() : "";
+                $loginEmail = $social_user->getEmail() ? $social_user->getEmail() : $social_user->getId() . '@' . $request->provider . '.com';
+                $loginName =  $fname . $lname;
+                // create new user and social login if user with social id not found.
+                $user = User::where("email", $loginEmail)->first();
+                if (!$user) {
+                    $user = new User;
+                    $user->email = $loginEmail;
+                    $user->first_name = $loginName;
+                    $user->social_id = $social_user->getId();
+                    $user->password = Hash::make('social');
+                    $user->api_token = hash('sha256', $token);
+                    $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
+                    $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
+                    $user->save();
+                }
+
+                $social_account = new SocialAccount;
+                $social_account->provider = $request->provider;
+                $social_account->provider_user_id = $social_user->getId();
+                $social_account->user_id = $user->id;
+                $social_account->save();
+                $data = new \stdClass();
+                $data->token = $user->createToken(env('APP_NAME'))->accessToken;
+                $this->setAuthResponse($user);
+                return ResponseBuilder::successWithToken($data->token, $this->response, 'Login Successfully');
+                // return response()->json(['data' => $data, 'status' => true, 'message' => 'Your account logged in successfully', 'details' => $user]);
             }
-
-            if (!isset($socialUser['id'])) {
-                // dd($socialUser);
-                return ResponseBuilder::error(__('Invalid Token'), $this->badRequest);
-            }
-
-            $user = User::query();
-
-            if (isset($socialUser['email'])) {
-                $user = $user->where(function ($query) use ($socialUser, $social_id) 
-                {
-                    $query->where('email', $socialUser['email'])->orWhere($social_id, $socialUser['id']);
-                });
-            } else {
-                $user = $user->where($social_id, $socialUser['id']);
-            }
-
-            $user = $user->withTrashed()->first();
-
-            if ($user) {
-                $user->update([
-                    'name' => $socialUser['name'],
-                    'email' => $socialUser['email'],
-                    $social_id => $socialUser['id'],
-                    'deleted_at' => null
-                ]);
-            } else {
-                $user = User::query()->create([
-                    'name' => $socialUser['name'],
-                    'email' => $socialUser['email'],
-                    $social_id => $socialUser['id']
-                ]);
-            }
-
-            if (!$user->email_verified_at) {
-                $user->email_verified_at = now();
-            }
-
-            // login user
-            $token = auth('api')->login($user);
-            $this->setAuthResponse($user);
-
-            return ResponseBuilder::successWithToken($token, $this->response);
-        } catch (\Exception $e) {
-            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        } 
+        catch (\Exception $th) {
+            return response()->json([
+                "message" => $th->getMessage(),], 400);
         }
     }
     
