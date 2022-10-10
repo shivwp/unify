@@ -45,6 +45,7 @@ class User extends Authenticatable
         'status',
         'close_status',
         'online_status',
+        'is_verified',
         'password',
         'referal_code',
         'address',

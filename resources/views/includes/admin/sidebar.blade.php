@@ -274,6 +274,11 @@
                         <div data-i18n="Connections">Account Close Reason</div>
                     </a>
                 </li>
+                <li class="menu-item {{ request()->is('admin/hours-per-week') || request()->is('admin/hours-per-week/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.hours-per-week.index") }}" class="menu-link">
+                        <div data-i18n="Connections">Hours Per Week</div>
+                    </a>
+                </li>
             </ul>
         </li>
         @endcan

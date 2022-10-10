@@ -50,6 +50,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //Close Reason
     Route::resource('close-reason', 'CloseReasonController');
 
+    //hoursPerWeek
+    Route::resource('hours-per-week', 'HoursController');
+
     // Projectscategory
     Route::delete('project-category/destroy', 'ProjectCategoryController@massDestroy')->name('project-category.massDestroy');
     Route::resource('project-category', 'ProjectCategoryController');

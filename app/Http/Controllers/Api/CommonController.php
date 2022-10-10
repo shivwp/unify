@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\AccountCloseReason;
 use App\Models\ProjectCategory;
+use App\Models\HoursPerWeek;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
 use App\Models\ProjectSkill;
@@ -90,6 +91,20 @@ class CommonController extends Controller
             $reason = AccountCloseReason::select('id','title')->get();
             if(!empty($reason)){
                return ResponseBuilder::success($reason, "Skills List");
+            }else{
+               return ResponseBuilder::success(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function hoursPerWeek()
+      {
+         try{
+            $hours = HoursPerWeek::select('id','title')->get();
+            if(!empty($hours)){
+               return ResponseBuilder::success($hours, "Hours Per Week List");
             }else{
                return ResponseBuilder::success(__("No Data found"), $this->success);
             }

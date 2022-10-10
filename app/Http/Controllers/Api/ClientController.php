@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
+use App\Models\FreelancerRating;
 use App\Models\Client;
 use App\Models\User;
 use Carbon\Carbon;
@@ -137,5 +138,48 @@ class ClientController extends Controller
       }catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
       }
+   }
+
+   public function freelancer_rating(Request $request)
+   {
+      try{
+         if (Auth::guard('api')->check()) {
+            $singleuser = Auth::guard('api')->user();
+            // dd($singleuser->roles()->first()->title);
+            if($singleuser->roles()->first()->title == "Client"){
+               $user_id = $singleuser->id;
+            }else{
+               return ResponseBuilder::error(__("Please Login with Valid Credentials"), $this->badRequest);
+            }
+         } 
+         else{
+             return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         }
+         $validator = Validator::make($request->all(), [
+            'rating'  => 'required|between:0,5|integer',
+            'description'  => 'required',
+            'freelancer_id'  => 'required|exists:freelancer,user_id',
+         ]);
+
+         if ($validator->fails()) {
+            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+         }
+
+         $parameters = $request->all();
+         extract($parameters);
+
+         $client = new FreelancerRating;
+         $client->freelancer_id = $request->freelancer_id;
+         $client->client_id = $user_id;
+         $client->rating = $request->rating;
+         $client->description = $request->description;
+         $client->save();
+
+         return ResponseBuilder::successMessage("Add Rating Successfully",$this->success);
+
+      }catch(\Exception $e){
+         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+      }
+
    }
 }

@@ -27,6 +27,8 @@ class UserResource extends JsonResource
             'profile_image'     =>(string)isset($this->profile_image) ? url('/images/profile-image/'.$this->profile_image) : '',
             'agree_terms'       =>boolval($this->agree_terms),
             'send_email'        =>boolval($this->send_email),
+            'user_type'         =>(string)$request->user_type,
+            'is_verified'       =>boolval($request->is_verified),
         ];
     }
 }

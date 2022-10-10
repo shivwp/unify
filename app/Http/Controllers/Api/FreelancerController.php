@@ -22,6 +22,7 @@ use App\Models\FreelancerTestimonial;
 use App\Models\FreelancerExperience;
 use App\Models\FreelancerPortfolio;
 use App\Models\FreelancerSkill;
+use App\Models\HoursPerWeek;
 use App\Models\Freelancer;
 use App\Models\User;
 use Carbon\Carbon;
@@ -771,4 +772,42 @@ class FreelancerController extends Controller
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}
 	}
+
+	public function hours_per_week(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	
+         	$validator = Validator::make($request->all(), [
+            	'hours_id'  => 'required|exists:hours_per_week,id',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+			
+			if(!empty($request->hours_id)){
+				$hours_title = HoursPerWeek::where('id',$request->hours_id)->select('title')->first();
+				$hour = 'hours_per_week';
+				$uploadvideo = $this->updateFreelancerMeta($user_id,$hour,$hours_title->title);
+				return ResponseBuilder::successMessage("Update Successfully", $this->success);
+			}else{
+				return ResponseBuilder::error("No Data available", $this->badRequest);
+			}
+		}catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}	
+	}
+
 }

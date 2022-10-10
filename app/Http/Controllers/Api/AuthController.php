@@ -512,12 +512,12 @@ class AuthController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'provider' => 'required|in:google,apple',
-                'access_token' => 'required',
+                'token' => 'required',
             ]);
             if ($validator->fails()) {
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
             }
-            $social_user = Socialite::driver($request->provider)->stateless()->userFromToken($request->input('access_token'));
+            $social_user = Socialite::driver($request->provider)->stateless()->userFromToken($request->input('token'));
 
             if (!$social_user) {
                 throw new Error(Str::replaceArray('?', [$request->provider], __('messages.invalid_social')));
@@ -569,9 +569,8 @@ class AuthController extends Controller
                 // return response()->json(['data' => $data, 'status' => true, 'message' => 'Your account logged in successfully', 'details' => $user]);
             }
         } 
-        catch (\Exception $th) {
-            return response()->json([
-                "message" => $th->getMessage(),], 400);
+        catch (\Exception $e) {
+           return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
         }
     }
     

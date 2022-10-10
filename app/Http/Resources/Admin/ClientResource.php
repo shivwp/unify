@@ -22,6 +22,9 @@ class ClientResource extends JsonResource
             'vat_id'            =>(string)$this->client->vat_id,
             'timezone'          =>(string)$this->timezone,
             'company_address'   =>(string)$this->client->company_address,
+            'country'           =>(string)$this->country,
+            'state'             =>(string)$this->state,
+            'city'              =>(string)$this->city,
         ];
     }
 }

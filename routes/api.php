@@ -21,6 +21,9 @@
     //close account reason list
     Route::get('close-account-reason-list', [App\Http\Controllers\Api\CommonController::class, 'accountCloseReasonList']);
 
+    //hoursPerWeek
+    Route::get('hours-per-week', [App\Http\Controllers\Api\CommonController::class, 'hoursPerWeek']);
+
     //skill list
     Route::get('skill-list', [App\Http\Controllers\Api\CommonController::class, 'skillList']);
 
