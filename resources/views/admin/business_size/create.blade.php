@@ -33,32 +33,17 @@
                 <div class="col-6">
                   <div class="form-group mt-3">
                     <label for="client ">Min Employees Size</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value="1"
-                      class="form-control"
-                      name="min_business_size"
-                     Required>
+                    <input type="number" min="1" value="1" class="form-control" name="min_business_size" Required>
                   </div>
                 </div>
                 <div class="col-6">
                   <div class="form-group mt-3">
                     <label for="client ">Max Employees Size</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value=""
-                      class="form-control"
-                      name="max_business_size"
-                      Required>
+                    <input type="number"  value="" class="form-control" name="max_business_size">
                   </div>
                 </div>
               </div>
-              <div class="form-group mt-3">
-                <label for="client ">Icon</label>
-                <input type="file" value="" class="form-control" name="image" Required>
-              </div>
+              
               <div class="mt-3">
                 <button type="submit" class="btn btn-danger">Save</button>
               </div>

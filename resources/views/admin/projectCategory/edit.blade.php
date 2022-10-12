@@ -6,13 +6,9 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-            <div class="row tabelhed">
-            <div class="col-lg-12" style="margin-bottom: 23px !important;">
-                Category/Edit
-            </div>
-</div>
+            
 <div class="card">
-    <div class="card-header">
+    <div class="card-header border-bottom">
         Edit Category List
     </div>
 
@@ -20,7 +16,7 @@
         <form action="{{ route("admin.project-category.update", [$projectCategory->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
-            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+            <div class="form-group mt-3 {{ $errors->has('name') ? 'has-error' : '' }}">
                 <label for="name">Category Name*</label>
                 <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($projectCategory) ? $projectCategory->name : '') }}" required>
                 @if($errors->has('name'))

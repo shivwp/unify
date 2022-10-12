@@ -68,7 +68,9 @@ class FreelancerController extends Controller
     {
         $d['f_data'] = $this->getFreelancerInfo($id);
         $lang_data = $this->getFreelancerMeta($id,'language');
-        $d['languages'] = json_decode($lang_data['language']);
+        if(!empty($lang_data)){
+            $d['languages'] = json_decode($lang_data['language']);
+        }
         return view('admin.freelancer.show',$d);
     }
 

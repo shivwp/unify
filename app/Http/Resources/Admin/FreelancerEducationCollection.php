@@ -18,7 +18,8 @@ class FreelancerEducationCollection extends ResourceCollection
             return [
                 'id'            => $data->id,
                 'school'        => (string)$data->school,
-                'date'          => (string)$data->date,
+                'start_year'    => (string)$data->start_date,
+                'end_year'      => (string)$data->end_date,
                 'level'         => (string)$data->level,
                 'degree'        => (string)$data->degree,
                 'area_study'    => (string)$data->area_study,

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\FreelancerRating;
+use App\Models\Industries;
 use App\Models\Client;
 use App\Models\User;
 use Carbon\Carbon;
@@ -38,12 +39,12 @@ class ClientController extends Controller
              return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          }
          $validator = Validator::make($request->all(), [
-            'profile_image'  => 'required|image',
-            'company_email'  => 'email|required',
-            'company_phone'  => 'digits_between:10,12',
-            'timezone'       =>  'exists:timezone',
-            'website'       =>  'url'
-            
+            'profile_image'   =>  'image|nullable',
+            'company_email'   => 'email|nullable|unique:users,email',
+            'company_phone'   => 'digits_between:10,12',
+            'timezone'        =>  'exists:timezone',
+            'website'         =>  'url',
+            'industry'        => 'required|exists:industries,id',
          ]);
 
          if ($validator->fails()) {
@@ -52,14 +53,18 @@ class ClientController extends Controller
 
          $parameters = $request->all();
          extract($parameters);
-
+         if(!empty($request->industry)){
+            $industry = Industries::where('id',$request->industry)->select('title')->first();
+         }
          $client = Client::updateOrCreate([
             'user_id' =>$user_id
          ],[
             'company_name' => $company_name,
             'website' => $website,
+            'tagline' => $tagline,
+            'industry' => $industry->title,
+            'employee_no' => $employee_no,
             'description' => $description,
-            'company_email' => $company_email,
             'company_phone' => $company_phone,
             'vat_id' => $vat_id,
             'company_address' => $company_address,
@@ -68,7 +73,14 @@ class ClientController extends Controller
          $user_name->first_name = $first_name;
          $user_name->last_name = $last_name;
          $user_name->timezone = $timezone;
-         $user_name->profile_image = $this->uploadProfile_image($profile_image);
+         if(!empty($request->email)){
+
+            $user_name->email = $request->email;
+         }
+         if(!empty($request->profile_image)){
+
+            $user_name->profile_image = $this->uploadProfile_image($profile_image);
+         }
          $user_name->save();
 
          return ResponseBuilder::successMessage("Update Successfully",$this->success);
@@ -108,7 +120,7 @@ class ClientController extends Controller
    
    public function close_account(Request $request){
 
-       try{
+      try{
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             $user_id = $singleuser->id;

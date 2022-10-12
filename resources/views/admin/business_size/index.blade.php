@@ -33,22 +33,6 @@
           </div>
         
            <div class="col-lg-6 col-md-6 col-sm-12 pl-2">
-<!-- 
-           <form action="" method="GET" class="d-flex">
-                <div class="mb-3">
-                   
-                    <div class="input-group input-daterange" class="daterange">
-                      <input type="text" name="start_date"  id="Startdate" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date" class="form-control" />
-                      <span class="input-group-text">To</span>
-                      <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date" class="form-control" />
-                    </div>
-                    </div>
-              <div class="d-flex" style="margin-left: 8px;">
-                <button class="btn-sm search-btn" type="submit" style="height: 37px; margin-right:6px">  <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
-                <a href="{{url('admin/jobs')}}"><i class="fa fa-refresh pl-3" style="border: 1px solid #beb3b3; padding:10px; border-radius:6px" aria-hidden="true"></i></a>
-               
-            </div>
-          </form> -->
          
       </div>
 
@@ -93,71 +77,53 @@
       <table id="exportToTable" class=" datatables-basic table border-top table table-bordered table-striped table-hover datatable datatable-Project">
         <thead>
             <tr>
-       
-                <th>
-               S No.
-             </th>
-             <th>
-              Title
-             </th>
-             <th>
-                Employees size
-             </th>
-             <th>
-           icon
-          </th>
-         
-      <th>
-         Action
-     </th>
- </tr>
-</thead>
-<tbody id="">
-@if(count($Business_size)>0)
-@php $i=1 @endphp
-@foreach($Business_size as $key => $item)
-<tr data-entry-id="{{ $item->id }}">
-<td>{{$i++}}</td>
-    <td>
-        {{ $item->title ?? '' }}
-    </td>
-    <td>
-        {{ $item->min_employee ?? '' }} - {{ $item->max_employee ?? '' }}
-    </td>
-   
-    <td>
-    <img src="{{ url('/images/business size icons/') . '/' . $item->image }}"  alt="" style="width: 34px;" class="icon-wrap" />
-    </td>
-
-<td>
+                <th>S No.</th>
+                <th>Title</th>
+                <th>Employees size</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="">
+        @if(count($Business_size)>0)
+        @php $i=1 @endphp
+        @foreach($Business_size as $key => $item)
+        <tr data-entry-id="{{ $item->id }}">
+        <td>{{$i++}}</td>
+            <td>
+                {{ $item->title ?? '' }}
+            </td>
+            <td>
+                {{ isset($item->min_employee) ? $item->min_employee : '' }}  {{ isset($item->max_employee) ? '-'.$item->max_employee : ''}}
+            </td>
+        <td>
 
 
-    @can('project_edit')
-    <a  href="{{ route('admin.business_size.edit', $item->id) }}">
-    <i class="bx bx-edit"  data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i>
-    </a>
-    @endcan
+            @can('project_edit')
+            <a  href="{{ route('admin.business_size.edit', $item->id) }}">
+            <i class="bx bx-edit"  data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i>
+            </a>
+            @endcan
 
-    @can('project_delete')
-  
-        
-       <a href="business-delete/{{$item->id}}"><i class="bx bx-trash"data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"></i></a>
+            @can('project_delete')
+          
+                
+               <a href="business-delete/{{$item->id}}"><i class="bx bx-trash"data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"></i></a>
 
-    @endcan
+            @endcan
 
-</td>
+        </td>
 
-</tr>
-@endforeach 
-@else
-<tr class="mb-3">
+        </tr>
+        @endforeach 
+        @else
+        <tr class="mb-3">
 
-No Record Found
+        No Record Found
 
-</tr>
-@endif
+        </tr>
+        @endif
 
-</tbody>
+        </tbody>
 </table>
           
 {!! $Business_size->links() !!}

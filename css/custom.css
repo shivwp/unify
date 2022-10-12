@@ -73,7 +73,7 @@ table.dataTable thead .sorting_desc {
 .row.tabelhed{
     background-color: white !important;
     margin: 0px 0px 10px 0px;
-    padding: 25px 25px 10px 20px;
+    padding: 25px 25px 25px 20px;
     border-radius: 12px;
 }
 .ad-btn{
@@ -96,7 +96,9 @@ table.dataTable thead .sorting_desc {
 }
 .search-btn{
     height: 37px; 
-    margin-right:6px
+    margin-right:6px;
+    background-color: transparent;
+        color: #696cff;
 }
 .redirect-icon{
     border: 1px solid #beb3b3; 
@@ -116,4 +118,11 @@ table.dataTable thead .sorting_desc {
 .badge.badge-hold{
     margin: 1px;
    background-color: #ffc107;
+}
+.listViewclr {
+    background-color: #e7e7ff4a !important;
+    margin: 0px 10px 15px;
+}
+.btn_back{
+    margin-top:20px;
 }

@@ -39,7 +39,12 @@ class FreelancerController extends Controller
 		{
 			if (Auth::guard('api')->check()) {
 	            $singleuser = Auth::guard('api')->user();
-	            $user_id = $singleuser->id;
+	            $userRole = strtolower($singleuser->roles()->first()->title);
+	            if($userRole == 'freelancer'){
+	            	$user_id = $singleuser->id;
+	            }else{
+	            	return ResponseBuilder::error(__("Login with Valid Freelancer Details"), $this->unauthorized);
+	            }
 	        } 
          	else{
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
@@ -52,7 +57,30 @@ class FreelancerController extends Controller
          	$this->response->certificates = new FreelancerCertificateResource($freelancer_profile_data->freelancer->freelancer_certificates);
          	$this->response->experiences = new FreelancerExperienceResource($freelancer_profile_data->freelancer->freelancer_experiences);
          	$this->response->education = new FreelancerEducationCollection($freelancer_profile_data->freelancer->freelancer_education);
-         	
+
+         	$freelancer_meta = $this->getFreelancerMeta($user_id);
+
+         	//language
+         	$language = [];
+         	$languages = isset($freelancer_meta['language']) ? json_decode($freelancer_meta['language']) : [];
+         	if(isset($languages) && !empty($languages)){
+         		foreach ($languages as $key => $value) {
+	         		$language[] = [
+	         			'language'=>$key,
+	         			'level'=>$value,
+	         		];
+	         	}
+         	}
+         	$this->response->language = $language;
+
+         	//hour per week
+         	$this->response->hours_per_week = isset($freelancer_meta['hours_per_week']) ? $freelancer_meta['hours_per_week'] : '';
+
+         	//video
+         	$video['url'] = isset($freelancer_meta['freelancer_video']) ? $freelancer_meta['freelancer_video'] : '';
+         	$video['type'] = isset($freelancer_meta['freelancer_video_type']) ? $freelancer_meta['freelancer_video_type'] : '';
+         	$this->response->video = isset($video) ? $video : '';
+
          	return ResponseBuilder::success($this->response, "Freelancer Profile Data");
 		}
 		catch(\Exception $e)
@@ -218,7 +246,11 @@ class FreelancerController extends Controller
          		'image'		=>	isset($request->image) ? $this->freelancerPortfolioImage($request->image) : '',
          	]);
          	if(!empty($portfolioData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		if(!empty($request->id)){
+         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		}else{
+         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         		}
          	}
 		}
 		catch(\Exception $e)
@@ -239,11 +271,11 @@ class FreelancerController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$validator = Validator::make($request->all(), [
+         		'id'		=> 'nullable|exists:freelancer_testimonial,id',
          		'first_name'  => 'required',
          		'last_name'  => 'required',
          		'email'  => 'required|email',
          		'linkdin_url'  => 'nullable|url',
-         		'title'  => 'required',
          		'type'	=>'required',
          		'description'	=>'required',
          	]);
@@ -267,7 +299,11 @@ class FreelancerController extends Controller
          		'description'	=>	$request->description,
          	]);
          	if(!empty($testimonialData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		if(!empty($request->id)){
+         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		}else{
+         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         		}
          	}
 		}
 		catch(\Exception $e)
@@ -311,7 +347,11 @@ class FreelancerController extends Controller
          		'certificate_id'	=>	$request->certificate_id,
          	]);
          	if(!empty($certificateData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		if(!empty($request->id)){
+         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		}else{
+         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         		}
          	}
 		}
 		catch(\Exception $e)
@@ -362,7 +402,11 @@ class FreelancerController extends Controller
          		'description'		=>	$request->description,
          	]);
          	if(!empty($experienceData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		if(!empty($request->id)){
+         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		}else{
+         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         		}
          	}
 		}
 		catch(\Exception $e)
@@ -523,7 +567,7 @@ class FreelancerController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$validator = Validator::make($request->all(), [
-         		'video'	=>'required|mimes:mp4,mov,ogg,qt',
+         		'video'	=>'required|url',
          		'video_type'=>'required',
          	]);
 
@@ -536,7 +580,7 @@ class FreelancerController extends Controller
 			
 			$video_meta = [];
 			$video_meta = [
-				'freelancer_video'=>$this->freelancervideo($request->video),
+				'freelancer_video'=>$request->video,
 				'freelancer_video_type'=>$request->video_type,
 			];
 			if(!empty($video_meta)){
@@ -563,7 +607,8 @@ class FreelancerController extends Controller
          	}
          	$validator = Validator::make($request->all(), [
          		'school'  => 'required',
-         		'date'  => 'nullable|date',
+         		'start_year'  => 'required|digits:4|integer',
+         		'end_year'  => 'required|digits:4|integer',
          	]);
 
 	        if ($validator->fails()) {
@@ -577,14 +622,19 @@ class FreelancerController extends Controller
          		'user_id'	=>	$user_id,
          	],[
          		'school'	=>	$request->school,
-         		'date'		=>	$request->date,
+         		'start_date'=>	$request->start_year,
+         		'end_date'	=>	$request->end_year,
          		'level'		=>	$request->level,
          		'degree'	=>	$request->degree,
          		'area_study'=>	$request->area_study,
          		'description'=>	$request->description,
          	]);
          	if(!empty($educationData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		if(!empty($request->id)){
+         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		}else{
+         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         		}
          	}
 		}
 		catch(\Exception $e)
@@ -609,7 +659,7 @@ class FreelancerController extends Controller
 			
 			if(!empty($request->languages)){
 				$lang = 'language';
-				$uploadvideo = $this->updateFreelancerMeta($user_id,$lang,$request->languages);
+				$uploadvideo = $this->updateFreelancerMeta($user_id,$lang,json_encode($request->languages));
 				return ResponseBuilder::successMessage("Update Successfully", $this->success);
 			}else{
 				return ResponseBuilder::error("No Data available", $this->badRequest);
@@ -722,7 +772,11 @@ class FreelancerController extends Controller
          		'description'		=>	$request->description,
          	]);
          	if(!empty($expeData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		if(!empty($request->id)){
+         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		}else{
+         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         		}
          	}
 		}
 		catch(\Exception $e)
@@ -808,6 +862,46 @@ class FreelancerController extends Controller
 		{
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}	
+	}
+
+	public function contactInfo(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'email'		 =>'nullable|email|unique:users,email'
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         		extract($parameters);
+			
+			$user_name = User::where('id',$user_id)->first();
+			if(!empty($request->first_name)){
+				$user_name->first_name = $request->first_name;
+			}
+			if(!empty($request->last_name)){
+         		$user_name->last_name = $request->last_name;
+         	}if(!empty($request->email)){
+         		$user_name->email = $request->email;
+         	}
+         	$user_name->save();
+
+         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+		}catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
 	}
 
 }

@@ -19,6 +19,7 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('edit-other-experience', [App\Http\Controllers\Api\FreelancerController::class, 'edit_other_experience']);
 	Route::post('edit-location', [App\Http\Controllers\Api\FreelancerController::class, 'edit_location']);
 	Route::post('edit-hours-per-week', [App\Http\Controllers\Api\FreelancerController::class, 'hours_per_week']);
+	Route::post('edit-contact-info', [App\Http\Controllers\Api\FreelancerController::class, 'contactInfo']);
 
 	//freelancer profile delete
 	Route::post('delete-portfolio-info', [App\Http\Controllers\Api\FreelancerController::class, 'delete_portfolio_info']);

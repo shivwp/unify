@@ -27,11 +27,14 @@
     //skill list
     Route::get('skill-list', [App\Http\Controllers\Api\CommonController::class, 'skillList']);
 
+    //industry list
+    Route::get('industries-list', [App\Http\Controllers\Api\CommonController::class, 'industriesList']); 
+
+    
     //forget password
     Route::post('forget-password', [App\Http\Controllers\Api\AuthController::class, 'forget_password_otp']);
     Route::post('reset-password', [App\Http\Controllers\Api\AuthController::class, 'reset_password']);
 
-    Route::get('category_list', [App\Http\Controllers\Api\CommonController::class, 'categorylist']);
     Route::get('timezone_list', [App\Http\Controllers\Api\CommonController::class, 'TimeZone']);
     Route::get('subcategory_list', [App\Http\Controllers\Api\CommonController::class, 'subcategorylist'] );
 

@@ -8,14 +8,14 @@
             <div class="col-lg-12">
             
 <div class="card">
-    <div class="card-header">
+    <div class="card-header border-bottom">
         Create Category
     </div>
 
     <div class="card-body">
         <form action="{{ route("admin.project-category.store") }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <div class="form-group {{ $errors->has('name') ? 'has-error' : '' }}">
+            <div class="form-group mt-3 {{ $errors->has('name') ? 'has-error' : '' }}">
                 <label for="name">Category Name*</label>
                 <input type="text" id="name" name="name" class="form-control" value="{{ old('name', isset($projectCategory) ? $projectCategory->name : '') }}" required>
                 @if($errors->has('name'))
@@ -44,7 +44,7 @@
                 @endif
             </div>
             <div class="mt-3">
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                <input class="btn btn-success" type="submit" value="{{ trans('global.save') }}">
             </div>
         </form>
     </div>

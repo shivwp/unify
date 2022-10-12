@@ -30,36 +30,17 @@
                 <div class="col-6">
                   <div class="form-group mt-3">
                     <label for="client ">Min Employees Size</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value="{{$business_size->min_employee}}"
-                      class="form-control"
-                      name="min_business_size"
-                    />
+                    <input type="number" min="1" value="{{$business_size->min_employee}}" class="form-control" name="min_business_size"/>
                   </div>
                 </div>
                 <div class="col-6">
                   <div class="form-group mt-3">
                     <label for="client ">Max Employees Size</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value="{{$business_size->max_employee}}"
-                      class="form-control"
-                      name="max_business_size"
-                    />
+                    <input type="number"  value="{{$business_size->max_employee}}" class="form-control" name="max_business_size"/>
                   </div>
                 </div>
               </div>
-              <div class="form-group mt-3">
-                <label for="client ">Icon</label>
-                <input type="file" value="" class="form-control" name="image" />
-              </div>
-              <div class="form-group mt-3">
-              <img src="{{ url('/images/business size icons/') . '/' . $business_size->image }}"  alt="" style="width: 50px;" class="icon-wrap" />
-              <input type="hidden" name="image1" value="{{$business_size->image}}" >
-              </div>
+              
         <input type="hidden" name="business_id"  value="{{$business_size->id}}">
             <div class="mt-3">
                 <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">

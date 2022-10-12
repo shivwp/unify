@@ -1,41 +1,17 @@
 @extends('layouts.master') @section('content')
-<style>
-    .search-btn {
-        border: 1px solid #d7cbcb;
-        padding: 8px 10px 6px 11px;
-        border-radius: 8px;
-        margin-left: 6px;
-    }
-</style>
+
 <div class="content-wrapper">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row ">
-            <div class="row tabelhed d-flex justify-content-between">
-                    <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
-                        @can('user_create')
-                        <a class="btn-sm ad-btn text-center pt-2" href="{{ route("admin.project-skill.create") }}"> Add</a>
-                        @endcan
-                        <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
-                    </div>
-                    <div class="col-lg-5 col-md-5 col-sm-5 "> 
-                        <?php 
-                        if(!empty($_GET['search'])){
-                            $search= $_GET['search'];
-                        }else{ 
-                            $search='';
-                        }?>
-                        <div class="right-item" >
-                            <form action="" class="d-flex" method="get">
-                                <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Search..." required>
-                                <button class="btn-sm search-btn" type="submit"  style="margin-left:6px"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
-                                <a href="{{url('admin/project-skill')}}">
-                                    <i class="fa fa-refresh pl-3 redirect-icon" aria-hidden="true"></i>
-                                </a>
-                            </form>
-                        </div>
-                    </div>
+            <div class="col-lg-12">
+            @can('project_status_create')
+            <div class="row tabelhed">
+                <div class="col-lg-12" style="margin-bottom:23px;">
+                    <a class="btn-sm ad-btn" style="height: 30px; font-size: smaller; padding: 9px 11px 11px 12px;" href="{{ route("admin.project-skill.create") }}">Add</a>
                 </div>
+            </div>
+            @endcan
             <div class="card">
                 <div class="card-header">
                     Skills List

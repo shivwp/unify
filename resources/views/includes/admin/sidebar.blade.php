@@ -81,22 +81,7 @@
                     </a>
                 </li>
                 @endcan
-                @can('project_category_access')
-                <li class="menu-item {{ request()->is('admin/project-category') || request()->is('admin/project-category/*') ? 'active' : '' }}">
-                    <a href="{{ route("admin.project-category.index") }}" class="menu-link">
-                        <div data-i18n="Notifications">Categories</div>
-                    </a>
-                </li>
-                @endcan
-               
-
-                @can('project_skills_access')
-                <li class="menu-item  {{ request()->is('admin/project-skill') || request()->is('admin/project-skill/*') ? 'active' : '' }}">
-                    <a href="{{ route("admin.project-skill.index") }}" class="menu-link">
-                        <div data-i18n="Connections">Skills</div>
-                    </a>
-                </li>
-                @endcan
+                
 
                 @can('project_listing_type_access')
                 <li class="menu-item {{ request()->is('admin/project-listing-type') || request()->is('admin/project-listing-type/*') ? 'active' : '' }}">
@@ -173,6 +158,28 @@
             </a>
         </li> -->
         @endcan
+        @can('project_skills_access')
+        <li class="menu-item  {{ request()->is('admin/project-skill') || request()->is('admin/project-skill/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.project-skill.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-certificate"></i>
+                <div data-i18n="Connections">Skills</div>
+            </a>
+        </li>
+        @endcan
+        @can('project_category_access')
+        <li class="menu-item {{ request()->is('admin/project-category') || request()->is('admin/project-category/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.project-category.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-list-alt"></i>
+                <div data-i18n="Notifications">Categories</div>
+            </a>
+        </li>
+        @endcan
+        <li class="menu-item {{ request()->is('admin/industry') || request()->is('admin/industry/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.industry.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-industry"></i>
+                <div data-i18n="Analytics">Industries</div>
+            </a>
+        </li>
         @can('user_management_access')
         <li class="menu-item {{ request()->is('admin/clients') || request()->is('admin/clients/*') ? 'active' : '' }}">
             <a href="{{ route("admin.clients.index") }}" class="menu-link">
@@ -255,13 +262,13 @@
                     </a>
                 </li>
                 @endcan
-                @can('business_acccess')
+                {{--@can('business_acccess')
                 <li class="menu-item {{ request()->is('admin/business_size') || request()->is('admin/business_size/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.business_size.index") }}" class="menu-link">
                         <div data-i18n="Notifications">Business Size</div>
                     </a>
                 </li>
-                @endcan
+                @endcan--}}
                 @can('project_status_access')
                 <li class="menu-item {{ request()->is('admin/project-statuses') || request()->is('admin/project-statuses/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.project-statuses.index") }}" class="menu-link">

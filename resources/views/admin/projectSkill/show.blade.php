@@ -9,11 +9,11 @@
             
 
 <div class="card">
-    <div class="card-header">
+    <div class="card-header border-bottom">
         Show Skill List
     </div>
 
-    <div class="card-body">
+    <div class="card-body mt-4">
         <div class="mb-2">
             <table class="table table-bordered table-striped">
                 <tbody>
@@ -35,18 +35,9 @@
                     </tr>
                 </tbody>
             </table>
-            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
+            <a style="margin-top:20px;" class="btn btn-success" href="{{ url()->previous() }}">
                 Back to list
             </a>
-        </div>
-
-        <nav class="mb-3">
-            <div class="nav nav-tabs">
-
-            </div>
-        </nav>
-        <div class="tab-content">
-
         </div>
     </div>
 </div> 

@@ -10,7 +10,7 @@ class FreelancerResource extends JsonResource
     {
         return [
             'id'                =>(string)$this->id,
-            'profile_image'     =>isset($this->profile_image) ? url('/profile-image',$this->profile_image) : '',
+            'profile_image'     =>isset($this->profile_image) ? url('/images/profile-image',$this->profile_image) : '',
             'visibility'        =>(string)$this->freelancer->visibility,
             'project_preference'=>(string)$this->freelancer->project_preference,
             'experience_level'  =>(string)$this->freelancer->experience_level,
@@ -24,6 +24,9 @@ class FreelancerResource extends JsonResource
             'total_jobs'        =>(integer)$this->freelancer->total_jobs,
             'total_hours'       =>(integer)$this->freelancer->total_hours,
             'pending_project'   =>(integer)$this->freelancer->pending_project,
+            'timezone'          =>(string)$this->timezone,
+            'address'           =>(string)$this->address,
+            'phone'             =>(string)$this->phone,
             'country'           =>(string)$this->country,
             'state'             =>(string)$this->state,
             'city'              =>(string)$this->city,

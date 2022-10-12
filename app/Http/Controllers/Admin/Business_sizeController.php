@@ -50,35 +50,10 @@ class Business_sizeController extends Controller
     public function store(Request $request)
     { 
   
-  
-     if ($request->hasfile('image')) {
-        $file1 = $request->file('image');
-       
-          
-          $name = $file1->getClientOriginalName();
-          $filename = time() . '_' . $name;
-          $image_resize = Image::make($file1->getRealPath());
-          $image_resize->save('images/business size icons/' . $filename);
-          $image_name= $filename;
-        
-      }
-  
-      $varimg = $request->image1;
-
-      if (!empty($image_name) && !empty($varimg)) {
-
-        $result = array_merge($image_name, $varimg);
-      } else if (!empty($image_name)) {
-
-        $result = $image_name;
-      } else {
-        $result = '';
-      }
       $Business_size = new Business_size;
       $Business_size->title=$request->business_title;
       $Business_size->min_employee=$request->min_business_size;
-      $Business_size->max_employee=$request->   max_business_size;
-      $Business_size->image=$result;
+      $Business_size->max_employee=$request->max_business_size;
       $Business_size->save();
 
         return redirect()->route('admin.business_size.index');
@@ -92,27 +67,11 @@ class Business_sizeController extends Controller
 
     public function update(Request $request)
     {
-        if ($request->hasfile('image')) {
-            $file1 = $request->file('image');
-           
-              
-              $name = $file1->getClientOriginalName();
-              $filename = time() . '_' . $name;
-              $image_resize = Image::make($file1->getRealPath());
-              $image_resize->save('images/business size icons/' . $filename);
-            
-            
-          }else{
-            $filename=$request->image1;
-          }
-      
-         
         $Business_size = Business_size::where('id',$request->business_id)->first();
 
         $Business_size->title=$request->business_title;
         $Business_size->min_employee=$request->min_business_size;
-        $Business_size->max_employee=$request->   max_business_size;
-        $Business_size->image=$filename;
+        $Business_size->max_employee=$request->max_business_size;
         $Business_size->save();
     
 

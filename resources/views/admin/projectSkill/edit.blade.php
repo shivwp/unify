@@ -9,11 +9,11 @@
             
 
 <div class="card">
-    <div class="card-header">
+    <div class="card-header border-bottom">
         Edit Skill List
     </div>
 
-    <div class="card-body">
+    <div class="card-body mt-3">
         <form action="{{ route("admin.project-skill.update", [$projectSkill->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
@@ -30,7 +30,7 @@
                 </p> -->
             </div>
             <div class="mt-3">
-                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                <input class="btn btn-success" type="submit" value="{{ trans('global.save') }}">
             </div>
         </form>
 

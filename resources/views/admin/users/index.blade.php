@@ -1,10 +1,11 @@
 @extends('layouts.master') @section('content')
 <style>
     .search-btn {
-    border: 1px solid #d7cbcb;
-    padding: 8px 10px 6px 11px;
-    border-radius: 8px;
-}
+        border: 1px solid #d7cbcb;
+        padding: 8px 10px 6px 11px;
+        border-radius: 8px;
+        margin-left: 6px;
+    }
 </style>
 <div class="content-wrapper">
     <!-- Content -->

@@ -16,6 +16,8 @@ use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
 use App\Models\ProjectSkill;
 use App\Models\TimeZone;
+use App\Models\Business_size;
+use App\Models\Industries;
 use Carbon\Carbon;
 use Validator;
 use Config;
@@ -112,4 +114,19 @@ class CommonController extends Controller
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
          }
       }
+
+      public function industriesList()
+      {
+         try{
+            $industry = Industries::select('id','title')->get();
+            if(!empty($industry)){
+               return ResponseBuilder::success($industry, "Industries List");
+            }else{
+               return ResponseBuilder::success(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
 }

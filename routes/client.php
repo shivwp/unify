@@ -9,3 +9,6 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('close-account', [App\Http\Controllers\Api\ClientController::class, 'close_account']);
 
 });
+	//category-list
+	Route::get('category-list', [App\Http\Controllers\Api\JobController::class, 'categoryList']);
+	Route::post('sub-category-list', [App\Http\Controllers\Api\JobController::class, 'subCategoryList']);

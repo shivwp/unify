@@ -93,6 +93,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Business
     Route::resource('business_size', 'Business_sizeController');
     Route::get('/business-delete/{id}', 'Business_sizeController@destroy');
+    
+    // Industry
+    Route::resource('industry', 'IndustryController');
 
     //subscription
     Route::post('service/{id}', 'ServicesController@destroy')->name('service');
