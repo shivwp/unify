@@ -24,6 +24,7 @@ use App\Models\FreelancerPortfolio;
 use App\Models\FreelancerSkill;
 use App\Models\HoursPerWeek;
 use App\Models\Freelancer;
+use App\Models\ProjectSkill;
 use App\Models\User;
 use Carbon\Carbon;
 use Validator;
@@ -185,9 +186,7 @@ class FreelancerController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$validator = Validator::make($request->all(), [
-         		'id ' 	 	=> 	'exists:freelancer_skills,id',
-         		'skill_id'  => 	'required|exists:project_skill,id',
-         		'skill_name'=>	'required|exists:project_skill,name',
+         		'skill_id'  => 	'required',
          	]);
 
 	        if ($validator->fails()) {
@@ -197,16 +196,35 @@ class FreelancerController extends Controller
          	$parameters = $request->all();
          	extract($parameters);
 
-         	$skillData = FreelancerSkill::updateOrCreate([
-         		'id'		=>	$request->id,
-         		'user_id'	=>	$user_id,
-         	],[
-         		'skill_id'	=>	$request->skill_id,
-         		'skill_name'=>	$request->skill_name,
-         	]);
-         	if(!empty($skillData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
-         	}
+         	if(!empty($request->skill_id)){
+		    $skills  = explode(',', $request->skill_id);
+
+		    $projectSkill = ProjectSkill::all();
+
+		    foreach($skills as $val){
+		        $freelanceSkill[] = $val;
+		    }
+		    
+		        foreach($projectSkill as $val){
+
+		            if(in_array($val->id, $freelanceSkill)){
+		                $save_d[] = FreelancerSkill::updateOrCreate([
+		                    'user_id'   => $user_id,
+		                    'skill_id'   => $val->id,
+		                ],
+		                [
+		                    'skill_id'   => $val->id,
+		                    'skill_name'   => $val->name,
+		                ]);
+		            }
+		            else{
+		                $skilll_id = FreelancerSkill::where('user_id',$user_id)->where('skill_id',$val->id)->first();
+		                if($skilll_id)
+		                $skilll_id->delete();
+		            }
+		        }
+		        return ResponseBuilder::successMessage("Update Successfully", $this->success);
+		    }
 		}
 		catch(\Exception $e)
 		{
@@ -326,9 +344,7 @@ class FreelancerController extends Controller
          	$validator = Validator::make($request->all(), [
          		'id'				=>'exists:freelancer_certificates,id',
          		'name'  			=>'required',
-         		'issue_date'		=>'required|date',
-         		'expiry_date'		=>'after:issue_date|date',
-         		'certificate_id'	=>'required'
+         		'description'		=>'required',
          	]);
 
 	        if ($validator->fails()) {
@@ -342,9 +358,7 @@ class FreelancerController extends Controller
          		'user_id'			=>	$user_id,
          	],[
          		'name'				=>	$request->name,
-         		'issue_date'		=>	$request->issue_date,
-         		'expiry_date'	=>	$request->expiry_date,
-         		'certificate_id'	=>	$request->certificate_id,
+         		'description'		=>	$request->description,
          	]);
          	if(!empty($certificateData)){
          		if(!empty($request->id)){

@@ -92,7 +92,7 @@ class ClientController extends Controller
 
    Public function get_info()
    {
-      try{
+      // try{
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             // dd($singleuser->roles()->first()->title);
@@ -112,10 +112,10 @@ class ClientController extends Controller
 
          return ResponseBuilder::success($this->response, "Client Profile data");
 
-      }catch(\Exception $e)
-      {
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
-      }
+      // }catch(\Exception $e)
+      // {
+      //    return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+      // }
    } 
    
    public function close_account(Request $request){
@@ -142,9 +142,12 @@ class ClientController extends Controller
          $reasonTitle = AccountCloseReason::where('id',$reason_id)->select('title')->first();
          $userAccountStatus = User::where('id',$user_id)->first();
          $userAccountStatus->close_status = $reasonTitle->title;
-         $userAccountStatus->deleted_at = now();
-         $userAccountStatus->save();
+         $userAccountStatus->delete();
 
+         $socialUser = SocialAccount::where('user_id',$user_id)->first();
+         if(!empty($socialUser)){
+            $socialUser->delete();
+         }
          return ResponseBuilder::successMessage("Close Account successfulyy", $this->success);
 
       }catch(\Exception $e){
@@ -192,6 +195,5 @@ class ClientController extends Controller
       }catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
       }
-
    }
 }

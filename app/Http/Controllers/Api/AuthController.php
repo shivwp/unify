@@ -511,8 +511,9 @@ class AuthController extends Controller
         try {
 
             $validator = Validator::make($request->all(), [
-                'provider' => 'required|in:google,apple',
-                'token' => 'required',
+                'provider'  => 'required|in:google,apple',
+                'token'     => 'required',
+                'user_type' =>  'required|in:client,freelancer'
             ]);
             if ($validator->fails()) {
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
@@ -556,6 +557,21 @@ class AuthController extends Controller
                     $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
                     $user->save();
                 }
+
+                
+                if($request->user_type == 'freelancer'){
+                    $role = 2;
+                    $freelancer = new Freelancer;
+                    $freelancer->user_id = $user->id;
+                    $freelancer->save();
+                }
+                if($request->user_type == 'client'){
+                    $role = 3;
+                    $client = new Client;
+                    $client->user_id = $user->id;
+                    $client->save();
+                }
+                $user->roles()->sync($role);
 
                 $social_account = new SocialAccount;
                 $social_account->provider = $request->provider;

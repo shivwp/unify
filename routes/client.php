@@ -8,7 +8,11 @@ Route::middleware('auth:api')->group(function () {
 	//close account
 	Route::post('close-account', [App\Http\Controllers\Api\ClientController::class, 'close_account']);
 
+	//post A Job
+	Route::post('post-job', [App\Http\Controllers\Api\JobController::class, 'post_job']);
+
 });
-	//category-list
-	Route::get('category-list', [App\Http\Controllers\Api\JobController::class, 'categoryList']);
-	Route::post('sub-category-list', [App\Http\Controllers\Api\JobController::class, 'subCategoryList']);
+
+//category-list
+Route::get('category-list', [App\Http\Controllers\Api\JobController::class, 'categoryList']);
+Route::post('sub-category-list', [App\Http\Controllers\Api\JobController::class, 'subCategoryList']);
