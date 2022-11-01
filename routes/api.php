@@ -18,6 +18,9 @@
     //country list
     Route::get('coutrylist', [App\Http\Controllers\Api\CommonController::class, 'countrylist']);
 
+    //languages list
+    Route::get('languages-list', [App\Http\Controllers\Api\CommonController::class, 'languageslist']);
+
     //close account reason list
     Route::get('close-account-reason-list', [App\Http\Controllers\Api\CommonController::class, 'accountCloseReasonList']);
 
@@ -25,18 +28,30 @@
     Route::get('hours-per-week', [App\Http\Controllers\Api\CommonController::class, 'hoursPerWeek']);
 
     //skill list
-    Route::get('skill-list', [App\Http\Controllers\Api\CommonController::class, 'skillList']);
+    Route::post('skill-list', [App\Http\Controllers\Api\CommonController::class, 'skillList']);
+
+    //degree list
+    Route::get('degree-list', [App\Http\Controllers\Api\CommonController::class, 'degreelist']);
+
+    //job list
+    Route::get('jobs-list', [App\Http\Controllers\Api\JobController::class, 'jobsList']);
+
+    //Recent job list
+    Route::get('recent-jobs-list', [App\Http\Controllers\Api\JobController::class, 'recentJobsList']);
 
     //industry list
     Route::get('industries-list', [App\Http\Controllers\Api\CommonController::class, 'industriesList']); 
-
     
     //forget password
     Route::post('forget-password', [App\Http\Controllers\Api\AuthController::class, 'forget_password_otp']);
+    //Page data
+    Route::post('page', [App\Http\Controllers\Api\CommonController::class, 'page']);
+
     Route::post('reset-password', [App\Http\Controllers\Api\AuthController::class, 'reset_password']);
 
     Route::get('timezone_list', [App\Http\Controllers\Api\CommonController::class, 'TimeZone']);
     Route::get('subcategory_list', [App\Http\Controllers\Api\CommonController::class, 'subcategorylist'] );
+    Route::post('specialization-list', [App\Http\Controllers\Api\CommonController::class, 'specializationlist'] );
 
 //Route::middleware('auth:api')->group(function () {
 Route::post('change-password', [App\Http\Controllers\Api\AuthController::class, 'changepassword']);

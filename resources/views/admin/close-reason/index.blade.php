@@ -46,9 +46,7 @@
                                         <td>{{ $value->title ?? '' }}</td>
                                         <td>{{ $value->description }}</td>
                                         <td>
-                                            <a href="{{ route('admin.close-reason.show', $value->id) }}">
-                                                <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
-                                            </a>
+                                            
                                             <a href="{{ route('admin.close-reason.edit', $value->id) }}">
                                                 <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
                                             </a>

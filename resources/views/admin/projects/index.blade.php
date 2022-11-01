@@ -88,7 +88,7 @@
                                 <tr>
                                     <th>S No.</th>
                                     <th>Project Name</th>
-                                    <th>Client</th>
+                                    <!-- <th>Client</th> -->
                                     <th>Publish date</th>
                                     <th>Budget</th>
                                     <th>Status</th>
@@ -102,9 +102,9 @@
                                         <tr data-entry-id="{{ $project->id }}">
                                             <td>{{$i++}}</td>
                                             <td>{{ $project->name ?? '' }}</td>
-                                            <td>
+                                            {{--<td>
                                                <a href="{{ url("admin/users", [$project->client->id]) }}"><p class="C_nme">{{ $project->client->name ?? '' }}</p></a>
-                                            </td>
+                                            </td>--}}
                                             <td>{{$project->created_at->toFormattedDateString()}}</td>
                                             <td>
                                                 @if($project->payment_base=='fixed')

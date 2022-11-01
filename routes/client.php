@@ -11,8 +11,16 @@ Route::middleware('auth:api')->group(function () {
 	//post A Job
 	Route::post('post-job', [App\Http\Controllers\Api\JobController::class, 'post_job']);
 
+	//FreelanceList list as per skills
+	Route::post('skills-freelance-list', [App\Http\Controllers\Api\ClientController::class, 'skillsFreelanceList']);
+
+	//user document verify
+	Route::post('user-document-verify', [App\Http\Controllers\Api\AuthController::class, 'userDocumentVerify']);
 });
 
 //category-list
 Route::get('category-list', [App\Http\Controllers\Api\JobController::class, 'categoryList']);
-Route::post('sub-category-list', [App\Http\Controllers\Api\JobController::class, 'subCategoryList']);
+Route::get('sub-category-list', [App\Http\Controllers\Api\JobController::class, 'subCategoryList']);
+
+//client List
+Route::get('client-list', [App\Http\Controllers\Api\ClientController::class, 'clientList']);

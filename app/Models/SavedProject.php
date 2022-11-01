@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProjectSkill extends Model
+class SavedProject extends Model
 {
-    use SoftDeletes;
 
-    public $table = 'project_skill';
+    public $table = 'saved_projects';
 
     protected $dates = [
         'created_at',
@@ -18,10 +16,8 @@ class ProjectSkill extends Model
     ];
 
     protected $fillable = [
-        'name',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+        'user_id',
+        'project_id',
     ];
     
     public function projects()

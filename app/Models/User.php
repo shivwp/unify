@@ -13,7 +13,7 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use SoftDeletes, Notifiable, HasApiTokens;
+    use Notifiable, HasApiTokens;
 
     public $table = 'users';
 
@@ -25,7 +25,6 @@ class User extends Authenticatable
     protected $dates = [
         'updated_at',
         'created_at',
-        'deleted_at',
         'email_verified_at',
     ];
 
@@ -56,6 +55,7 @@ class User extends Authenticatable
         'timezone',
         'profile_image',
         'remember_token',
+        'avg_rating',
         'agree_terms',
         'send_email',
     ];

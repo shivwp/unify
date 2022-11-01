@@ -39,11 +39,29 @@ class Controller extends BaseController
         return $name;
     }
 
+    public function uploadUserDocument($document)
+    {
+        $file = $document;
+        $name =$file->getClientOriginalName();
+        $destinationPath = 'images/user-document';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+
     public function freelancerPortfolioImage($image)
     {
         $file = $image;
         $name =$file->getClientOriginalName();
         $destinationPath = 'images/freelancer-portfolio';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+
+    public function proposalImage($image)
+    {
+        $file = $image;
+        $name =$file->getClientOriginalName();
+        $destinationPath = 'images/proposals';
         $file->move($destinationPath, $name);
         return $name;
     }
@@ -73,7 +91,6 @@ class Controller extends BaseController
                 ->toArray();
             return $freelancer_details_add;
         } else {
-            
             if ($status) {
                 
                 $freelancer_details_add = FreelancerMeta::where('user_id', $id)->where('meta_key', $key)->first();
@@ -82,7 +99,6 @@ class Controller extends BaseController
                 else
                     return "";
             } else {
-
                 $freelancer_details_add = FreelancerMeta::where('user_id', $id)->where('meta_key', $key)->select('meta_key', 'meta_value')
                     ->pluck('meta_value', 'meta_key')
                     ->toArray();

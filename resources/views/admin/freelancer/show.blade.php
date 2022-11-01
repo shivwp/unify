@@ -343,6 +343,28 @@
                             @else
                                 <p class="mb-0">No data Found</p>
                             @endif
+                            <br>
+                            <h5><strong>Languages info</strong></h5>
+                            @if(isset($languages))
+                                @foreach($languages as $key => $value)
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Language</strong></h6>
+                                            <p class="mb-0">{{ $key ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Proficiency level</strong></h6>
+                                            <p class="mb-0">{{ $value ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            @else
+                                <p class="mb-0">No data Found</p>
+                            @endif
                             <a class="btn btn-success btn_back" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>

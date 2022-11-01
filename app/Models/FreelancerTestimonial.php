@@ -19,7 +19,9 @@ class FreelancerTestimonial extends Model
         'last_name',
         'email',
         'type',
-        'description',
+        'status',
+        'description_freelancer',
+        'description_client',
     ];
 
     protected $dates = [

@@ -65,7 +65,8 @@
                      <option value="signupverification"  @if(isset($mail ) && $mail->mail_category=="signupverification") Selected @endif>Sign Up</option>
                      <option value="forgetpassword"  @if(isset($mail ) && $mail->mail_category=="forgetpassword") Selected @endif>Forget Password</option>
                      <option value="contactus"  @if(isset($mail ) && $mail->mail_category=="contactus") Selected @endif>Contact Us</option>
-
+                     <option value="resendotp"  @if(isset($mail ) && $mail->mail_category=="resendotp") Selected @endif>Resend OTP</option>
+                     <option value="request_testimonial"  @if(isset($mail ) && $mail->mail_category=="request_testimonial") Selected @endif>Request Testimonial</option>
                   </select>
                </div>
             </div>

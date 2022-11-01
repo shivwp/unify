@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\AccountCloseReason;
 use App\Models\ProjectCategory;
+use App\Models\SpecializeProfile;
 use App\Models\HoursPerWeek;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ use App\Models\ProjectSkill;
 use App\Models\TimeZone;
 use App\Models\Business_size;
 use App\Models\Industries;
+use App\Models\Page;
 use Carbon\Carbon;
 use Validator;
 use Config;
@@ -29,7 +31,7 @@ class CommonController extends Controller
       public $success = 200;
 
       public function countrylist(){
-         $countrylist =  DB::table('country_list')->select('name')->get();
+         $countrylist =  DB::table('country_list')->select('id','name','country_code')->get();
          if(!empty($countrylist)){
             return response()->json(['countrylist'=>$countrylist,'status'=>true,'message'=>'country List'], $this->success); 
          }else{
@@ -73,14 +75,18 @@ class CommonController extends Controller
          }
       }
 
-      public function skillList()
+      public function skillList(Request $request)
       {
          try{
-            $skills = ProjectSkill::select('id','name')->get();
-            if(!empty($skills)){
+            $skill = ProjectSkill::select('id','name');
+            if(!empty($request->skill)){
+               $skill->where('name', 'LIKE', "%$request->skill%");
+            }
+            if(!empty($skill)){
+               $skills = $skill->get();
                return ResponseBuilder::success($skills, "Skills List");
             }else{
-               return ResponseBuilder::success(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -92,9 +98,9 @@ class CommonController extends Controller
          try{
             $reason = AccountCloseReason::select('id','title')->get();
             if(!empty($reason)){
-               return ResponseBuilder::success($reason, "Skills List");
+               return ResponseBuilder::success($reason, "Close Account Reasons List");
             }else{
-               return ResponseBuilder::success(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -108,7 +114,7 @@ class CommonController extends Controller
             if(!empty($hours)){
                return ResponseBuilder::success($hours, "Hours Per Week List");
             }else{
-               return ResponseBuilder::success(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -122,7 +128,77 @@ class CommonController extends Controller
             if(!empty($industry)){
                return ResponseBuilder::success($industry, "Industries List");
             }else{
-               return ResponseBuilder::success(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function languageslist()
+      {
+         try{
+            $language_list =  DB::table('languages')->select('id','name')->get();
+            if(!empty($language_list)){
+               return ResponseBuilder::success($language_list, "Languages List");
+            }else{
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function degreelist()
+      {
+         try{
+            $degree_list =  DB::table('degree_list')->select('id','title')->get();
+            if(!empty($degree_list)){
+               return ResponseBuilder::success($degree_list, "Degree's List");
+            }else{
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+            }
+         }catch(\Exception $e){
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function page(Request $request)
+      {
+         try
+         {
+            $validator = Validator::make($request->all(), [
+               'slug'  =>'required|exists:pages,slug',
+            ]);
+
+           if ($validator->fails()) {
+               return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+           }
+            $degree_list =  DB::table('pages')->where('slug',$request->slug)->select('id','title','slug','content')->get();
+            if(!empty($degree_list)){
+               return ResponseBuilder::success($degree_list, "Degree's List");
+            }else{
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
+         }
+      }
+
+      public function specializationlist(Request $request)
+      {
+         try{
+            $specializ = SpecializeProfile::select('id','title');
+            if(!empty($request->specialization)){
+               $specializ->where('title', 'LIKE', "%$request->specialization%");
+            }
+            if(!empty($specializ)){
+               $all_specialProfile = $specializ->get();
+               return ResponseBuilder::success($all_specialProfile, "Specialize Profile List");
+            }else{
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);

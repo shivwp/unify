@@ -14,7 +14,7 @@ class FreelancerPortfolioResource extends ResourceCollection
                 'id'         => $data->id,
                 'name'       => (string)$data->title,
                 'description'=> (string)$data->description,
-                'image'      => isset($data->image) ? url('/images/portfolio-image',$data->image) : '',
+                'image'      => isset($data->image) ? url('/images/freelancer-portfolio',$data->image) : '',
             ];
         });
         

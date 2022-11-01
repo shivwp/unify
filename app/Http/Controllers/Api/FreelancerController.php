@@ -5,29 +5,34 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Storage;
 use App\Helper\ResponseBuilder;
 use App\Http\Resources\Admin\FreelancerResource;
+use App\Http\Resources\Admin\FreelancerCollection;
 use App\Http\Resources\Admin\FreelancerPortfolioResource;
 use App\Http\Resources\Admin\FreelancerEducationCollection;
 use App\Http\Resources\Admin\FreelancerTestimonialResource;
 use App\Http\Resources\Admin\FreelancerCertificateResource;
 use App\Http\Resources\Admin\FreelancerExperienceResource;
 use App\Http\Resources\Admin\FreelancerSkillResource;
+use App\Models\FreelancerCertificate;
+use App\Models\FreelancerTestimonial;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Http\Request;
-use App\Models\FreelancerEducation;
-use App\Models\FreelancerCertificate;
-use App\Models\FreelancerTestimonial;
 use App\Models\FreelancerExperience;
+use App\Models\FreelancerEducation;
 use App\Models\FreelancerPortfolio;
 use App\Models\FreelancerSkill;
+use App\Models\UserSpecialize;
+use Illuminate\Http\Request;
+use App\Models\ProjectSkill;
 use App\Models\HoursPerWeek;
 use App\Models\Freelancer;
-use App\Models\ProjectSkill;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Mails;
 use Carbon\Carbon;
 use Validator;
+use App\Mail\SendMail;
 use Config;
 use Str;
 use DB;
@@ -56,7 +61,7 @@ class FreelancerController extends Controller
          	$this->response->portfolio = new FreelancerPortfolioResource($freelancer_profile_data->freelancer->freelancer_portfolio);
          	$this->response->testimonial = new FreelancerTestimonialResource($freelancer_profile_data->freelancer->freelancer_testimonial);
          	$this->response->certificates = new FreelancerCertificateResource($freelancer_profile_data->freelancer->freelancer_certificates);
-         	$this->response->experiences = new FreelancerExperienceResource($freelancer_profile_data->freelancer->freelancer_experiences);
+         	$this->response->employment = new FreelancerExperienceResource($freelancer_profile_data->freelancer->freelancer_experiences);
          	$this->response->education = new FreelancerEducationCollection($freelancer_profile_data->freelancer->freelancer_education);
 
          	$freelancer_meta = $this->getFreelancerMeta($user_id);
@@ -245,7 +250,6 @@ class FreelancerController extends Controller
          	}
          	$validator = Validator::make($request->all(), [
          		'title'  => 'required',
-         		'image'	=>'required',
          		'image'=>'image',
          	]);
 
@@ -289,13 +293,9 @@ class FreelancerController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$validator = Validator::make($request->all(), [
-         		'id'		=> 'nullable|exists:freelancer_testimonial,id',
          		'first_name'  => 'required',
          		'last_name'  => 'required',
          		'email'  => 'required|email',
-         		'linkdin_url'  => 'nullable|url',
-         		'type'	=>'required',
-         		'description'	=>'required',
          	]);
 
 	        if ($validator->fails()) {
@@ -304,30 +304,86 @@ class FreelancerController extends Controller
 
          	$parameters = $request->all();
          	extract($parameters);
+         	$checkemail = FreelancerTestimonial::where('user_id',$user_id)->where('email',$request->email)->first();
+         	if(!empty($checkemail)){
+         		return ResponseBuilder::error("It looks like you've already sent this person a request", $this->badRequest );
+         	}
          	$testimonialData = FreelancerTestimonial::updateOrCreate([
-         		'id'		=>	$request->id,
-         		'user_id'	=>	$user_id,
+         		'user_id'		=>	$user_id,
+         		'email'			=>	$request->email,
          	],[
+         		'email'			=>	$request->email,
          		'first_name'	=>	$request->first_name,
          		'last_name'		=>	$request->last_name,
-         		'email'			=>	$request->email,
-         		'linkdin_url'	=>	$request->linkdin_url,
          		'title'			=>	$request->title,
          		'type'			=>	$request->type,
-         		'description'	=>	$request->description,
+         		'description_freelancer'	=>	$request->description,
          	]);
          	if(!empty($testimonialData)){
-         		if(!empty($request->id)){
-         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
-         		}else{
-         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
-         		}
+         		//mail to client
+                   
+                    $mail_data = Mails::where('user_category', 'client')->where('mail_category', 'request_testimonial')->first();
+                    $basicinfo = [
+                    	'{id}'=> $testimonialData->id,
+                        '{freelancer_name}'=>$singleuser->name,
+                        '{client_name}'=> $request->first_name,
+                    ];
+
+                    $msg = $mail_data->message;
+                    foreach($basicinfo as $key=> $info){
+                        $msg = str_replace($key,$info,$msg);
+                    }
+                    
+                    $config = 
+                    [	'from_email' => $mail_data->mail_from,
+                        'reply_email' => $mail_data->reply_email,
+                        'subject' => $mail_data->subject, 
+                        'name' => $mail_data->name,
+                        'message' => $msg,
+                    ];
+
+                    Mail::to($request->email)->send(new SendMail($config));
+                    $testimonial_data = [
+                    	'id'	=> $testimonialData->id,
+                    	'Request Sent'	=>  Carbon::now()->format('M d Y')
+,
+                    ];
+         		return ResponseBuilder::success($testimonial_data, "Your testimonial request is awaiting ".$request->first_name." 's response");
          	}
 		}
 		catch(\Exception $e)
 		{
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}
+	}
+
+	public function getTestimonial(Request $request)
+	{
+		try{
+			$validator = Validator::make($request->all(), [
+         		'id'		=> 'required|exists:freelancer_testimonial,id',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$find_testimonial = FreelancerTestimonial::where('id',$request->id)->select('first_name','last_name','title','email','description_freelancer')->first();
+         	if(!empty($find_testimonial)){
+         		return ResponseBuilder::success($find_testimonial, "Testimonial Data");
+         	}else{
+         		return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+         	}
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function client_testimonial(Request $request)
+	{
+
 	}
 
 	public function edit_certificate_info(Request $request)
@@ -830,6 +886,8 @@ class FreelancerController extends Controller
          		'phone'			=>	isset($request->phone) ? $request->phone : (isset($user->phone) ? $user->phone : null),
          		'timezone'		=>	isset($request->timezone) ? $request->timezone : (isset($user->timezone) ? $user->timezone : null),
          		'address'		=>	isset($request->address) ? $request->address : (isset($user->address) ? $user->address : null),
+         		'country'		=>	isset($request->country) ? $request->country : (isset($user->country) ? $user->country : null),
+         		'city'			=>	isset($request->city) ? $request->city : (isset($user->city) ? $user->city : null),
          	]);
          	if(!empty($locationData)){
          		return ResponseBuilder::successMessage("Update Successfully", $this->success);
@@ -918,4 +976,180 @@ class FreelancerController extends Controller
 		}
 	}
 
+	public function freelancerList()
+	{
+		try
+      	{
+	        $freelancer_data = Role::where('title', 'Freelancer')->first()->users()->where('users.status','approve')->with('freelancer')->get();
+	        if(!empty($freelancer_data))
+	        {
+	            $this->response = new FreelancerCollection($freelancer_data);
+	            return ResponseBuilder::success($this->response, "Freelancer Profile data");
+	        }
+	    }catch(\Exception $e)
+	    {
+	        return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+	    }
+	}
+
+	public function delete_education_info(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'id'	=>'required|exists:freelancer_education,id',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+
+         	$parameters = $request->all();
+         	extract($parameters);
+
+         	$educationDelete = FreelancerEducation::where('user_id',$user_id)->where('id',$request->id)->first();
+   
+         	if(!empty($educationDelete)){
+         		$educationDelete->delete();
+         		return ResponseBuilder::successMessage("Delete Successfully", $this->success);
+         	}else{
+         		return ResponseBuilder::error("No Data Available", $this->success);
+         	}
+		}catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function freelanceSingleData(Request $request)
+	{
+		try
+		{
+			
+         	$validator = Validator::make($request->all(), [
+         		'user_id'	=>'required|exists:users,id',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+	        
+	        $parameters = $request->all();
+         	extract($parameters);
+
+         	$freelancer_profile_data = $this->getFreelancerInfo($user_id);
+         	$this->response->basic_info = new FreelancerResource($freelancer_profile_data);
+         	$this->response->skills = new FreelancerSkillResource($freelancer_profile_data->freelancer->freelancer_skills);
+         	$this->response->portfolio = new FreelancerPortfolioResource($freelancer_profile_data->freelancer->freelancer_portfolio);
+         	$this->response->testimonial = new FreelancerTestimonialResource($freelancer_profile_data->freelancer->freelancer_testimonial);
+         	$this->response->certificates = new FreelancerCertificateResource($freelancer_profile_data->freelancer->freelancer_certificates);
+         	$this->response->employment = new FreelancerExperienceResource($freelancer_profile_data->freelancer->freelancer_experiences);
+         	$this->response->education = new FreelancerEducationCollection($freelancer_profile_data->freelancer->freelancer_education);
+
+         	$freelancer_meta = $this->getFreelancerMeta($user_id);
+
+         	//language
+         	$language = [];
+         	$languages = isset($freelancer_meta['language']) ? json_decode($freelancer_meta['language']) : [];
+         	if(isset($languages) && !empty($languages)){
+         		foreach ($languages as $key => $value) {
+	         		$language[] = [
+	         			'language'=>$key,
+	         			'level'=>$value,
+	         		];
+	         	}
+         	}
+         	$this->response->language = $language;
+
+         	//hour per week
+         	$this->response->hours_per_week = isset($freelancer_meta['hours_per_week']) ? $freelancer_meta['hours_per_week'] : '';
+
+         	//video
+         	$video['url'] = isset($freelancer_meta['freelancer_video']) ? $freelancer_meta['freelancer_video'] : '';
+         	$video['type'] = isset($freelancer_meta['freelancer_video_type']) ? $freelancer_meta['freelancer_video_type'] : '';
+         	$this->response->video = isset($video) ? $video : '';
+
+         	return ResponseBuilder::success($this->response, "Freelancer Profile Data");
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function userSpecialize(Request $request)
+	{
+		try{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'specialize_profile_id'	=>'required|exists:specialize_profile,id',
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+	        $user_specialize = UserSpecialize::where('user_id',$user_id)->get();
+	        if(count($user_specialize) == 2){
+	        	return ResponseBuilder::error(__("Already 2 out of 2 Published"), $this->badRequest);
+	        }
+	        else{
+	        	$newProfile = new UserSpecialize;
+	        	$newProfile->specialize_profile_id = $request->specialize_profile_id;
+	        	$newProfile->user_id = $user_id;
+	        	$newProfile->title = $request->title;
+	        	$newProfile->description = $request->description;
+	        	$newProfile->status = $request->status;
+	        	$newProfile->save();
+
+	        	if(!empty($request->skill_id)){
+			    $skills  = explode(',', $request->skill_id);
+
+			    $projectSkill = ProjectSkill::all();
+
+			    foreach($skills as $val){
+			        $freelanceSkill[] = $val;
+			    }
+			    
+			        foreach($projectSkill as $val){
+
+			            if(in_array($val->id, $freelanceSkill)){
+			                $save_d[] = FreelancerSkill::updateOrCreate([
+			                    'user_id'   => $user_id,
+			                    'skill_id'   => $val->id,
+			                ],
+			                [
+			                    'skill_id'   => $val->id,
+			                    'skill_name'   => $val->name,
+			                ]);
+			            }
+			            else{
+			                $skilll_id = FreelancerSkill::where('user_id',$user_id)->where('skill_id',$val->id)->first();
+			                if($skilll_id)
+			                $skilll_id->delete();
+			            }
+			        }
+			        return ResponseBuilder::successMessage("Update Successfully", $this->success);
+			    }
+	        	return ResponseBuilder::successMessage(__("Created Profile successfully"), $this->success);
+	        }
+
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
 }

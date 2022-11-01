@@ -13,11 +13,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
 use App\Models\UserReferal;
+use App\Models\UserDocument;
 use App\Models\Freelancer;
 use App\Helper\Helper;
 use App\Models\Client;
 use App\Mail\SendMail;
 use App\Models\SocialAccount;
+use App\Models\Agency;
 use App\Models\Mails;
 use App\Models\User;
 use Carbon\Carbon;
@@ -32,7 +34,7 @@ class AuthController extends Controller
 
     public function signup(Request $request): Response
     {
-       try{
+        try{
             $validator = Validator::make($request->all(), [
                 'first_name' => 'required',
                 'last_name'  => 'required',
@@ -48,7 +50,7 @@ class AuthController extends Controller
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);  
             }   
             $otpp =Helper::generateOtp();
-            $user = User::where('email',$request->email)->withTrashed()->first();
+            $user = User::where('email',$request->email)->first();
 
             if($user){
                 if($user->deleted_at == null){
@@ -220,7 +222,7 @@ class AuthController extends Controller
             extract($parameters);
 
             $otpp = Helper::generateOtp();
-            $user = User::where('email', $email)->withTrashed()->first();
+            $user = User::where('email', $email)->first();
 
             if($user){
                 $user->update([
@@ -299,7 +301,7 @@ class AuthController extends Controller
                         return ResponseBuilder::successMessage( __("Your account is not approved"), $this->badRequest);
                     }
                 }else{
-                    return ResponseBuilder::success( __("Please verify your email address"), $this->badRequest);
+                    return ResponseBuilder::successMessage( __("Please verify your email address"), $this->badRequest);
                 }
             }else{
                 return ResponseBuilder::error( __("User Not Registered"), $this->badRequest);
@@ -374,7 +376,7 @@ class AuthController extends Controller
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
             }
 
-            $user = User::where('email', $request->get('email'))->withTrashed()->first();
+            $user = User::where('email', $request->get('email'))->first();
 
             if ($user->otp != $request->otp) {
                 return ResponseBuilder::error(__("Your OTP is Invalid"), $this->badRequest);
@@ -415,7 +417,7 @@ class AuthController extends Controller
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
             }
 
-            $user = User::where('email', $request->get('email'))->withTrashed()->first();
+            $user = User::where('email', $request->get('email'))->first();
             if ($user) {
                 $user = User::where('email', $request->get('email'))->first();
                 $user->password = Hash::make($request->get('password'));
@@ -452,7 +454,7 @@ class AuthController extends Controller
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
             }
 
-            $user = User::where('id', $user_id)->withTrashed()->first();
+            $user = User::where('id', $user_id)->first();
             if ($user) {
                 if(Hash::check($request->old_password, $user->password)){
                     $user->password = Hash::make($request->new_password);
@@ -589,6 +591,90 @@ class AuthController extends Controller
            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
         }
     }
-    
 
+    public function additional_account(Request $request)
+    {
+        try
+        {
+            if (Auth::guard('api')->check()) {
+                $singleuser = Auth::guard('api')->user();
+                $user_id = $singleuser->id;
+            } 
+            else{
+                return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+            }
+            $validator = Validator::make($request->all(), [
+                'user_type'  =>  'required|in:client,agency',
+            ]);
+
+            if ($validator->fails()) {
+                return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+            }
+            if($request->user_type == "client"){
+                $clientCheck = Client::where('user_id',$user_id)->first();
+                if(!empty($clientCheck))
+                {
+                    return ResponseBuilder::successMessage(__("Already Registered as a Client"),$this->badRequest);
+                }else{
+                    $clientCreate = new Client;
+                    $clientCreate->user_id = $user_id;
+                    $clientCreate->save();
+                    return ResponseBuilder::successMessage(__("Successfully Registered as a Client"),$this->success);
+                }
+            }
+            if($request->user_type == "agency"){
+                $agencyCheck = Agency::where('user_id',$user_id)->first();
+                if(!empty($agencyCheck))
+                {
+                    return ResponseBuilder::successMessage(__("Already Registered as an Agency"),$this->success);
+                }else{
+                    $agencyCreate = new Agency;
+                    $agencyCreate->user_id = $user_id;
+                    $agencyCreate->save();
+                    return ResponseBuilder::successMessage(__("Successfully Registered as a Agency"),$this->success);
+                }
+            }
+        }
+        catch(\Exception $e)
+        {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
+        }
+    }
+
+    public function userDocumentVerify(Request $request)
+    {
+        try{
+            if (Auth::guard('api')->check()) {
+                $singleuser = Auth::guard('api')->user();
+                $user_id = $singleuser->id;
+            } 
+            else{
+                return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+            }
+            $validator = Validator::make($request->all(), [
+                'type'  =>  'required|in:passport,driving_license,other',
+                'document_front'  =>  'required|image',
+                'document_back'  =>  'required|image',
+            ]);
+
+            if ($validator->fails()) {
+                return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+            }
+
+            $user_document = UserDocument::updateOrCreate([
+                'user_id'=> $user_id,
+            ],
+            [
+                'type'=> $request->type,
+                'document_front'=> $this->uploadUserDocument($request->document_front),
+                'document_back'=> $this->uploadUserDocument($request->document_back),
+            ]);
+
+            return ResponseBuilder::successMessage("Upload Document Successfully", $this->success);
+
+        }catch(\Exception $e)
+        {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        }
+    }
 }

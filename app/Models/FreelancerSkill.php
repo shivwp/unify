@@ -13,6 +13,7 @@ class FreelancerSkill extends Model
 
     protected $fillable = [
         'user_id',
+        'specialize_profile_id',
         'skill_id',
         'skill_name',
     ];

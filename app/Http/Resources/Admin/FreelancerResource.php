@@ -30,6 +30,7 @@ class FreelancerResource extends JsonResource
             'country'           =>(string)$this->country,
             'state'             =>(string)$this->state,
             'city'              =>(string)$this->city,
+            'is_verified'       =>(string)$this->is_verified,
         ];
     }
 }

@@ -14,9 +14,7 @@ class FreelancerCertificate extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'issue_date',
-        'expiry_date',
-        'certificate_id',
+        'description',
     ];
 
     protected $dates = [

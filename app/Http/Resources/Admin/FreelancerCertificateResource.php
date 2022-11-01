@@ -13,9 +13,7 @@ class FreelancerCertificateResource extends ResourceCollection
             return [
                 'id'            => $data->id,
                 'name'          => (string)$data->name,
-                'issue_date'    => $data->issue_date,
-                'expiry_date'   => $data->expiry_date,
-                'certificate_id'=> $data->certificate_id,
+                'description'   => (string)$data->description,
             ];
         });
         

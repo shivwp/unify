@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProjectSkill extends Model
+class SendProposal extends Model
 {
-    use SoftDeletes;
 
-    public $table = 'project_skill';
+    public $table = 'send_proposals';
 
     protected $dates = [
         'created_at',
@@ -18,10 +16,15 @@ class ProjectSkill extends Model
     ];
 
     protected $fillable = [
-        'name',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+        'job_id',
+        'user_id',
+        'status',
+        'bid_amount',
+        'platform_fee',
+        'receive_amount',
+        'project_duration',
+        'cover_letter',
+        'image',
     ];
     
     public function projects()

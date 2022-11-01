@@ -27,6 +27,7 @@ class ClientResource extends JsonResource
             'country'           =>(string)$this->country,
             'state'             =>(string)$this->state,
             'city'              =>(string)$this->city,
+            'zip_code'          =>(string)$this->zip_code,
         ];
     }
 }

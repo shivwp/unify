@@ -18,7 +18,7 @@ class FreelancerTestimonialResource extends ResourceCollection
                 'linkdin_url'=> (string)$data->linkdin_url,
                 'title'      => (string)$data->title,
                 'type'       => (string)$data->type,
-                'description'=> (string)$data->description,
+                'description'=> (string)$data->description_freelancer,
             ];
         });
         

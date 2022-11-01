@@ -26,4 +26,29 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('delete-testimonial-info', [App\Http\Controllers\Api\FreelancerController::class, 'delete_testimonial_info']);
 	Route::post('delete-certificate-info', [App\Http\Controllers\Api\FreelancerController::class, 'delete_certificate_info']);
 	Route::post('delete-employment-info', [App\Http\Controllers\Api\FreelancerController::class, 'delete_employment_info']);
+	Route::post('delete-education-info', [App\Http\Controllers\Api\FreelancerController::class, 'delete_education_info']);
+
+	//Best Match jobs list
+    Route::get('best-match-jobs-list', [App\Http\Controllers\Api\JobController::class, 'bestMatchJobsList']);
+
+    //saved jobs
+    Route::post('saved-jobs', [App\Http\Controllers\Api\JobController::class, 'savedJobs']);
+
+    //remove saved jobs
+    Route::post('remove-saved-jobs', [App\Http\Controllers\Api\JobController::class, 'removeSavedJobs']);
+
+    // account
+    Route::post('additional-account', [App\Http\Controllers\Api\AuthController::class, 'additional_account']);
+
+    //send proposal
+    Route::post('send-proposal', [App\Http\Controllers\Api\JobController::class, 'sendProposal']);
+
+    //user specialize profile
+    Route::post('user-specialize-profile', [App\Http\Controllers\Api\FreelancerController::class, 'userSpecialize']);
 });
+
+//freelancer List
+Route::get('freelancer-list', [App\Http\Controllers\Api\FreelancerController::class, 'freelancerList']);
+Route::post('single-freelancer', [App\Http\Controllers\Api\FreelancerController::class, 'freelanceSingleData']);
+
+Route::post('get-testimonial', [App\Http\Controllers\Api\FreelancerController::class, 'getTestimonial']);

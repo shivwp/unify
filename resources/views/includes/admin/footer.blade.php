@@ -1,10 +1,6 @@
-<style>
-    a.footer-link.fw-bolder {
-    padding-left: 282px;
-}
-</style>
+
 <footer class="content-footer footer bg-footer-theme text-center">
-    <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+    <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-column">
         <div class="mb-2 mb-md-0 ">
            
            

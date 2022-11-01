@@ -24,24 +24,24 @@ class Project extends Model
 
     protected $fillable = [
         'name',
-        'budget',
-        'client_id',
-        'status_id',
+        'type',
+        'slug',
+        'description',
         'start_date',
         'end_date',
-        'total_budget',
-        'per_hour_budget',
+        'min_price',
+        'price',
+        'client_id',
+        'status',
+        'project_duration',
+        'project_category',
+        'budget_type',
+        'experience_level',
+        'scop',
+        'project_images',
         'created_at',
         'updated_at',
         'deleted_at',
-        'description',
-        'freelancer_type',
-        'project_duration',
-        'payment_base',
-        'level',
-        'english_level',
-        'scop',
-        'project_images',
     ];
 
     public function notes()
@@ -81,7 +81,7 @@ class Project extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(ProjectCategory::class);
+        return $this->belongsTo(ProjectCategory::class,'project_category');
     }
      public function skills()
     {
@@ -91,19 +91,19 @@ class Project extends Model
     {
         return $this->belongsToMany(ProjectListingType::class);
     }
-//     public function sluggable(): array
+    // public function sluggable(): array
 
-//     {
+    // {
 
-//         return [
+    //     return [
 
-//             'slug' => [
+    //         'slug' => [
 
-//                 'source' => 'name'
+    //             'source' => 'name'
 
-//             ]
+    //         ]
 
-//         ];
+    //     ];
 
-//     }
+    // }
  }

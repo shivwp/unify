@@ -164,6 +164,7 @@ class ProjectController extends Controller
         }
         if(!empty($request->skills)){   
             $project_skills = $request->skills;
+            
                 foreach($project_skills as $skl){
                     $skil = ProjectProjectSkill::create([
                         'project_id'=>$project->id,
