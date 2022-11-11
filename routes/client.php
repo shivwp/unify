@@ -16,6 +16,21 @@ Route::middleware('auth:api')->group(function () {
 
 	//user document verify
 	Route::post('user-document-verify', [App\Http\Controllers\Api\AuthController::class, 'userDocumentVerify']);
+
+	//all posting
+	Route::post('client-all-posting', [App\Http\Controllers\Api\ClientJobController::class, 'allPosting']);
+
+	//all draft posting
+	Route::post('client-draft-posting', [App\Http\Controllers\Api\ClientJobController::class, 'allDraftPosting']);
+
+	//invite freelancer
+	Route::post('invite-freelancer', [App\Http\Controllers\Api\ClientJobController::class, 'inviteFreelancer']);
+
+	//invite freelancer
+	Route::post('remove-job', [App\Http\Controllers\Api\ClientJobController::class, 'closeJob']);
+
+	//edit freelancer
+	Route::post('update-job', [App\Http\Controllers\Api\JobController::class, 'UpdateJob']);	
 });
 
 //category-list
@@ -24,3 +39,6 @@ Route::get('sub-category-list', [App\Http\Controllers\Api\JobController::class, 
 
 //client List
 Route::get('client-list', [App\Http\Controllers\Api\ClientController::class, 'clientList']);
+
+Route::post('single-client', [App\Http\Controllers\Api\ClientController::class, 'singleClient']);
+

@@ -78,6 +78,69 @@
 
                             </div> 
                             <br>
+                            <div class="row">
+                                <h5><strong>Documents</strong></h5>
+                                <div class="col-md-4 ">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Document Type</strong></h6>
+                                        <p class="mb-0">{{ $document->type ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <h6><strong>Front Side</strong></h6>
+                                            </div>
+                                            @if(!empty($document->document_front))
+                                                <div class="col-md-2">
+                                                    <a href="{{ url('/images/user-document').'/'.$document->document_front }}" download><i class="fa fa-download"></i></a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        @if(!empty($document->document_front))
+                                            <div class="even mt-3">
+                                                
+                                                <div class="parc">
+                                                    <span class="pip" data-title="{{$document->document_front}}">
+                                                        <img src="{{ url('/images/user-document').'/'.$document->document_front ?? "" }}" alt="" width="260" height="150">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                        <p class="mb-0"> No Image Found </p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <div class="row">
+                                            <div class="col-md-10">
+                                                <h6><strong>Back Side</strong></h6>
+                                            </div>
+                                            @if(!empty($document->document_back))
+                                                <div class="col-md-2">
+                                                    <a href="{{ url('/images/user-document').'/'.$document->document_back }}" download><i class="fa fa-download"></i></a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        @if(!empty($document->document_back))
+                                            <div class="even mt-3">
+                                                
+                                                <div class="parc">
+                                                    <span class="pip" data-title="{{$document->document_back}}">
+                                                        <img src="{{ url('/images/user-document').'/'.$document->document_back ?? "" }}" alt="" width="260" height="150">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        @else
+                                        <p class="mb-0"> No Image Found </p>
+                                        @endif
+                                    </div>
+                                </div>
+
+                            </div>
+                            <br>
                             {{--<div class="row">
                                 <h5><strong>Other Information</strong></h5>
                                 <div class="col-md-4 ">

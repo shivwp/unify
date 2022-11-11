@@ -11,8 +11,10 @@ use Illuminate\Http\Request;
 use App\Models\ProjectSkill;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserDocument;
 use App\Models\Client;
 use App\Models\Freelancer;
+use App\Models\Agency;
 use Carbon\Carbon;
 use Validator;
 use Gate;
@@ -41,6 +43,17 @@ class UsersController extends Controller
                     $q->where('title', '=', 'Freelancer');})->paginate(10);
             }
         }
+        if($request->user_status_filter){
+            if($request->user_status_filter=='pending'){
+                $users = User::where('status', '=', 'pending')->paginate(10);
+            }
+            if($request->user_status_filter=='approve'){
+                $users = User::where('status', '=', 'approve')->paginate(10);
+            }
+            if($request->user_status_filter=='reject'){
+                $users = User::where('status', '=', 'reject')->paginate(10);
+            }
+        }
         
         return view('admin.users.index', compact('users'));
     }
@@ -55,6 +68,7 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->roles);
         //validation
         $validator = Validator::make($request->all(), [
             'email' => 'unique:users,email|email',
@@ -86,19 +100,30 @@ class UsersController extends Controller
         $user->save();
         $user_role = $user->roles()->sync($request->roles);
 
-        //entry in client table
-        if($request->roles == '3'){
-            $client = new Client;
-            $client->user_id = $user->id;
-            $client->save();
-        }
+        foreach($request->roles as $role)
+        {
+           //entry in client table
+            if($role == '3'){
+                $client = new Client;
+                $client->user_id = $user->id;
+                $client->save();
+            }
 
-        //entry in freelancer table
-        if($request->roles == '2'){
-            $freelancer = new Freelancer;
-            $freelancer->user_id = $user->id;
-            $freelancer->save();
+            //entry in freelancer table
+            if($role == '2'){
+                $freelancer = new Freelancer;
+                $freelancer->user_id = $user->id;
+                $freelancer->save();
+            } 
+
+            //entry in agencies table
+            if($role == '4'){
+                $agency = new Agency;
+                $agency->user_id = $user->id;
+                $agency->save();
+            } 
         }
+        
         session()->flash('success','User Created successfully');
         return redirect()->route('admin.users.index');
     }
@@ -115,12 +140,13 @@ class UsersController extends Controller
 
     public function update(Request $request)
     {
-        // dd($request);
+        // dd($request->all());
         $user = User::where('id',$request->user_id)->first();
         $user->name = $request->first_name.' '.$request->last_name;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->status = $request->status;
+        $user->is_verified = $request->is_verified;
         $user->referal_code = isset($request->referal_code) ? $request->referal_code : null;
         if(!empty($request->password)){
             $user->password = Hash::make($request->password);
@@ -132,7 +158,63 @@ class UsersController extends Controller
             $file->move($destinationPath, $name);
             $user->profile_image = $name;
         }
+
         $user->save();
+
+        $all_roles = DB::table('role_user')->where('user_id',$request->user_id)->get();
+
+        $role = $request->roles;
+        foreach ($role as $value) {
+            $roles[]= $value;
+        }
+        foreach ($all_roles as $value) {
+            if(!in_array($value->role_id, $roles)){
+
+                //entry in client table
+                if($value->role_id == '3'){
+                    Client::where('user_id',$request->user_id)->delete();
+                }
+
+                //entry in freelancer table
+                if($value->role_id == '2'){
+                    Freelancer::where('user_id',$request->user_id)->delete();
+                } 
+
+                //entry in agencies table
+                if($value->role_id == '4'){
+                    Agency::where('user_id',$request->user_id)->delete();
+                } 
+            }
+        }
+
+        $user_role = $user->roles()->sync($request->roles);
+
+        foreach($request->roles as $role)
+        {
+            //entry in client table
+            if($role == '3'){
+                $client = Client::firstOrCreate(
+                    ['user_id' => $request->user_id],
+                    ['user_id' => $request->user_id]
+                );
+            }
+
+            //entry in freelancer table
+            if($role == '2'){
+                $freelancer = Freelancer::firstOrCreate(
+                    ['user_id' => $request->user_id],
+                    ['user_id' => $request->user_id]
+                );
+            } 
+
+            //entry in agencies table
+            if($role == '4'){
+                $agency = Agency::firstOrCreate(
+                    ['user_id' => $request->user_id],
+                    ['user_id' => $request->user_id]
+                );
+            } 
+        }
 
         session()->flash('success','User Update successfully');
         return redirect()->back();
@@ -143,8 +225,8 @@ class UsersController extends Controller
         abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user->load('roles');
-
-        return view('admin.users.show', compact('user'));
+        $document = UserDocument::where('user_id',$user->id)->first();
+        return view('admin.users.show', compact('user','document'));
     }
 
     public function destroy(User $user)

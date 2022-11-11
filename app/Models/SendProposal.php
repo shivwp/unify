@@ -29,8 +29,12 @@ class SendProposal extends Model
     
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        // return $this->belongsToMany(Project::class);
+        return $this->hasMany(Project::class, 'id', 'job_id');
     }
 
-    
+    public function users()
+    {
+        return $this->hasMany(User::class,'id','user_id');
+    }
 }

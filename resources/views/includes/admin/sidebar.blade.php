@@ -75,8 +75,8 @@
                 </li>
                 @endcan
                 @can('project_access')
-                <li class="menu-item {{ request()->is('admin/jobs') || request()->is('admin/jobs/*') ? 'active' : '' }}">
-                    <a href="{{ route("admin.jobs.index") }}" class="menu-link">
+                <li class="menu-item {{ request()->is('admin/contracts') || request()->is('admin/contracts/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.contracts.index") }}" class="menu-link">
                         <div data-i18n="Account">Contracts</div>
                     </a>
                 </li>
@@ -121,20 +121,8 @@
 
             </ul>
         </li>
-        @can('notification_access')
-        @php
-        $notification= App\Models\Notification::where('status','0')->count();
-        @endphp
-        <li class="menu-item {{ request()->is('admin/notification') || request()->is('admin/notification/*') ? 'active' : '' }}">
-            <a href="{{ url("admin/notification") }}" class="menu-link">
-                <i class="menu-icon fa fa-bell-o"></i>
-                <div data-i18n="Analytics notification">Notifications  @if($notification>0) ({{$notification}}) @endif</div>
-              
-            </a>
-        </li>
-        @endcan
         
-        @can('document_access')
+        {{-- @can('document_access')
         <li class="menu-item {{ request()->is('admin/documents') || request()->is('admin/documents/*') ? 'active' : '' }}">
             <a href="{{ route("admin.documents.index") }}" class="menu-link">
                 <i class="menu-icon fa fa-file"></i>
@@ -149,7 +137,7 @@
                 <div data-i18n="Analytics">Transactions</div>
             </a>
         </li>
-        @endcan
+        @endcan --}}
         @can('client_report_access')
         <!-- <li class="menu-item {{ request()->is('admin/client-reports') || request()->is('admin/client-reports/*') ? 'active' : '' }}">
             <a href="{{ route("admin.client-reports.index") }}" class="menu-link">
@@ -178,6 +166,30 @@
             <a href="{{ route("admin.industry.index") }}" class="menu-link">
                 <i class="menu-icon fa fa-industry"></i>
                 <div data-i18n="Analytics">Industries</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('admin/certificate') || request()->is('admin/certificate/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.certificate.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-file-text"></i>
+                <div data-i18n="Analytics">Certificates</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('admin/degree') || request()->is('admin/degree/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.degree.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-graduation-cap"></i>
+                <div data-i18n="Analytics">Degrees</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('admin/specialization') || request()->is('admin/specialization/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.specialization.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-list"></i>
+                <div data-i18n="Analytics">Specialization</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('admin/page') || request()->is('admin/page/*') ? 'active' : '' }}">
+            <a href="{{ route("admin.page.index") }}" class="menu-link">
+                <i class="menu-icon fa fa-files-o"></i>
+                <div data-i18n="Analytics">Pages</div>
             </a>
         </li>
         @can('user_management_access')
@@ -281,6 +293,16 @@
                         <div data-i18n="Connections">Account Close Reason</div>
                     </a>
                 </li>
+                <li class="menu-item {{ request()->is('admin/project-close-reason') || request()->is('admin/project-close-reason/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.project-close-reason.index") }}" class="menu-link">
+                        <div data-i18n="Connections">Project Close Reason</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->is('admin/dislike-reason') || request()->is('admin/dislike-reason/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.dislike-reason.index") }}" class="menu-link">
+                        <div data-i18n="Connections">Dislike Reason</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ request()->is('admin/hours-per-week') || request()->is('admin/hours-per-week/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.hours-per-week.index") }}" class="menu-link">
                         <div data-i18n="Connections">Hours Per Week</div>
@@ -289,6 +311,20 @@
             </ul>
         </li>
         @endcan
+
+        @can('notification_access')
+        @php
+        $notification= App\Models\Notification::where('status','0')->count();
+        @endphp
+        <li class="menu-item {{ request()->is('admin/notification') || request()->is('admin/notification/*') ? 'active' : '' }}">
+            <a href="{{ url("admin/notification") }}" class="menu-link">
+                <i class="menu-icon fa fa-bell-o"></i>
+                <div data-i18n="Analytics notification">Notifications  @if($notification>0) ({{$notification}}) @endif</div>
+              
+            </a>
+        </li>
+        @endcan
+
         <li class="menu-item ">
             <a  class="menu-link"   href="{{url('/admin/logout')}}">
                 <i class="menu-icon fa fa-sign-out"></i>

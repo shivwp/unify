@@ -66,6 +66,15 @@ class Controller extends BaseController
         return $name;
     }
 
+    public function uploadProjectImage($image)
+    {
+        $file = $image;
+        $name = $file->getClientOriginalName();
+        $destinationPath = 'project-files';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+
     public function updateFreelancerMeta($id, $meta_key = "", $meta_value)
     {
         try {

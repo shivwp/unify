@@ -272,6 +272,20 @@
 
 </script>
 <script>
+
+   $('#user_status_filter').change(function(){
+    $('#status_filter_form').submit();
+    });
+
+</script>
+<script>
+
+   $('#project_status_filter').change(function(){
+    $('#status_filter_form').submit();
+    });
+
+</script>
+<script>
     $('#materialUnchecked').click(function(event) {   
     if(this.checked) {
         // Iterate each checkbox

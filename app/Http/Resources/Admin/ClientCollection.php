@@ -29,6 +29,7 @@ class ClientCollection extends ResourceCollection
                 'state'             =>(string)$data->state,
                 'city'              =>(string)$data->city,
                 'zip_code'          =>(string)$data->zip_code,
+                'is_verified'       =>(string)$data->is_verified,
             ];
         });
     }

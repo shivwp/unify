@@ -67,6 +67,7 @@
                      <option value="contactus"  @if(isset($mail ) && $mail->mail_category=="contactus") Selected @endif>Contact Us</option>
                      <option value="resendotp"  @if(isset($mail ) && $mail->mail_category=="resendotp") Selected @endif>Resend OTP</option>
                      <option value="request_testimonial"  @if(isset($mail ) && $mail->mail_category=="request_testimonial") Selected @endif>Request Testimonial</option>
+                     <option value="social_login"  @if(isset($mail ) && $mail->mail_category=="social_login") Selected @endif>Social Login</option>
                   </select>
                </div>
             </div>

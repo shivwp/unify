@@ -31,8 +31,9 @@ class FreelancerCollection extends ResourceCollection
             'country'           =>isset($data->country) ? $data->country : '',
             'state'             =>isset($data->state) ? $data->state : '',
             'city'              =>isset($data->city) ? $data->city : '',
+            'zip_code'          =>isset($data->zip_code) ? $data->zip_code : '',
             'online_status'     =>isset($data->online_status) ? $data->online_status : '',
-            'is_verified'       =>boolval($data->is_verified),
+            'is_verified'       =>(string)$data->is_verified,
         ];
         });
     }

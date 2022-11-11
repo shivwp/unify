@@ -58,9 +58,9 @@
                             <div class="form-group {{ $errors->has('roles') ? 'has-error' : '' }} mt-2">
                                 <label for="roles">Role *
                                    </label>
-                                <select name="roles" id="roles" class="form-control form-select" readonly>
-                                    @foreach($user->roles as $id => $roles)
-                                    <option value="{{$roles->id}}">{{ $roles->title}}</option>
+                                <select name="roles[]" id="roles" class="form-control form-select select2" multiple>
+                                    @foreach($roles as $id => $role)
+                                        <option value="{{ $id }}" {{ (isset($user) && $user->roles->contains($id)) ? 'selected' : '' }}>{{ $role }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -74,6 +74,14 @@
                                     <option value="pending" {{isset($user->status) && $user->status == "pending" ? 'selected' : ''}}>Pending</option>
                                     <option value="approve" {{isset($user->status) && $user->status == "approve" ? 'selected' : ''}}>Approve</option>
                                     <option value="reject" {{isset($user->status) && $user->status == "reject" ? 'selected' : ''}}>Reject</option>
+                                </select>
+                            </div>
+                            <div class="form-group {{ $errors->has('is_verified') ? 'has-error' : '' }} mt-2">
+                                <label for="is_verified">Is verified *</label>
+                                <select name="is_verified" id="is_verified" class="form-control form-select" required>
+                                    <option value="pending" {{isset($user->is_verified) && $user->is_verified == "pending" ? 'selected' : ''}}>Pending</option>
+                                    <option value="approve" {{isset($user->is_verified) && $user->is_verified == "approve" ? 'selected' : ''}}>Approve</option>
+                                    <option value="reject" {{isset($user->is_verified) && $user->is_verified == "reject" ? 'selected' : ''}}>Reject</option>
                                 </select>
                             </div>
                            

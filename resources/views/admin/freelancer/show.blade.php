@@ -1,5 +1,8 @@
 @extends('layouts.master') @section('content')
 <style>
+    .testimonial_date{
+        float: right;
+    }
 </style>
 <div class="content-wrapper">
     <!-- Content -->
@@ -164,6 +167,7 @@
                                 @foreach($f_data->freelancer->freelancer_testimonial as $value)
                                     <div class="row">
                                         <h6><strong>{{'Testimonial'.$i}}</strong></h6>
+                                        @if($value->status == 1)
                                         <div class="col-md-6">
                                             <div class="p-3 listViewclr">
                                                 <h6><strong>First Name</strong></h6>
@@ -184,34 +188,26 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="p-3 listViewclr">
-                                                <h6><strong>Linkdin Profile URl</strong></h6>
-                                                <p class="mb-0">{{ $value->linkdin_url ?? '-'}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="p-3 listViewclr">
-                                                <h6><strong>Client Title</strong></h6>
-                                                <p class="mb-0">{{ $value->title ?? '-'}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="p-3 listViewclr">
-                                                <h6><strong>Client Title</strong></h6>
-                                                <p class="mb-0">{{ $value->title ?? '-'}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="p-3 listViewclr">
                                                 <h6><strong>Project Type</strong></h6>
                                                 <p class="mb-0">{{ $value->type ?? '-'}}</p>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="p-3 listViewclr">
-                                                <h6><strong>Message to Client</strong></h6>
-                                                <p class="mb-0">{{ $value->description ?? '-'}}</p>
+                                                <h6><strong>Client Title</strong></h6>
+                                                <p class="mb-0">{{ $value->title ?? '-'}}</p>
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="p-3 listViewclr">
+                                                <h6><strong>Description</strong></h6>
+                                                <p class="mb-0">{{ $value->description_client ?? '-'}}</p>
+                                            </div>
+                                        </div>
+                                         @else
+                                            <p class="mb-0">Your testimonial request is awaiting {{ $value->first_name }} response<span class="testimonial_date">{{ '- '.date_format($value->created_at, 'M d Y') }}</span></p>
+                                            <p>{{ ($value->status == 0) ? 'Pending' : 'Rejected' }}</p>
+                                        @endif
                                     </div>
                                     @php
                                     $i++;

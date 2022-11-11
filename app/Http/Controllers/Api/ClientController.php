@@ -31,7 +31,7 @@ class ClientController extends Controller
 {
    Public function edit_info(Request $request)
    {
-      try{
+      // try{
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             // dd($singleuser->roles()->first()->title);
@@ -48,9 +48,12 @@ class ClientController extends Controller
             'profile_image'   =>  'image|nullable',
             'company_email'   => 'email|nullable|unique:users,email',
             'company_phone'   => 'nullable|digits_between:10,12',
-            'timezone'        =>  'exists:timezone',
+            'timezone'        =>  'exists:timezone|nullable',
             'website'         =>  'nullable|url',
-            'industry'        => 'required|exists:industries,id',
+            'industry'        => 'nullable|exists:industries,title',
+            'city'            => 'required',
+            'country'         => 'required',
+            'zip_code'        => 'required',
          ]);
 
          if ($validator->fails()) {
@@ -59,16 +62,16 @@ class ClientController extends Controller
 
          $parameters = $request->all();
          extract($parameters);
-         if(!empty($request->industry)){
-            $industry = Industries::where('id',$request->industry)->select('title')->first();
-         }
+         // if(!empty($request->industry)){
+         //    $industry = Industries::where('id',$request->industry)->select('title')->first();
+         // }
          $client = Client::updateOrCreate([
             'user_id' =>$user_id
          ],[
             'company_name' => $request->company_name,
             'website' => $request->website,
             'tagline' => $request->tagline,
-            'industry' => $industry->title,
+            'industry' => $request->industry,
             'employee_no' => $request->employee_no,
             'description' => $request->description,
             'company_phone' => $request->company_phone,
@@ -79,6 +82,9 @@ class ClientController extends Controller
          $user_name->first_name = $first_name;
          $user_name->last_name = $last_name;
          $user_name->timezone = $timezone;
+         $user_name->city = $request->city;
+         $user_name->country = $request->country;
+         $user_name->zip_code = $request->zip_code;
          if(!empty($request->email)){
 
             $user_name->email = $request->email;
@@ -91,9 +97,9 @@ class ClientController extends Controller
 
          return ResponseBuilder::successMessage("Update Successfully",$this->success);
 
-      }catch(\Exception $e){
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
-      }
+      // }catch(\Exception $e){
+      //    return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+      // }
    } 
 
    Public function get_info()
@@ -259,5 +265,28 @@ class ClientController extends Controller
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
       }
    }
+
+   Public function singleClient(Request $request)
+   {
+      try{
+         $validator = Validator::make($request->all(), [
+               'user_id'  =>'required|exists:client,user_id',
+         ]);
+
+         if ($validator->fails()) {
+            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+         }
+         
+         $client_profile_data = $this->getClientInfo($request->user_id);
+
+         $this->response->client = new ClientResource($client_profile_data);
+
+         return ResponseBuilder::success($this->response, "Client Profile data");
+
+      }catch(\Exception $e)
+      {
+         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+      }
+   } 
 
 }

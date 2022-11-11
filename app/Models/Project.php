@@ -91,6 +91,21 @@ class Project extends Model
     {
         return $this->belongsToMany(ProjectListingType::class);
     }
+
+    // protected $appends = ["is_saved","is_dislike"];
+
+    public function saved_projects()
+    {
+        return $this->hasMany(SavedProject::class);
+    }
+
+    public function isUserSaved($id)
+    {
+        return $this->saved_projects()->where('user_id', $id)->exists();
+    }
+
+    
+    
     // public function sluggable(): array
 
     // {

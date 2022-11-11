@@ -66,7 +66,29 @@ class AuthController extends Controller
                         $this->response->email = $user->email;
                         $this->response->otp = $user->otp;
 
-                        return ResponseBuilder::success($this->response, 'Please verify your email');
+                        //mail to user
+                   
+                        $mail_data = Mails::where('user_category', 'user')->where('mail_category', 'signupverification')->first();
+                        $basicinfo = [
+                            '{otp}'=>$otpp,
+                            '{password}'=>$request->password,
+                            '{username}'=>$request->first_name.' '.$request->last_name,
+                        ];
+
+                        $msg = $mail_data->message;
+                        foreach($basicinfo as $key=> $info){
+                            $msg = str_replace($key,$info,$msg);
+                        }
+                        
+                        $config = ['from_email' => $mail_data->mail_from,
+                            "reply_email" => $mail_data->reply_email,
+                            'subject' => $mail_data->subject, 
+                            'name' => $mail_data->name,
+                            'message' => $msg,
+                        ];
+
+                        Mail::to($user->email)->send(new SendMail($config));
+                        return ResponseBuilder::success($this->response, 'Registered Successfully! Please verify your email ');
                     }
                 }else{
                     $user->name=$request->first_name.' '.$request->last_name;
@@ -161,7 +183,7 @@ class AuthController extends Controller
             $this->response->email = $user->email;
             $this->response->otp = $user->otp;
 
-            return ResponseBuilder::success($this->response, 'Registered Successfully');
+            return ResponseBuilder::success($this->response, 'Registered Successfully ! Please verify your email ');
             
         }
         catch (exception $e) {
@@ -510,7 +532,7 @@ class AuthController extends Controller
 
     public function social(Request $request)
     {
-        try {
+        // try {
 
             $validator = Validator::make($request->all(), [
                 'provider'  => 'required|in:google,apple',
@@ -530,6 +552,7 @@ class AuthController extends Controller
             $account = SocialAccount::where("provider_user_id", $social_user->getId())
                 ->where("provider", $request->provider)
                 ->with('user')->first();
+                // dds($account);
             if ($account) {
                 $user = User::where(["id" => $account->user->id])->first();
                 $user->api_token = hash('sha256', $token);
@@ -549,15 +572,40 @@ class AuthController extends Controller
                 // create new user and social login if user with social id not found.
                 $user = User::where("email", $loginEmail)->first();
                 if (!$user) {
+                    $pwd = Str::random(10);
                     $user = new User;
                     $user->email = $loginEmail;
                     $user->first_name = $loginName;
                     $user->social_id = $social_user->getId();
-                    $user->password = Hash::make('social');
+                    $user->password = Hash::make($pwd);
                     $user->api_token = hash('sha256', $token);
+                    $user->email_verified_at = now();
+                    $user->status = 'approve';
                     $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
                     $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
                     $user->save();
+
+                    //mail to user
+                   
+                    $mail_data = Mails::where('user_category', 'user')->where('mail_category', 'social_login')->first();
+                    $basicinfo = [
+                        '{password}'=>$pwd,
+                        '{email}'=>$loginEmail,
+                    ];
+
+                    $msg = $mail_data->message;
+                    foreach($basicinfo as $key=> $info){
+                        $msg = str_replace($key,$info,$msg);
+                    }
+                    
+                    $config = ['from_email' => $mail_data->mail_from,
+                        "reply_email" => $mail_data->reply_email,
+                        'subject' => $mail_data->subject, 
+                        'name' => $mail_data->name,
+                        'message' => $msg,
+                    ];
+
+                    Mail::to($loginEmail)->send(new SendMail($config));
                 }
 
                 
@@ -586,10 +634,10 @@ class AuthController extends Controller
                 return ResponseBuilder::successWithToken($data->token, $this->response, 'Login Successfully');
                 // return response()->json(['data' => $data, 'status' => true, 'message' => 'Your account logged in successfully', 'details' => $user]);
             }
-        } 
-        catch (\Exception $e) {
-           return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
-        }
+        // } 
+        // catch (\Exception $e) {
+        //    return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        // }
     }
 
     public function additional_account(Request $request)
@@ -604,7 +652,8 @@ class AuthController extends Controller
                 return ResponseBuilder::error(__("User not found"), $this->unauthorized);
             }
             $validator = Validator::make($request->all(), [
-                'user_type'  =>  'required|in:client,agency',
+                'user_type'  =>  'required|in:client,agency,freelance',
+                'agency_name' => 'required_if:user_type,==,agency'
             ]);
 
             if ($validator->fails()) {
@@ -630,8 +679,21 @@ class AuthController extends Controller
                 }else{
                     $agencyCreate = new Agency;
                     $agencyCreate->user_id = $user_id;
+                    $agencyCreate->title = $request->agency_name;
                     $agencyCreate->save();
                     return ResponseBuilder::successMessage(__("Successfully Registered as a Agency"),$this->success);
+                }
+            }
+            if($request->user_type == "freelance"){
+                $freelanceCheck = Freelancer::where('user_id',$user_id)->first();
+                if(!empty($freelanceCheck))
+                {
+                    return ResponseBuilder::successMessage(__("Already Registered as an Freelancer"),$this->success);
+                }else{
+                    $freelanceCreate = new Freelancer;
+                    $freelanceCreate->user_id = $user_id;
+                    $freelanceCreate->save();
+                    return ResponseBuilder::successMessage(__("Successfully Registered as a Freelancer"),$this->success);
                 }
             }
         }
@@ -652,9 +714,9 @@ class AuthController extends Controller
                 return ResponseBuilder::error(__("User not found"), $this->unauthorized);
             }
             $validator = Validator::make($request->all(), [
-                'type'  =>  'required|in:passport,driving_license,other',
-                'document_front'  =>  'required|image',
-                'document_back'  =>  'required|image',
+                'type'              =>  'required|in:passport,driving_license,other',
+                'document_front'    =>  'required',
+                'document_back'     =>  'required',
             ]);
 
             if ($validator->fails()) {
@@ -662,15 +724,52 @@ class AuthController extends Controller
             }
 
             $user_document = UserDocument::updateOrCreate([
-                'user_id'=> $user_id,
+                'user_id'           => $user_id,
             ],
             [
-                'type'=> $request->type,
-                'document_front'=> $this->uploadUserDocument($request->document_front),
-                'document_back'=> $this->uploadUserDocument($request->document_back),
+                'type'              => $request->type,
+                'document_front'    => $this->uploadUserDocument($request->document_front),
+                'document_back'     => $this->uploadUserDocument($request->document_back),
             ]);
 
+            $user_req = User::where('id',$user_id)->first();
+            $user_req->is_verified = 'requested';
+            $user_req->save();
+
             return ResponseBuilder::successMessage("Upload Document Successfully", $this->success);
+
+        }catch(\Exception $e)
+        {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        }
+    }
+
+    public function connected_service(Request $request)
+    {
+        try{
+           if (Auth::guard('api')->check()) {
+                $singleuser = Auth::guard('api')->user();
+                $user_id = $singleuser->id;
+            } 
+            else{
+                return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+            } 
+            $acount_check = SocialAccount::where('user_id',$user_id)->select('provider')->first();
+
+            $connect['google_signin'] = false;
+            $connect['apple_signin'] = false;
+            
+            if(!empty($acount_check)){
+                if($acount_check->provider == "google"){
+                    $connect['google_signin'] = true;
+                }
+                if($acount_check->provider == "apple"){
+                    $connect['apple_signin'] = true;
+                }
+                return ResponseBuilder::success($connect, "Connected services");
+            }else{
+                return ResponseBuilder::success($connect, "Connected services");
+            }
 
         }catch(\Exception $e)
         {

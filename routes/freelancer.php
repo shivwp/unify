@@ -45,6 +45,21 @@ Route::middleware('auth:api')->group(function () {
 
     //user specialize profile
     Route::post('user-specialize-profile', [App\Http\Controllers\Api\FreelancerController::class, 'userSpecialize']);
+
+    //save job list
+    Route::post('freelancer-saved-job', [App\Http\Controllers\Api\FreelancerJobController::class, 'saveJobList']);
+
+    //all proposal
+    Route::get('all-proposal', [App\Http\Controllers\Api\ProposalController::class, 'allProposal']);
+
+    //dislike job
+    Route::post('dislike-job', [App\Http\Controllers\Api\JobController::class, 'dislikeJob']);
+
+    //Remove from dislike job
+    Route::post('remove-dislike-job', [App\Http\Controllers\Api\JobController::class, 'removeDislikeJob']);
+
+	// Contracts List
+	Route::get('contracts', [App\Http\Controllers\Api\Freelancer\ContractsController::class, 'ContractsList']);
 });
 
 //freelancer List
@@ -52,3 +67,4 @@ Route::get('freelancer-list', [App\Http\Controllers\Api\FreelancerController::cl
 Route::post('single-freelancer', [App\Http\Controllers\Api\FreelancerController::class, 'freelanceSingleData']);
 
 Route::post('get-testimonial', [App\Http\Controllers\Api\FreelancerController::class, 'getTestimonial']);
+Route::post('client-testimonial', [App\Http\Controllers\Api\FreelancerController::class, 'clientTestimonial']);
