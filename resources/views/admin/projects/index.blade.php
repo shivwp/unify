@@ -121,9 +121,9 @@
                                 <tr>
                                     <th>S No.</th>
                                     <th>Project Name</th>
-                                    <!-- <th>Client</th> -->
+                                    <th>Type</th>
+                                    <th>Scope</th>
                                     <th>Publish date</th>
-                                    <!-- <th>Budget</th> -->
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -138,6 +138,8 @@
                                             {{--<td>
                                                <a href="{{ url("admin/users", [$project->client->id]) }}"><p class="C_nme">{{ $project->client->name ?? '' }}</p></a>
                                             </td>--}}
+                                            <td>{{ $project->type ?? '' }}</td>
+                                            <td>{{ $project->scop ?? '' }}</td>
                                             <td>{{$project->created_at->toFormattedDateString()}}</td>
                                             <!-- <td>
                                                 @if($project->budget_type=='fixed')

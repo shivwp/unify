@@ -259,4 +259,16 @@ class UsersController extends Controller
         session()->flash('success','User Status Update successfully');
         return redirect()->back();
     }
+    public function statusBlock(Request $request, $id){
+       
+        $data = User::where('id',$id)->first();
+        $status =  $data->status;
+        if($status == 'approve'){
+            $data->status = 'reject';
+        }else{
+            $data->status = 'approve';
+        }
+        $data->save();
+        return redirect()->back();
+    }
 }

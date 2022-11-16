@@ -47,7 +47,7 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="col-xl-6">
-                            <h5>User List</h5>
+                            <h5>Freelancer's List</h5>
                         </div>
                     </div>
                 </div>

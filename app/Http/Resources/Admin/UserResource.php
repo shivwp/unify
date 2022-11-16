@@ -28,7 +28,7 @@ class UserResource extends JsonResource
             'agree_terms'       =>boolval($this->agree_terms),
             'send_email'        =>boolval($this->send_email),
             'user_type'         =>(string)$request->user_type,
-            'is_verified'       =>boolval($request->is_verified),
+            'is_verified'       =>(string)$this->is_verified,
         ];
     }
 }

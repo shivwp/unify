@@ -23,61 +23,95 @@
                                 <div class="col-md-4 ">
                                     <div class="p-3 listViewclr">
                                         <h6><strong>Project Name</strong></h6>
-                                        <p class="mb-0">{{ $proposal->project_name ?? '-' }}</p>
+                                        <p class="mb-0">{{ $proposal->name ?? '-' }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 listViewclr">
                                         <h6><strong>Freelancer Name</strong></h6>
-                                        @if(isset($proposal))
-                                            @if(!empty($proposal->first_name))
-                                                <p class="mb-0">{{ $proposal->first_name }}</p>
-                                            @else
-                                                <p class="mb-0">{{ '-' }}</p>
-                                            @endif
+                                        @if(count($proposal->users)>0)
+                                            @foreach($proposal->users as $user)
+                                                @if(!empty($user->first_name))
+                                                    <p class="mb-0">{{ $user->first_name }}</p>
+                                                @else
+                                                    <p class="mb-0">{{ '-' }}</p>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <p class="mb-0">{{ '-' }}</p>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 listViewclr">
                                         <h6><strong>Freelancer Email</strong></h6>
-                                        @if(isset($proposal))
-                                            @if(!empty($proposal->email))
-                                                <p class="mb-0">{{ $proposal->email }}</p>
-                                            @else
-                                                <p class="mb-0">{{ '-' }}</p>
-                                            @endif
+                                        @if(count($proposal->users)>0)
+                                            @foreach($proposal->users as $user)
+                                                @if(!empty($user->email))
+                                                    <p class="mb-0">{{ $user->email }}</p>
+                                                @else
+                                                    <p class="mb-0">{{ '-' }}</p>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <p class="mb-0">{{ '-' }}</p>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 listViewclr">
-                                        <h6><strong>Bid Amount</strong></h6>
-                                        <p class="mb-0">{{ number_format((float)$proposal->bid_amount, 2, '.', '') }}$</p>
+                                        <h6><strong>Client Name</strong></h6>
+                                        @if(count($proposal->client)>0)
+                                            @foreach($proposal->client as $client)
+                                                @if(!empty($client->first_name))
+                                                    <p class="mb-0">{{ $client->first_name }}</p>
+                                                @else
+                                                    <p class="mb-0">{{ '-' }}</p>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <p class="mb-0">{{ '-' }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Client Email</strong></h6>
+                                        @if(count($proposal->client)>0)
+                                            @foreach($proposal->client as $client)
+                                                @if(!empty($client->email))
+                                                    <p class="mb-0">{{ $client->email }}</p>
+                                                @else
+                                                    <p class="mb-0">{{ '-' }}</p>
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            <p class="mb-0">{{ '-' }}</p>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 listViewclr">  
-                                        <h6><strong>Platform Fee</strong></h6>
-                                        <p class="mb-0">{{ number_format((float)$proposal->platform_fee, 2, '.', '') }}$</p>
+                                        <h6><strong>Budget Type</strong></h6>
+                                        <p class="mb-0">{{ ucfirst($proposal->budget_type) ?? '-' }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 listViewclr">
-                                        <h6><strong>Amount Received</strong></h6>
-                                        <p class="mb-0">{{ number_format((float)$proposal->receive_amount, 2, '.', '') }}$</p>
+                                        <h6><strong>Amount</strong></h6>
+                                        <p class="mb-0">{{ number_format((float)$proposal->amount, 2, '.', '') }}$</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
-                                    <div class="p-3 listViewclr">
-                                        <h6><strong>Project Duration</strong></h6>
-                                        <p class="mb-0">{{ $proposal->project_duration ?? '-' }}</p>
+                                    <div class="p-3 listViewclr">  
+                                        <h6><strong>Weekly Limit</strong></h6>
+                                        <p class="mb-0">{{ $proposal->weekly_limit ? $proposal->weekly_limit .' hour' : '-' }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="p-3 listViewclr">  
                                         <h6><strong>Status</strong></h6>
-                                        <p class="mb-0">{{ $proposal->status ?? '-' }}</p>
+                                        <p class="mb-0">{{ $proposal->send_proposal_status ?? '-' }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -88,7 +122,7 @@
                                                 
                                                 <div class="parc">
                                                     <span class="pip" data-title="{{$proposal->image}}">
-                                                        <img src="{{ url('/images/profile-image').'/'.$proposal->image ?? "" }}" alt="" width="150" height="100">
+                                                        <img src="{{ url('/images/proposals').'/'.$proposal->image ?? "" }}" alt="" width="150" height="100">
                                                     </span>
                                                 </div>
                                             </div>
@@ -113,5 +147,9 @@
                 
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection

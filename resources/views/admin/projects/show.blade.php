@@ -127,7 +127,7 @@
                                             <div class="even mt-3">
                                                 <div class="parc">
                                                     <span class="pip" data-title="{{$project->project_images}}">
-                                                        <img src="{{ url('/project-files').'/'.$project->project_images ?? '-' }}" alt="" width="150" height="100">
+                                                        <img src="{{ url('images/jobs').'/'.$project->project_images ?? '-' }}" alt="" width="150" height="100">
                                                     </span>
                                                 </div>
                                             </div>
@@ -221,5 +221,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection

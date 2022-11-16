@@ -5,7 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 // use Cviebrock\EloquentSluggable\Sluggable;
-
+use App\Models\SiteSetting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
@@ -92,11 +92,17 @@ class Project extends Model
         return $this->belongsToMany(ProjectListingType::class);
     }
 
-    // protected $appends = ["is_saved","is_dislike"];
+    protected $appends = ["service_fee"];
 
     public function saved_projects()
     {
         return $this->hasMany(SavedProject::class);
+    }
+
+    public function getServiceFeeAttribute()
+    {   
+        $service_fee = SiteSetting::where('name', 'servicefee')->first();
+        return empty($service_fee)?'':$service_fee->value;
     }
 
     public function isUserSaved($id)
@@ -104,7 +110,15 @@ class Project extends Model
         return $this->saved_projects()->where('user_id', $id)->exists();
     }
 
-    
+    public function is_proposal_send()
+    {
+        return $this->hasMany(SendProposal::class, 'project_id');
+    }
+
+    public function isProposalSend($id)
+    {
+        return $this->is_proposal_send()->where('freelancer_id', $id)->exists();
+    }
     
     // public function sluggable(): array
 

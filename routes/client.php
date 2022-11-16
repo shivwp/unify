@@ -31,6 +31,13 @@ Route::middleware('auth:api')->group(function () {
 
 	//edit freelancer
 	Route::post('update-job', [App\Http\Controllers\Api\JobController::class, 'UpdateJob']);	
+
+	//hire freelancer
+	Route::post('hire-freelancer', [App\Http\Controllers\Api\ProposalController::class, 'hireFreelancer']);
+
+	//invite freelancer list
+	Route::get('all-invite-freelancers', [App\Http\Controllers\Api\ClientJobController::class, 'inviteFreelancerList']);
+
 });
 
 //category-list

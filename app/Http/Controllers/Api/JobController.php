@@ -20,8 +20,9 @@ use App\Models\Project;
 use App\Models\User;
 use App\Models\IncomeSource;
 use Illuminate\Http\Request;
+use App\Models\ProjectMilestone;
 use Validator;
-
+use DB;
 
 class JobController extends Controller
 {
@@ -208,11 +209,13 @@ class JobController extends Controller
          $page = !empty($request->pagination) ? $request->pagination : 10; 
          
          $query = Project::where('status','!=','close')->with('skills','categories');
-         
+
          // Filter Project Category
          if(isset($request->project_category) ) {
-            $query->where('project_category', $request->project_category);
+            $categories = explode(',', $request->project_category);
+            $query->whereIn('project_category', $categories);
          }
+         
          // Filter Project Search
          if(isset($request->search) ) {
             $query->where('name', 'like', "%$request->search%");
@@ -221,9 +224,15 @@ class JobController extends Controller
          
          // Filter Project skills
          if(isset($request->skills) ) {
-            // $skills = $request->skills;
-            // $projectsIds = ProjectProjectSkill::
-            // $query->whereIn('project_category', $request->skills);
+            // 
+            $skills = explode(',', $request->skills);
+            $projectsIds = ProjectProjectSkill::whereIn('project_skill_id', $skills)->pluck('project_id')->toArray();
+            $DislikeJob = DislikeJob::where('user_id', $user_id)->pluck('job_id')->toArray();
+            $projectIds = array_diff($projectsIds, $DislikeJob);
+            $query->whereIn('id', $projectIds);
+         } else {
+            $DislikeJob = DislikeJob::where('user_id', $user_id)->pluck('job_id')->toArray();
+            $query->whereNotIn('id', $DislikeJob);
          }
 
          // Filter Project Type
@@ -241,9 +250,10 @@ class JobController extends Controller
             $query->where('english_level', $request->english_level);
          }
 
-         // Filter Project EnglishLevel
+         // Filter Project Language
          if(isset($request->language) ) {
-            $query->where('language', $request->language);
+            $languages = explode(',', $request->language);
+            $query->whereIn('language', $languages);
          }
          
          // Filter Project Price - MIN
@@ -267,7 +277,7 @@ class JobController extends Controller
       }
    }
 
-   public function recentJobsList()
+   public function recentJobsList(Request $request)
    {
       try
       {
@@ -277,8 +287,15 @@ class JobController extends Controller
             $user_id = $singleuser->id;
          }
          $page = !empty($request->pagination) ? $request->pagination : 10; 
-         $job_list = Project::where('status','publish')->orderBy('created_at','DESC')->with('skills','categories');
-         $jobdata = $job_list->paginate($page);
+         $query = Project::where('status','publish')->orderBy('created_at','DESC')->with('skills','categories');
+         
+         // 
+         $DislikeJob = DislikeJob::where('user_id', $user_id)->pluck('job_id')->toArray();
+         if(count($DislikeJob) > 0) {
+            $query->whereNotIn('id', $DislikeJob);
+         }
+
+         $jobdata = $query->paginate($page);
          $jobdata->user_id = $user_id;
 
          $this->response = new ProjectResource($jobdata);
@@ -297,16 +314,24 @@ class JobController extends Controller
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             $user_id = $singleuser->id;
-         } 
-         else{
+         } else {
             return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          }
          $user_skills = FreelancerSkill::where('user_id',$user_id)->pluck('skill_id')->toArray();
          
-         $project_skills = ProjectProjectSkill::whereIn('project_skill_id',$user_skills)->pluck('project_id')->toArray();
+         $project_skills = ProjectProjectSkill::whereIn('project_skill_id', $user_skills)->pluck('project_id')->toArray();
          
-         $job_list = Project::whereIn('id',$project_skills)->where('status','publish')->orderBy('created_at','DESC')->with('skills','categories')->get();
+         $query = Project::whereIn('id',$project_skills)->where('status','publish')->orderBy('created_at','DESC')->with('skills','categories');
          
+
+         $DislikeJob = DislikeJob::where('user_id', $user_id)->pluck('job_id')->toArray();
+         if($DislikeJob){
+            $query->whereNotIn('id', $DislikeJob);
+         }
+         
+         $job_list = $query->get();
+
+         $job_list->user_id = $user_id;
          $this->response = new ProjectResource($job_list);
          return ResponseBuilder::success($this->response, "Best Match Jobs List");
       }
@@ -397,44 +422,101 @@ class JobController extends Controller
          else{
             return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          }
+         
          $validator = Validator::make($request->all(), [
-            'job_id'       => 'required|exists:projects,id',
-            'bid_amount'   => 'required',
-            'cover_letter' => 'required',
-            'project_duration'=>'required',
-            'image'        => 'nullable|mimes:png,jpeg,gif,svg,jpg',
+            'client_id'       => 'required|exists:client,user_id',
+            'job_id'   	      =>	'required|exists:projects,id',
+            'budget_type'	   =>	'required|in:fixed,hourly',
+            'weekly_limit'	   =>	'required_if:budget_type,hourly|integer',
+            'milestone_type'  =>	'required_if:budget_type,fixed|in:single,multiple',
          ]);
+
          if ($validator->fails()) {
             return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
          }
-         $send_proposal = SendProposal::where('job_id',$request->job_id)->where('user_id',$user_id)->first();
+         
+         $send_proposal = SendProposal::where('project_id',$request->job_id)->where('freelancer_id',$user_id)->first();
          if(!empty($send_proposal))
          {
             return ResponseBuilder::error(__("Already Send Proposal"), $this->badRequest);
          }
-         else{
+         else {
+            DB::beginTransaction();
             $get_fee = IncomeSource::where('name','Unify')->first();
             $platform_fee = $get_fee->fee_percent;
 
-            $receive_amount = ($request->bid_amount - $platform_fee);
+            $bidAmount = (isset($request->bid_amount))?($request->bid_amount - $platform_fee):'0';
             
-            $savejob = SendProposal::updateOrCreate([
+            $proposal = SendProposal::updateOrCreate([
                'id' => $request->id
             ], [
-               'user_id' => $user_id,
-               'job_id' => $request->job_id,
-               'status' => 'pending',
-               'bid_amount' => $request->bid_amount,
-               'platform_fee' => $platform_fee,
-               'receive_amount' => $receive_amount,
-               'project_duration' => $request->project_duration,
-               'cover_letter' => $request->cover_letter,
-               'image' => !empty($request->file('image')) ? $this->proposalImage($request->file('image')  ) : '',
+               'client_id'       => $request->client_id,
+               'freelancer_id'   => $user_id,
+               'project_id'      => $request->job_id,
+               'budget_type'     => $request->budget_type,
+               'status'          => 'pending',
+               'amount'          => $bidAmount,
+               'platform_fee'    => $platform_fee,
+               'weekly_limit'    => ($request->weekly_limit)??null,
+               'title'           => ($request->title)??'',
+               'date'            => ($request->date)??null,
+               'cover_letter'    => $request->cover_letter,
+               'image'           => !empty($request->file('image')) ? $this->proposalImage($request->file('image')  ) : '',
             ]);
+
+            if($request->budget_type == 'fixed') {
+               // 
+               if($request->milestone_type == 'single') {
+                  $mileStones = [
+                     'proposal_id' => $proposal->id,
+                     'project_id' => $request->job_id,
+                     'client_id' => $request->client_id,
+                     'freelancer_id' => $user_id,
+                     'description' => $request->milestone_description[0],
+                     'amount' => $request->milestone_amount[0],
+                     'due_date' => $request->milestone_due_date[0],
+                     'status' => 'created',
+                     'note' => '',
+                     'type' => $request->milestone_type
+                  ];
+                  ProjectMilestone::create($mileStones);
+                  // 
+               } else {
+                  
+                  $mileStonesDescription = $request->milestone_description;
+                  $mileStonesAmount = $request->milestone_amount;
+                  $mileStonesDueDate = $request->milestone_due_date;
+
+                  foreach ($mileStonesDescription as $key => $value) {
+                     # code...
+                     $mileStones[] = [
+                        'proposal_id' => $proposal->id,
+                        'project_id' => $request->job_id,
+                        'client_id' => $request->client_id,
+                        'freelancer_id' => $user_id,
+                        'description' => $value,
+                        'amount' => $mileStonesAmount[$key],
+                        'due_date' => $mileStonesDueDate[$key],
+                        'status' => 'created',
+                        'note' => '',
+                        'type' => $request->milestone_type
+                     ];
+                  }
+
+                  ProjectMilestone::insert($mileStones);
+               }
+            }
+
+            // if($request->budget_type == 'hourly') { 
+               
+            // }
+
+            DB::commit();
             return ResponseBuilder::successMessage("Sent Proposal Sucessfully",$this->success);
          }
       }catch(\Exception $e)
       {
+         DB::rollback();
          return ResponseBuilder::error($e->getMessage(),$this->serverError);
       }
    }
@@ -450,25 +532,36 @@ class JobController extends Controller
             return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
          }
          $job_list = Project::where('id',$request->job_id)->with('skills','categories')->first();
-         $proposalss= SendProposal::join('users','send_proposals.user_id','users.id')->where('job_id',$job_list->id)->select('users.id as user_id','send_proposals.id as send_proposals_id','send_proposals.cover_letter','send_proposals.status','send_proposals.bid_amount','send_proposals.created_at','users.first_name','users.profile_image')->get();
+         $proposalss= SendProposal::join('users','send_proposals.freelancer_id','users.id')->where('project_id',$job_list->id)->select('users.id as freelancer_id','send_proposals.id as send_proposals_id','send_proposals.cover_letter','send_proposals.status','send_proposals.amount','send_proposals.created_at','users.first_name','users.profile_image')->get();
          $proposalList = [];
          if(count($proposalss) > 0){
             foreach($proposalss as $value)
             {
                $proposalList[] = [
-                  'freelancer_id'       =>(string)$value->user_id,
-                  'freelancer_name'     =>(string)$value->first_name,
-                  'profile_image'       =>isset($value->profile_image) ? url('/images/profile-image',$value->profile_image) : '',
-                  'proposal_id'         =>(string)$value->send_proposals_id,
-                  'proposal_description'=>(string)$value->cover_letter,
-                  'status'              =>(string)$value->status,
-                  'bid_amount'          =>(string)$value->bid_amount,
-                  'time'                =>$value->created_at->diffForHumans()
+                  'freelancer_id'         =>(string)$value->user_id,
+                  'freelancer_name'       =>(string)$value->first_name,
+                  'profile_image'         =>isset($value->profile_image) ? url('/images/profile-image',$value->profile_image) : '',
+                  'proposal_id'           =>(string)$value->send_proposals_id,
+                  'proposal_description'  =>(string)$value->cover_letter,
+                  'status'                =>(string)$value->status,
+                  'amount'                =>(string)$value->amount,
+                  'time'                  =>$value->created_at->diffForHumans()
                ];
             }
          }
          $job_list['proposal_list'] = $proposalList;
          $job_list['cdata'] = $this->getClientInfo($job_list->client_id);
+
+         if (Auth::guard('api')->check()) {
+            $singleuser = Auth::guard('api')->user();
+            $user_id = $singleuser->id;
+         } else {
+            $user_id = 0;
+         }
+         $job_list['user_id'] = $user_id;
+
+         $job_list['service_fee'] = $user_id;
+         
          $this->response = new ProjectSingleResource($job_list);
 
          return ResponseBuilder::success($this->response, "Single Jobs Data");

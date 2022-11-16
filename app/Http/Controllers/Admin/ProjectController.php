@@ -123,7 +123,7 @@ class ProjectController extends Controller
         ->where('role_user.role_id', '=', 3)
         ->where('users.deleted_at','=',null)->get();
 
-        $d['statuses'] = ProjectStatus::all()->pluck('name', 'id');
+        $d['statuses'] = ProjectStatus::orderBy('name', 'ASC')->pluck('name', 'id');
         $d['category'] = ProjectCategory::all();
         $d['skill'] = ProjectSkill::all();
         $d['listing'] = ProjectListingType::all();
@@ -217,8 +217,8 @@ class ProjectController extends Controller
         ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
         ->where('role_user.role_id', '=', 3)
         ->where('users.deleted_at','=',null)->get();
-        $proposals=SendProposal::where('job_id',$project->id)->with(['users' => function($query){$query->where('deleted_at', '=', null);}])->orderby('id','desc');
-        $d['statuses'] = ProjectStatus::all()->pluck('name', 'id');
+        $proposals=SendProposal::where('project_id',$project->id)->where('type', '=', 'proposal')->with(['users' => function($query){$query->where('deleted_at', '=', null);}])->orderby('id','desc');
+        $d['statuses'] = ProjectStatus::orderBy('name', 'ASC')->pluck('name', 'id');
         $d['category'] = ProjectCategory::all();
         $d['skill'] = ProjectSkill::all();
         $d['listing'] = ProjectListingType::all();
@@ -430,7 +430,9 @@ class ProjectController extends Controller
     public function project_proposal($id)
     {
 
-        $d['proposal'] = SendProposal::join('users', 'send_proposals.user_id', '=', 'users.id')->join('projects', 'send_proposals.job_id', '=', 'projects.id')->where('send_proposals.id', $id)->select('send_proposals.*', 'users.first_name', 'users.email', 'projects.name as project_name')->first();
+        $d['proposal'] = SendProposal::join('projects', 'send_proposals.project_id', '=', 'projects.id')->where('send_proposals.id', $id)->with('users', 'client')->select('send_proposals.*', 'projects.*', 'send_proposals.status as send_proposal_status')->first();
+
+        // dd($d['proposal']);
         return view('admin.projects.project-proposal', $d);
     }
    

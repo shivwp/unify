@@ -72,7 +72,7 @@
                                 @endphp
                                 @foreach($specialization as $key => $value)
                                     <tr data-entry-id="{{ $value->id }}">
-                                        <td>{{ $value->id ?? ''}}</td>
+                                        <td>{{ $i++ }}</td>
                                         <td>{{ $value->title ?? '' }}</td>
                                         <td>{{ $value->description ?? '' }}</td>
                                         

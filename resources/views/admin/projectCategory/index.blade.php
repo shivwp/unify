@@ -8,7 +8,7 @@
     }
 </style>
 <div class="content-wrapper">
-  <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row ">
                 @can('project_status_create')
                 <div class="row tabelhed d-flex justify-content-between">
@@ -71,8 +71,9 @@
                                     <tr>
                                         <th class="wd-15p">S No.</th>
                                         <th class="wd-15p">Title</th>
-                                        <th class="wd-15p">Parent</th>
-                                        <th class="wd-15p">Number of projects going on</th>
+                                        <!-- <th class="wd-15p">Parent</th> -->
+                                        <!-- <th class="wd-15p">Number of projects going on</th> -->
+                                        <th class="wd-15p">Number of Sub Categories</th>
                                         <th class="wd-15p">Action</th>
                                     </tr>
                                 </thead>
@@ -82,6 +83,8 @@
 
                                         @php
                                             $record = App\Models\ProjectProjectCategory::where('project_category_id',$projectCate->id)->count();
+
+                                            $count = App\Models\ProjectCategory::where('parent_id', $projectCate->id)->count();
                                         @endphp
                                         <tr data-entry-id="{{ $projectCate->id }}">
                                            
@@ -89,19 +92,9 @@
                        
                                            
                                              <td>
-                                                {{ $projectCate->name ?? '' }}
+                                                <a href="{{ route('admin.project-category.sub_category', $projectCate->id) }}">{{ $projectCate->name ?? '' }}</a>
                                             </td>
-                                            <td>
-                                               
-                                                @if(!empty($projectCate->parentcategory))
-                                                {{ $projectCate->parentcategory->name ?? '' }}
-                                                @else
-                                                No Parent
-                                                @endif
-                                            </td>
-                                            <td>
-                                                {{ $record ?? '' }}
-                                            </td>
+                                            <td>{{ $count ?? '' }}</td>
                                             <td>
                                                 @can('project_category_show')
                                                     <a href="{{ route('admin.project-category.show', $projectCate->id) }}">
@@ -117,7 +110,7 @@
                                                 @if($record <= 0)
                                                     @can('project_category_delete')
                                                     
-                                                        <form action="{{ route('admin.project-category.destroy', $projectCate->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                        <form action="{{ route('admin.project-category.destroy', $projectCate->id) }}" method="POST" style="display: inline-block;">
                                                             <input type="hidden" name="_method" value="DELETE">
                                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                             <button type="submit" class="btn btn-sm  btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>" onclick="return confirm('{{ trans('global.areYouSure') }}');"><i class="bx bx-trash"></i></button>
@@ -140,35 +133,38 @@
                     </div>
                 </div>
 
-    <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel1">Selected category used in other projects/jobs. need to replace with other category</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col mb-3 m-0">
-                  <label for="nameBasic" class="form-label">Category</label>
-                  <form action="{{url('admin/category-delete-replace')}}" method="POST">
-                    @csrf
-                  <input type="hidden" id="nameBasic" class="form-control" value="" name="delete_id">
-                  <div class="mb-3">
-                    <select id="select2Basic" name="replace_id" class=" form-select form-select-lg" data-allow-clear="true">
-                       
-                     </select>
-                  </div>
+                <div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel1">Selected category used in other projects/jobs. need to replace with other category</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col mb-3 m-0">
+                                        <label for="nameBasic" class="form-label">Category</label>
+                                        <form action="{{url('admin/category-delete-replace')}}" method="POST">
+                                        @csrf
+                                        <input type="hidden" id="nameBasic" class="form-control" value="" name="delete_id">
+                                        <div class="mb-3">
+                                            <select id="select2Basic" name="replace_id" class=" form-select form-select-lg" data-allow-clear="true">
+                                   
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                      
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Delete And Replace</button>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-          
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Delete And Replace</button>
-            </form>
-            </div>
-          </div>
         </div>
     </div>
 @endsection

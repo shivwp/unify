@@ -17,7 +17,7 @@ class ProjectSkillController extends Controller
     {
         abort_if(Gate::denies('project_skills_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $projectSkill = ProjectSkill::paginate(10);
+        $projectSkill = ProjectSkill::orderBy('name', 'ASC')->paginate(10);
 
         return view('admin.projectSkill.index', compact('projectSkill'));
     }

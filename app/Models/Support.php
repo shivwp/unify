@@ -11,7 +11,7 @@ class Support extends Model
     use SoftDeletes;
 
     public $table = 'support';
-
+    protected $fillable = ['user_id', 'job_link', 'status', 'description', 'image'];
     protected $dates = [
         'updated_at',
         'created_at',
@@ -19,11 +19,7 @@ class Support extends Model
       
     ];
 
-   
-    public function project()
-    {
-        return $this->hasOne('App\Models\Project', 'id', 'project_id');
-    }
+
     public function user()
     {
         return $this->hasOne('App\Models\User', 'id', 'user_id');

@@ -27,7 +27,7 @@
                                 @enderror
                             </div>
                             <div class="form-group mt-2">
-                                <label">Description *</label>
+                                <label>Description *</label>
                                 <textarea name="description" class="form-control @error('description') is-invalid @enderror">{{ empty(old('description')) ? (isset($specialization) ? $specialization->description : '') : old('description') }}</textarea>
                                 @error('description')
                                     <span class="invalid-feedback" role="alert">
@@ -41,5 +41,9 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection

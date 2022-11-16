@@ -71,7 +71,7 @@
                                 @endphp
                                 @foreach($certificate as $key => $value)
                                     <tr data-entry-id="{{ $value->id }}">
-                                        <td>{{ $value->id ?? ''}}</td>
+                                        <td>{{ $i++ }}</td>
                                         <td>{{ $value->name ?? '' }}</td>
                                         
                                         <td>

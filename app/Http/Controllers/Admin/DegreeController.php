@@ -19,7 +19,7 @@ class DegreeController extends Controller
           
             $q->where('title', 'like', "%$request->search%")->paginate(10);
         }
-        $d['degree']=$q->paginate($d['pagination']);
+        $d['degree']=$q->orderBy('title', 'ASC')->paginate($d['pagination']);
 
         return view('admin.degree.index', $d);
     }

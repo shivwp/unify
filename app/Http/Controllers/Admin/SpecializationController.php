@@ -19,7 +19,7 @@ class SpecializationController extends Controller
           
             $q->where('title', 'like', "%$request->search%")->paginate(10);
         }
-        $d['specialization']=$q->paginate($d['pagination']);
+        $d['specialization']=$q->orderBy('title', 'ASC')->paginate($d['pagination']);
 
         return view('admin.specialization.index', $d);
     }

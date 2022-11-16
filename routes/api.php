@@ -40,7 +40,7 @@
     Route::post('jobs-list', [App\Http\Controllers\Api\JobController::class, 'jobsList']);
 
     //Recent job list
-    Route::post('recent-jobs-list', [App\Http\Controllers\Api\JobController::class, 'recentJobsList']);
+    Route::get('recent-jobs-list', [App\Http\Controllers\Api\JobController::class, 'recentJobsList']);
 
     //industry list
     Route::get('industries-list', [App\Http\Controllers\Api\CommonController::class, 'industriesList']); 

@@ -18,7 +18,7 @@ class IndustryController extends Controller
           
             $q->where('title', 'like', "%$request->search%")->paginate(10);
         }
-        $d['industry']=$q->paginate($d['pagination']);
+        $d['industry']=$q->orderBy('title', 'ASC')->paginate($d['pagination']);
 
         return view('admin.industry.index', $d);
     }

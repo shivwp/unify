@@ -23,6 +23,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
     Route::resource('users', 'UsersController');
     Route::get('user/statusupdate/{id}', 'UsersController@statusupdate');
+    Route::get('users/statusblock/{id}','UsersController@statusBlock')->name('users.block');
 
     // Currencies
     Route::delete('currencies/destroy', 'CurrencyController@massDestroy')->name('currencies.massDestroy');
@@ -62,6 +63,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Projectscategory
     Route::delete('project-category/destroy', 'ProjectCategoryController@massDestroy')->name('project-category.massDestroy');
     Route::resource('project-category', 'ProjectCategoryController');
+    Route::get('project-sub-category/{id}', 'ProjectCategoryController@sub_category')->name('project-category.sub_category');
+    Route::get('project-sub-category/create/{id}', 'ProjectCategoryController@sub_category_create')->name('project-category.sub_category_create');
 
     // Projectskill
     Route::delete('project-skill/destroy', 'ProjectSkillController@massDestroy')->name('project-skill.massDestroy');

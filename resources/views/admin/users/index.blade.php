@@ -127,8 +127,21 @@
                                                     
                                                 </form>
                                             @endcan
-            
+<!--                                             <a href="{{route('admin.users.block', $user->id)}}">
+                                                <span class="btn btn-xs btn-warning text-capitalize">{{ 'Block' }}</span></a> -->
+                                                 @if($user->status == 'approve')
+                                                     <a href="{{route('admin.users.block', $user->id)}}">
+                                                        <button class="btn btn-sm btn-icon me-2"><i class="fa fa-lock" aria-hidden="true"></i></button>
+                                                    </a>
+                                                @else
+                                                    <a href="{{route('admin.users.block', $user->id)}}">
+                                                        <button class="btn btn-sm  btn-icon me-2"><i class="fa fa-unlock-alt" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Unblock</span>"></i></button>
+                                                    </a>
+                                                @endif
+
+
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>

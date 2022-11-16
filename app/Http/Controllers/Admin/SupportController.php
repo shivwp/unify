@@ -12,8 +12,7 @@ use App\Models\Project;
 use App\Models\Transaction;
 use Intervention\Image\ImageManagerStatic as Image;
 
-
-use App\Support;
+use App\Models\Support;
 use Gate;
 use DateTime;
 use PDF;

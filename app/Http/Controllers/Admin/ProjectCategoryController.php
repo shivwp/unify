@@ -22,8 +22,13 @@ class ProjectCategoryController extends Controller
         }
         abort_if(Gate::denies('project_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $d['projectCategory'] = ProjectCategory::paginate($d['pagination']);
-        
+        $search = "";
+        if($request->search){
+            $search = $request->search;
+        }
+        $d['projectCategory'] = ProjectCategory::where('parent_id', 0)->where('name', 'LIKE', '%'.$search.'%')->paginate($d['pagination']);
+        // $d['count'] = ProjectCategory::where('parent_id', 7)->get();
+        // dd($d['count']);
         return view('admin.projectCategory.index',$d);
     }
 
@@ -72,8 +77,10 @@ class ProjectCategoryController extends Controller
     public function destroy(ProjectCategory $projectCategory)
     {
         abort_if(Gate::denies('project_category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
+        
         $projectCategory->delete();
+
+        ProjectCategory::where('parent_id', $projectCategory->id)->update(['parent_id' => 0]);
 
         return back();
     }
@@ -108,5 +115,28 @@ class ProjectCategoryController extends Controller
        $ProjectCategory=ProjectCategory::where('id',$request->delete_id)->first();
        $ProjectCategory->delete();
        return back();
+    }
+
+    public function sub_category(Request $request,$id){
+        $d['pagination']='10';
+        if($request->pagination){
+            $d['pagination']=$request->pagination;
+        }
+        abort_if(Gate::denies('project_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $search = "";
+        if($request->search){
+            $search = $request->search;
+        }
+        $d['projectsubCategory'] = ProjectCategory::where('parent_id', $id)->where('name', 'LIKE', '%'.$search.'%')->paginate($d['pagination']);
+        $d['parent_id'] = $id;
+        return view('admin.projectCategory.sub-category',$d);
+    }
+
+    public function sub_category_create(Request $request){
+        $parent_id = $request->id;
+        $Category=ProjectCategory::where("parent_id",'0')->get();
+
+        return view('admin.projectCategory.create',compact('Category','parent_id'));
     }
 }

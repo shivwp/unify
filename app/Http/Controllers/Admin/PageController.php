@@ -19,7 +19,7 @@ class PageController extends Controller
           
             $q->where('title', 'like', "%$request->search%")->paginate(10);
         }
-        $d['page']=$q->paginate($d['pagination']);
+        $d['page']=$q->orderBy('title', 'ASC')->paginate($d['pagination']);
 
         return view('admin.page.index', $d);
     }

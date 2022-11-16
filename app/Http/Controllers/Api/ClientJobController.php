@@ -197,4 +197,25 @@ class ClientJobController extends Controller
 		}
 	}
 
+	// public function inviteFreelancerList(Request $request)
+	// {
+	// 	try
+	// 	{
+	// 		if (Auth::guard('api')->check()) {
+	//             $singleuser = Auth::guard('api')->user();
+	//             $user_id = $singleuser->id;
+	//         } 
+ //         	else{
+ //             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+ //         	}
+ //         	$all_inviteFreelance = InviteFreelacner::where('client_id',$user_id)->get();
+ //         	dd($all_inviteFreelance);
+
+	// 	}
+	// 	catch(\Expection $e)
+	// 	{
+	// 		return ResponseBuilder::error($e->getMessage(), $this->serverError);
+	// 	}
+	// } 
+
 }
