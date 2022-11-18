@@ -11,6 +11,7 @@ class ProjectSingleResource extends JsonResource
             'id'                => (string)$this->id,
             'client_id'         => (string)$this->client_id,
             'image'             => isset($this->project_images) ? url('/images/jobs',$this->project_images) : '',
+            'image_name'        => isset($this->project_images) ? (string)($this->project_images) : '',
             'name'              => isset($this->name) ? $this->name : '',
             'type'              => isset($this->type) ? $this->type : '',
             'description'       => isset($this->description) ? $this->description : '',

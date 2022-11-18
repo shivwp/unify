@@ -21,6 +21,7 @@ class FreelancerCollection extends ResourceCollection
             'occuption'         =>isset($data->freelancer->occcuption) ? $data->freelancer->occcuption : '',
             'description'       =>isset($data->freelancer->description) ? $data->freelancer->description : '',
             'rating'            =>isset($data->freelancer->rating) ? $data->freelancer->rating : '',
+            'amount'            =>isset($data->freelancer->amount) ? (float)$data->freelancer->amount : '',
             'total_earning'     =>isset($data->freelancer->total_earning) ? (float)$data->freelancer->total_earning : 0.00,
             'total_jobs'        =>isset($data->freelancer->total_jobs) ? (integer)$data->freelancer->total_jobs : 0,
             'total_hours'       =>isset($data->freelancer->total_hours) ? (integer)$data->freelancer->total_hours : 0,

@@ -28,6 +28,10 @@ class ProjectCategory extends Model
     {
         return $this->hasMany(Project::class);
     }
+    public function skills()
+    {
+        return $this->hasMany(ProjectSkill::class,'cate_id');
+    }
     public function parentcategory()
     {
         return $this->hasOne('App\Models\ProjectCategory','id','parent_id');

@@ -12,6 +12,7 @@ class ProjectResource extends ResourceCollection
             return [
                 'id'                => (string)$data->id,
                 'image'             => isset($data->project_images) ? url('/images/jobs',$data->project_images) : '',
+                'image_name'        => isset($data->project_images) ? (string)($data->project_images) : '',
                 'name'              => isset($data->name) ? $data->name : '',
                 'type'              => isset($data->type) ? $data->type : '',
                 'is_proposal_send'  => isset($this->user_id)?$data->isProposalSend($this->user_id):false,

@@ -58,6 +58,7 @@ class User extends Authenticatable
         'avg_rating',
         'agree_terms',
         'send_email',
+        'payment_verified'
     ];
 
     public function getEmailVerifiedAtAttribute($value)

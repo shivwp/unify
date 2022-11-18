@@ -22,6 +22,7 @@ use App\Models\TimeZone;
 use App\Models\Business_size;
 use App\Models\Certificate;
 use App\Models\Industries;
+use App\Models\Project;
 use App\Models\Page;
 use Carbon\Carbon;
 use Validator;
@@ -255,6 +256,36 @@ class CommonController extends Controller
          catch(\Exception $e)
          {
             return ResponseBuilder::error($e->getMessage(), $this->serverError);
+         }
+      }
+
+      public function homeData()
+      {
+         try
+         {
+            $home_data = Page::where('slug','home')->select('content')->first();
+            $category = ProjectCategory::where('parent_id',0)->limit(6)->select('id','name','image')->get();
+            foreach ($category as $value) {
+               $skill_count = ProjectSkill::where('cate_id',$value->id)->count();
+               $cat_data[] = [
+                  'category_id'=> $value->id,
+                  'category_name'=> $value->name,
+                  'category_image'=> isset($value->image) ? url('images/category/'.$value->image) : '',
+                  'skills'=>$skill_count,
+                  'rating'=>'4.8/5',
+               ];
+            }
+            if(!empty($home_data)){
+               $home_Alldata = json_decode($home_data->content,true);
+               
+               $home_Alldata['category'] = $cat_data;
+               $this->response = $home_Alldata;
+            }
+            return ResponseBuilder::success($this->response, "Home Page data");
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
          }
       }
 
