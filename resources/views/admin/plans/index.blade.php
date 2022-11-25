@@ -6,18 +6,18 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-            
-                @can('project_status_create')
-                <div style="margin-bottom: 10px;" class="row">
-                    <div class="col-lg-12" style="margin-bottom: 32px;">
-                        {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/plan')}}">Back
-                                        </a>--}}
-                        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.plan.create") }}">
-                            Add
-                        </a>
+                <div class="row tabelhed d-flex justify-content-between">
+                    <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
+                        @can('project_status_create')
+                            {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/plan')}}">Back
+                                            </a>--}}
+                            <a class="btn-sm ad-btn create_btn pt-2" href="{{ route("admin.plan.create") }}">
+                                Add
+                            </a>
+                        @endcan
                     </div>
                 </div>
-                @endcan
+                
                 <div class="card">
                     <div class="card-header">
                         Plan List
@@ -106,7 +106,7 @@
 
                                                 @can('project_category_delete')
                                                 
-                                                    <form action="{{ route('admin.plan.destroy', $item->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <form action="{{ route('admin.plan.destroy', $item->id) }}" method="POST" style="display: inline-block;">
                                                     @csrf    
                                                     <input type="hidden" name="_method" value="DELETE">
                                                         

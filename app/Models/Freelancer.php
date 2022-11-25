@@ -20,6 +20,7 @@ class Freelancer extends Model
         'project_preference',
         'experience_level',
         'occcuption',
+        'category',
         'description',
         'intro_video',
         'payment_base',
@@ -64,5 +65,9 @@ class Freelancer extends Model
         return $this->hasMany(FreelancerEducation::class, 'user_id', 'user_id');
     }
 
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
 }

@@ -6,8 +6,6 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-
-
                 <div class="card">
                     <div class="card-header">
                         {{ trans('global.show') }} {{ trans('cruds.projectStatus.title') }}
@@ -35,7 +33,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
+                            <a style="margin-top:20px;" class="btn btn-warning" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>
@@ -54,5 +52,4 @@
         </div>
     </div>
 </div>
-
 @endsection

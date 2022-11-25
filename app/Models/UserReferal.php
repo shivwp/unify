@@ -11,8 +11,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-class UserReferal extends Model
+class UserReferal extends Authenticatable
 {
-public $table = 'user_referals';
-  
+	public $table = 'user_referals';
+  	
+  	protected $fillable = [
+        'refered_user_id',
+        'user_id',
+    ];
+
 }

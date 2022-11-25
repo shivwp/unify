@@ -28,7 +28,7 @@
                                 </p> -->
                             </div>
                             <div class="mt-3">
-                                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

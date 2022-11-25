@@ -16,7 +16,7 @@ use App\Models\Support;
 use Gate;
 use DateTime;
 use PDF;
-use app\User;
+use app\Models\User;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,7 +28,7 @@ class SupportController extends Controller
 
         $dt = new DateTime();
         
-        $q = Support::query();
+        $q = Support::query()->join('users', 'support.user_id', '=', 'users.id')->select('support.*','users.name','users.email');
 
         $d['year']=$dt->format('Y');
         $d['month']=$dt->format('m');
@@ -62,8 +62,15 @@ class SupportController extends Controller
                 $q->where('created_at', 'like', '%' . $request->start_date . '%');
                  
         }
+        if(!empty($request->keyword)) {
+          $q->where('email', 'LIKE', '%'.$request->keyword.'%')->orwhere('name', 'LIKE', '%'.$request->keyword.'%')->get();
+        }
 
-        
+       if(isset($request->project_status_filter)){
+        // dd($request->project_status_filter);
+            $q->where('support.status', '=', $request->project_status_filter);
+        }
+
         $d['support']=$q->paginate(10);
         return view('admin.support.index', $d);
     }
@@ -82,16 +89,6 @@ class SupportController extends Controller
     public function store(Request $request)
     {  $random = $number = random_int(100,999999);
         $ticket='TCKT'.$random;
-       
-        $this->validate($request,[
-            'project_id' => 'required',
-            'user_id' => 'required',
-            'source' => 'required',
-            'status' => 'required',
-            'description' => 'required',
-            'image' => 'required',
-        ]);
-        
         
          if ($request->hasfile('image')) {
             $file1 = $request->file('image');
@@ -119,23 +116,25 @@ class SupportController extends Controller
           }
 
         $Support = new Support;
-         $Support->project_id=$request->project_id;
+         // $Support->project_id=$request->project_id;
          $Support->user_id=$request->user_id;
-         $Support->source=$request->source;
+         // $Support->source=$request->source;
+         $Support->job_link = $request->jobLink;
          $Support->status=$request->status;
-         $Support->ticket ='#'.$ticket;
+         // $Support->ticket ='#'.$ticket;
          $Support->description =$request->description ;
          $Support->image =json_encode($result);
          $Support->save();
 
-        return redirect()->route('admin.support.index');
+        return redirect()->route('admin.support.index')->with('added', 'Added Successfully');
     }
 
     public function edit($id)
     {
        
         $projects = Project::all()->pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-        $user=User::all();
+        $user=User::get()->pluck('name', 'id');
+
         $support=Support::where('id',$id)->first();
         return view('admin.support.edit', compact('projects', 'user', 'support'));
     }
@@ -170,12 +169,10 @@ class SupportController extends Controller
                         $result = $varimg;
                     }
                         
-                
-                    $Support->project_id=$request->project_id;
+                    
                     $Support->user_id=$request->user_id;
-                    $Support->source=$request->source;
+                    $Support->job_link=$request->jobLink;
                     $Support->status=$request->status;
-                    $Support->solution =$request->solution;
                     $Support->description =$request->description ;
                     $Support->image =json_encode($result);
                     $Support->save();
@@ -184,17 +181,16 @@ class SupportController extends Controller
                 }
         
 
-        return redirect()->route('admin.support.index');
+        return redirect()->route('admin.support.index')->with('update','Updated Successfully');
     }
 
     public function show($id)
     {
          $support=Support::where('id',$id)->first();
 
-       
-    
+       $user = User::find($support->user_id);
 
-        return view('admin.support.show', compact('support'));
+        return view('admin.support.show', compact('support','user'));
     }
 
     public function destroy($id)
@@ -204,7 +200,7 @@ class SupportController extends Controller
 
         $Support->delete();
 
-        return back();
+        return back()->with('delete', 'Deleted Successfully');
     }
 
     public function massDestroy(MassDestroyTransactionRequest $request)

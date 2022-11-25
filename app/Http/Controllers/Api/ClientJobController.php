@@ -288,7 +288,7 @@ class ClientJobController extends Controller
          	if(!empty($all_inviteFreelance)){
 				$freelance_data = User::whereIn('id',$all_inviteFreelance)->with('freelancer')->get();
 				// dd($freelance_data);
-				if(!empty($freelance_data))
+				if(count($freelance_data) > 0)
 		        {
 		            $this->response = new FreelancerCollection($freelance_data);
 		            return ResponseBuilder::success($this->response, "Invited freelacner's List");
@@ -297,7 +297,7 @@ class ClientJobController extends Controller
 		        	return ResponseBuilder::error("No Data found", $this->notFound);
 		        }
 			}else{
-				return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+				return ResponseBuilder::error('No data found', $this->serverError);
 			}
 
 		}

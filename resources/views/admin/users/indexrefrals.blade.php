@@ -14,42 +14,35 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="row tabelhed d-flex justify-content-between">
-                    <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
-                        
-                        <a class="btn-sm ad-btn create_btn text-center pt-2" href="{{ route("admin.industry.create") }}"> Add</a>
-                        
+                    {{--<div class="col-lg-2 col-md-2 col-sm-2 d-flex">
+                        <a class="btn-sm ad-btn create_btn text-center pt-2" href="{{ route("admin.users.create") }}"> Add</a>
                         <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
-                    </div>
-                    
-                    <div class="col-lg-5 col-md-5 col-sm-5 "> 
+                    </div>--}}
+                   
+                       <div class="col-4" style="margin-left: auto;"> 
                         <?php 
                         if(!empty($_GET['search'])){
                             $search= $_GET['search'];
                         }else{ 
                             $search='';
                         }?>
-                        <div class="right-item" >
+                        <div class="right-item">
                             <form action="" class="d-flex" method="get">
-                                <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Search..." required>
+                                <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Search User" required>
                                 <button class="btn-sm search-btn" type="submit"  style="margin-left:6px"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
-                                <a href="{{url('admin/industry')}}">
+                                <a href="{{url('admin/indexrefrals')}}">
                                     <i class="fa fa-refresh pl-3 redirect-icon" aria-hidden="true"></i>
                                 </a>
                             </form>
                         </div>
                     </div>
                 </div>
-                @if(Session::has('error'))
-                    <p class="alert {{ Session::get('alert-class', 'alert-danger') }}">{{ Session::get('error') }}</p>
-                @endif
-                @if(Session::has('success'))
-                    <p class="alert {{ Session::get('alert-class', 'alert-success') }}">{{ Session::get('success') }}</p>
-                @endif
+             
                 <div class="card">
                     <div class="card-header ">
                         <div class="row">
                             <div class="col-xl-6">
-                                <h5>Industries List</h5>
+                                <h5>Refrals User List</h5>
                             </div>
                         </div>
                     </div>
@@ -59,42 +52,35 @@
                                 <thead>
                                     <tr>
                                         <th>S No.</th>
-                                        <th>Title</th>
-                                        <th>Description</th>
-                                        <th>Action</th>
+                                        <th>User</th>
+                                        <th>Refered By</th>
+                                        <th>Referal Code</th>
+                                        <th>Created At</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @php
-                                        $i=1
+                                        $i = 1;
                                     @endphp
-                                    @foreach($industry as $key => $value)
-                                        <tr data-entry-id="{{ $value->id }}">
-                                            <td>{{ $i++ }}</td>
-                                            <td>{{ $value->title ?? '' }}</td>
-                                            <td>{{ $value->description ?? '' }}</td>
-                                            
-                                            <td>
-                                                <!-- <a href="{{ route('admin.industry.show', $value->id) }}">
-                                                    <button class="btn btn-sm btn-icon me-2"><i class="bx bx-show mx-1" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"></i></button>
-                                                </a> -->
-                                                <a href="{{ route('admin.industry.edit', $value->id) }}">
-                                                    <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
-                                                </a>
-                                                <form action="{{ route('admin.industry.destroy', $value->id) }}" method="POST" style="display: inline-block;">
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                    <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
-                                                    
-                                                </form>
-                
-                                            </td>
-                                        </tr>
+                                    @if(count($data)>0)
+                                    @foreach($data as $ref)
+                                    <tr>
+                                        <td>{{$i++}}</td>
+                                        <td>{{$ref->refer_to_name}}</td>
+                                        <td>{{$ref->refer_name}}</td>
+                                        <td>{{$ref->referal_code}}</td>
+                                        <td>{{$ref->created_at}}</td>
+                                    </tr>
                                     @endforeach
+                                    @else
+                                        <th>There is no Referals</th>
+                                    @endif
+                                   
                                 </tbody>
+                            
                             </table>
-                            {!! $industry->links() !!}
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -104,7 +90,6 @@
 @endsection
 @section('scripts')
 
-@parent
 <script>
 
 $(function () {
@@ -149,6 +134,8 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
         .columns.adjust();
 });
 })
+
+
 
 </script>
 

@@ -93,6 +93,15 @@ class Controller extends BaseController
         return $name;
     }
 
+    public function skillsImage($image)
+    {
+        $file = $image;
+        $name = time().'-'.$file->getClientOriginalName();
+        $destinationPath = 'images/skills';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+
     public function updateFreelancerMeta($id, $meta_key = "", $meta_value)
     {
         try {
@@ -168,6 +177,14 @@ class Controller extends BaseController
         $ClientRating = ClientRating::where('client_id', $clientId)->get();
         // $clientData->rating = 
         return $clientData;
+    }
+
+    public function referCode($name)
+    {
+        $capitalName = strtoupper($name);
+        $randomCode = rand(1000, 9999);
+        $code = $capitalName.$randomCode;
+        return $code;
     }
 
 

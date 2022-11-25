@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\Admin\SubscriptionResource;
 use App\Http\Resources\Admin\TimeZoneResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
@@ -13,16 +14,20 @@ use App\Models\AccountCloseReason;
 use App\Models\ProjectCloseReason;
 use App\Models\ProjectCategory;
 use App\Models\SpecializeProfile;
+use App\Models\FreelancerSkill;
 use App\Models\HoursPerWeek;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
 use App\Models\ProjectSkill;
 use App\Models\DislikeReason;
 use App\Models\TimeZone;
+use App\Models\Plans;
 use App\Models\Business_size;
 use App\Models\Certificate;
 use App\Models\Industries;
 use App\Models\Project;
+use App\Models\User;
+use App\Models\Freelancer;
 use App\Models\Page;
 use Carbon\Carbon;
 use Validator;
@@ -167,18 +172,11 @@ class CommonController extends Controller
          }
       }
 
-      public function page(Request $request)
+      public function page($slug)
       {
          try
          {
-            $validator = Validator::make($request->all(), [
-               'slug'  =>'required|exists:pages,slug',
-            ]);
-
-           if ($validator->fails()) {
-               return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
-           }
-            $degree_list =  DB::table('pages')->where('slug',$request->slug)->select('id','title','slug','content')->get();
+            $degree_list =  DB::table('pages')->where('slug',$slug)->select('id','title','slug','content')->first();
             if(!empty($degree_list)){
                return ResponseBuilder::success($degree_list, "Degree's List");
             }else{
@@ -263,25 +261,156 @@ class CommonController extends Controller
       {
          try
          {
+            $dummyicon = "1668774637-photo-editing.png";
             $home_data = Page::where('slug','home')->select('content')->first();
-            $category = ProjectCategory::where('parent_id',0)->limit(6)->select('id','name','image')->get();
+            $category = ProjectCategory::where('parent_id',0)->limit(9)->select('id','name','image')->get();
             foreach ($category as $value) {
                $skill_count = ProjectSkill::where('cate_id',$value->id)->count();
                $cat_data[] = [
                   'category_id'=> $value->id,
                   'category_name'=> $value->name,
-                  'category_image'=> isset($value->image) ? url('images/category/'.$value->image) : '',
+                  'category_image'=> isset($value->image) ? url('images/category/'.$value->image) : url('images/category/'.$dummyicon),
                   'skills'=>$skill_count,
                   'rating'=>'4.8/5',
                ];
             }
             if(!empty($home_data)){
                $home_Alldata = json_decode($home_data->content,true);
+               $home_Alldata['hero']['image'] = url('images/home/'.$home_Alldata['hero']['image']);
                
+               foreach($home_Alldata['used_by']['used_by_section_image'] as $value)
+               {
+                  $usedImages[] = url('images/home/'.$value);
+               }
+               foreach($home_Alldata['trusted_brands'] as $valu)
+               {
+                  $trustedBrand[] = [
+                     'brand_description'=>$valu['brand_description'],
+                     'brand_name'=>$valu['brand_name'],
+                     'designation'=>$valu['designation'],
+                     'total_projects'=>$valu['total_projects'],
+                     'launch_projects'=>$valu['launch_projects'],   
+                     'logo'=>url('images/home/'.$valu['logo'])
+                  ];
+               }
+
+               $home_Alldata['for_client']['client_banner'] = url('images/home/'.$home_Alldata['for_client']['client_banner']);
+
+               $home_Alldata['used_by']['used_by_section_image'] = $usedImages;
+               $home_Alldata['trusted_brands'] = $trustedBrand;
                $home_Alldata['category'] = $cat_data;
                $this->response = $home_Alldata;
             }
             return ResponseBuilder::success($this->response, "Home Page data");
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
+         }
+      }
+
+      public function categorySkills(Request $request)
+      {
+         try
+         {
+            $validator = Validator::make($request->all(),[
+               'category_id'  => 'required|exists:project_category,id'
+            ]);
+            if($validator->fails()){
+               return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+            }
+            $category = ProjectCategory::where('id',$request->category_id)->select('id','name','short_description','long_description','banner_image')->first();
+            // dd($category->banner_image);
+            $skils = ProjectSkill::where('cate_id',$category->id)->select('id','name','image')->get();
+            if(count($skils) > 0)
+            {  
+               foreach($skils as $value)
+               {
+                  $cateSkills[] = [
+                     'id' => $value->id,
+                     'name' => $value->name,
+                     'image' => isset($value->image) ? url('images/skills'.$value->image) : url('images/dummy.png'),
+                     'rating' => '4.5/5',
+                  ];
+               }
+               $category->banner_image = !empty($category->banner_image) ? url('images/category/'.$category->banner_image) : '';
+               $this->response->category_data =  $category;
+               $this->response->category_skills =  $cateSkills;
+               return ResponseBuilder::success($this->response, "Skills List based on category");
+            }else
+            {
+               return ResponseBuilder::error('No data found',$this->serverError);
+
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
+         }
+      }
+
+      public function skillfreelaner(Request $request)
+      {
+         try
+         {
+            $validator = Validator::make($request->all(),[
+               'skill_id'  => 'required|exists:project_skill,id'
+            ]);
+            $parameters = $request->all();
+               extract($parameters);
+
+            if($validator->fails()){
+               return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+            }
+            $singleskill = ProjectSkill::where('id',$request->skill_id)->select('id','name','image','cate_id','short_description','long_description','banner_image')->first();
+            $freelanceSkill = FreelancerSkill::where('skill_id',$request->skill_id)->pluck('user_id')->toArray();
+            // dd($freelanceSkill);
+            $freelaceData = User::join('freelancer','users.id','freelancer.user_id')->whereIn('freelancer.user_id',$freelanceSkill)->select('users.id','users.profile_image','users.first_name','users.last_name','freelancer.occcuption','freelancer.amount','freelancer.rating')->get();
+
+            if(count($freelaceData) > 0)
+            {  foreach($freelaceData as $vlu)
+               {  $skils = FreelancerSkill::where('user_id',$vlu->id)->select('skill_id','skill_name')->get();
+                  $freelancData[] = [
+                     'user_id' =>$vlu->id,
+                     'profile_image' =>!empty($vlu->profile_image) ? url('images/profile-image/'.$vlu->profile_image) : '',
+                     'first_name' => (string)$vlu->first_name,
+                     'last_name' => (string)$vlu->last_name,
+                     'occcuption' => (string)$vlu->freelancer->occcuption,
+                     'rating' => (float)$vlu->freelancer->rating,
+                     'amount' => (float)$vlu->freelancer->amount,
+                     'skills' => $skils,
+                  ];  
+               }
+               $singleskill->rating = "4.5/5";
+               $singleskill->total_client = "50";
+               $singleskill->image = !empty($singleskill->image) ? url('images/skills/'.$singleskill->image) : '';
+               $singleskill->banner_image = !empty($singleskill->banner_image) ? url('images/skills/'.$singleskill->banner_image) : '';
+               $this->response->skill_data =  $singleskill;
+               $this->response->freelancer_data =  $freelancData;
+               return ResponseBuilder::success($this->response, "freelancer list based on category");
+            }else
+            {
+               return ResponseBuilder::error('No data found',$this->serverError);
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
+         }
+      }
+
+      public function subscriptionList(Request $request)
+      {
+         try
+         {
+            $plan = Plans::with('services:service_name,description')->select('id','plans_title','validity','amount','description')->get();
+            if(count($plan) > 0)
+            {
+               $this->response = new SubscriptionResource($plan);
+               return ResponseBuilder::success($this->response, "Subscriptions plan list");
+            }else{
+               return ResponseBuilder::error('No data found',$this->badRequest);
+            }
          }
          catch(\Exception $e)
          {

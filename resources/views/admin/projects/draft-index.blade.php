@@ -16,66 +16,55 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-                <div class="row tabelhed">
+                <div class="row tabelhed justify-content-between">
                     <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
                         @can('project_create')
                         <a class="btn-sm ad-btn create_btn text-center pt-2" href="{{ route("admin.projects.create") }}"> Add</a>
                         @endcan
                         <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
                     </div>
-                    <?php if(!empty($_GET['project_status_filter'])){$status_filter= $_GET['project_status_filter'];}else{ $status_filter='';} ?>
-                    <div class="col-lg-2 col-md-2 col-sm-2">
-                        <form action="" method="get" id="status_filter_form">
-                            <select class="form-control" id="project_status_filter" name="project_status_filter">
-                                <option value="">Select Status</option>
-                                @if($statuses)
-                                    @foreach($statuses as $id => $status)
-                                        <option value="{{ strtolower($status) }}" {{ isset($statuses) ? (($status_filter == strtolower($status)) ? 'selected' : '') : '' }}>{{ $status }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </form>
-                    </div>
-                    <div class="col-lg-3 col-md-3 col-sm-3 "> 
-                        <?php 
-                        if(!empty($_GET['search'])){
-                            $search= $_GET['search'];
-                        }else{ 
-                            $search='';
-                        }?>
-                        <div class="right-item" >
-                            <form class="d-flex">
-                                <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Enter Project Name" required>
-                                <button class="btn-sm search-btn" type="submit"  style="margin-left:6px"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
-                                <!-- @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif -->
+                    <div class="row col-md-10">
+                        <div class="col-lg-5 col-md-5 col-sm-5 "> 
+                            <?php 
+                            if(!empty($_GET['search'])){
+                                $search= $_GET['search'];
+                            }else{ 
+                                $search='';
+                            }?>
+                            <div class="right-item" >
+                                <form class="d-flex">
+                                    <input type="text" name="project_search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Enter Project Name" required>
+                                    <button class="btn-sm search-btn" type="submit"  style="margin-left:6px"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                                    <!-- @if(isset($_GET['page']))<input type="hidden" name="page" value="{{$_GET['page']}}">@endif -->
+                                    @if(isset($_GET['pagination']))<input type="hidden" name="pagination" value="{{$_GET['pagination']}}">@endif
+                                    @if(isset($_GET['project_status_filter']))<input type="hidden" name="project_status_filter" value="{{$_GET['project_status_filter']}}">@endif
+                                    @if(isset($_GET['start_date']))<input type="hidden" name="start_date" value="{{$_GET['start_date']}}">@endif
+                                    @if(isset($_GET['end_date']))<input type="hidden" name="end_date" value="{{$_GET['end_date']}}">@endif
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 p-0 pl-2">
+                            <form action="" method="GET" class="d-flex">
+                                <div class="mb-3">
+                                    <div class="input-group input-daterange" class="daterange">
+                                        <input type="text" name="start_date"  id="datepicker" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date" class="form-control"  />
+                                        <span class="input-group-text">To</span>
+                                        <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="d-flex" style="margin-left: 8px;">
+                                    <button class="btn-sm search-btn" type="submit">  
+                                        <i class="fa fa-search pl-3" aria-hidden="true"></i> 
+                                    </button>
+                                    <a href="{{url('admin/draft-project')}}">
+                                        <i class="fa fa-refresh pl-3 redirect-icon" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                                @if(isset($_GET['search']))<input type="hidden" name="search" value="{{$_GET['search']}}">@endif
                                 @if(isset($_GET['pagination']))<input type="hidden" name="pagination" value="{{$_GET['pagination']}}">@endif
                                 @if(isset($_GET['project_status_filter']))<input type="hidden" name="project_status_filter" value="{{$_GET['project_status_filter']}}">@endif
-                                @if(isset($_GET['start_date']))<input type="hidden" name="start_date" value="{{$_GET['start_date']}}">@endif
-                                @if(isset($_GET['end_date']))<input type="hidden" name="end_date" value="{{$_GET['end_date']}}">@endif
                             </form>
                         </div>
-                    </div>
-                    <div class="col-lg-5 col-md-5 col-sm-5 p-0 pl-2">
-                        <form action="" method="GET" class="d-flex">
-                            <div class="mb-3">
-                                <div class="input-group input-daterange" class="daterange">
-                                    <input type="text" name="start_date"  id="datepicker" onfocus="(this.type='date')" value="{{Request::get('start_date') ?? ''}}" placeholder ="Start Date" class="form-control"  />
-                                    <span class="input-group-text">To</span>
-                                    <input type="text" name="end_date" id="Enddate" value="{{Request::get('end_date') ?? ''}}" onfocus="(this.type='date')" placeholder ="End Date" class="form-control"/>
-                                </div>
-                            </div>
-                            <div class="d-flex" style="margin-left: 8px;">
-                                <button class="btn-sm search-btn" type="submit">  
-                                    <i class="fa fa-search pl-3" aria-hidden="true"></i> 
-                                </button>
-                                <a href="{{url('admin/projects')}}">
-                                    <i class="fa fa-refresh pl-3 redirect-icon" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                            @if(isset($_GET['search']))<input type="hidden" name="search" value="{{$_GET['search']}}">@endif
-                            @if(isset($_GET['pagination']))<input type="hidden" name="pagination" value="{{$_GET['pagination']}}">@endif
-                            @if(isset($_GET['project_status_filter']))<input type="hidden" name="project_status_filter" value="{{$_GET['project_status_filter']}}">@endif
-                        </form>
                     </div>
                 </div>
                 @if(Session::has('error'))
@@ -88,7 +77,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-xl-6">
-                                <h5 class="m-0 mb-1">Project List</h5>
+                                <h5 class="m-0 mb-1">Draft/Complete Projects List</h5>
                             </div>
                             <div class="col-xl-6 ">
                                 <div class="row" style="float: right">
@@ -154,11 +143,7 @@
                                                     @endif
                                                 </td> -->
                                                 <td>
-                                                    @if($project->status == "publish")
-                                                        <span class="badge badge-publish">{{ $project->status ?? '' }}</span>
-                                                    @else
-                                                        <span class="badge badge-info">{{ $project->status ?? '' }}</span>
-                                                    @endif
+                                                     <span class="badge badge-info">{{ $project->status ?? '' }}</span>
                                                 </td>
                                                 <td>
                                                     @can('project_show')
@@ -167,11 +152,11 @@
                                                     </a>
                                                     @endcan
                                                   
-                                                    @can('project_edit')
+                                                  <!--   @can('project_edit')
                                                     <a  href="{{ route('admin.projects.edit', $project->id) }}">
                                                         <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"><i class="bx bx-edit"></i></button>
                                                     </a>
-                                                    @endcan
+                                                    @endcan -->
 
                                                     @can('project_delete')
                                                     <a href="project-delete/{{$project->id}}"> 
@@ -181,6 +166,7 @@
 
                                                 </td>
                                             </tr>
+
                                         @endforeach 
                                     @else
                                         <tr class="mb-3">No Record Found</tr>

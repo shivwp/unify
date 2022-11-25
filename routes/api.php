@@ -48,7 +48,7 @@
     //forget password
     Route::post('forget-password', [App\Http\Controllers\Api\AuthController::class, 'forget_password_otp']);
     //Page data
-    Route::post('page', [App\Http\Controllers\Api\CommonController::class, 'page']);
+    Route::get('page/{slug}', [App\Http\Controllers\Api\CommonController::class, 'page']);
 
     Route::post('reset-password', [App\Http\Controllers\Api\AuthController::class, 'reset_password']);
 
@@ -59,9 +59,14 @@
     Route::get('certificate-list', [App\Http\Controllers\Api\CommonController::class, 'certificatelist']);
     Route::post('change-password', [App\Http\Controllers\Api\AuthController::class, 'changepassword']);
     Route::post('single-job', [App\Http\Controllers\Api\JobController::class, 'singleJob']);
+    Route::get('home-data', [App\Http\Controllers\Api\CommonController::class, 'homeData']);
+    Route::post('category-skills', [App\Http\Controllers\Api\CommonController::class, 'categorySkills']);
+    Route::post('skill-freelancer', [App\Http\Controllers\Api\CommonController::class, 'skillfreelaner']);
+    Route::get('subscription-list', [App\Http\Controllers\Api\CommonController::class, 'subscriptionList']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('connected-service', [App\Http\Controllers\Api\AuthController::class, 'connected_service']);
+    Route::get('submit-profile', [App\Http\Controllers\Api\AuthController::class, 'submitProfile']);
 });
 
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:api']], function () {

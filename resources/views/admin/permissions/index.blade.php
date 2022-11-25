@@ -8,7 +8,7 @@
             <div class="col-lg-12">
                 <div class="row tabelhed d-flex justify-content-between">
                     <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
-                        <a class="btn-sm ad-btn text-center pt-2" href="{{ route("admin.permissions.create") }}"> Add</a>
+                        <a class="btn-sm ad-btn create_btn text-center pt-2" href="{{ route("admin.permissions.create") }}"> Add</a>
                         <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
                     </div>
                 </div>

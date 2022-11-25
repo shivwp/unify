@@ -105,7 +105,7 @@
                             </div>
                             
                             <div>
-                                <input class="btn btn-success btn_back" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

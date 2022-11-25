@@ -71,6 +71,22 @@ class FreelancerController extends Controller
         if(!empty($lang_data)){
             $d['languages'] = json_decode($lang_data['language']);
         }
+
+        $work_time = $this->getFreelancerMeta($id, 'hours_per_week');
+        if(!empty($work_time)){
+            $d['work_time'] = $work_time['hours_per_week'];
+        }
+
+        $video_data = $this->getFreelancerMeta($id, 'freelancer_video');
+        if(!empty($video_data)){
+            $d['video_link'] = $video_data['freelancer_video'];
+        }
+
+        $video_type = $this->getFreelancerMeta($id, 'freelancer_video_type');
+        if(!empty($video_type)){
+            $d['video_type'] = $video_type['freelancer_video_type'];
+        }
+
         return view('admin.freelancer.show',$d);
     }
 

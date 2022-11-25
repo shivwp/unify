@@ -27,7 +27,7 @@
                                     
                                     <div class="parc">
                                         <span class="pip" data-title="{{$user->profile_image}}">
-                                            <img src="{{ url('/profile-image').'/'.$user->profile_image ?? "" }}" alt="" width="100" height="100">
+                                            <img src="{{ url('images/profile-image').'/'.$user->profile_image ?? "" }}" alt="" width="100" height="100">
                                         </span>
                                     </div>
                                     
@@ -86,7 +86,7 @@
                             </div>
                            
                             <div class="mt-3">
-                                <input class="btn btn-success" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                 

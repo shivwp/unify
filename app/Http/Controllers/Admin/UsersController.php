@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\UserDocument;
 use App\Models\Client;
 use App\Models\Freelancer;
+use App\Models\SocialAccount;
 use App\Models\Agency;
 use Carbon\Carbon;
 use Validator;
@@ -92,8 +93,8 @@ class UsersController extends Controller
         $user->referal_code = isset($request->referal_code) ? $request->referal_code : null;
         if(!empty($request->file('profile_image'))){
             $file = $request->file('profile_image');
-            $name =$file->getClientOriginalName();
-            $destinationPath = 'profile-image';
+            $name = time().'-'.$file->getClientOriginalName();
+            $destinationPath = 'images/profile-image';
             $file->move($destinationPath, $name);
             $user->profile_image = $name;
         }
@@ -153,8 +154,8 @@ class UsersController extends Controller
         }
         if(!empty($request->file('profile_image'))){
             $file = $request->file('profile_image');
-            $name =$file->getClientOriginalName();
-            $destinationPath = 'profile-image';
+            $name =time().'-'.$file->getClientOriginalName();
+            $destinationPath = 'images/profile-image';
             $file->move($destinationPath, $name);
             $user->profile_image = $name;
         }
@@ -226,7 +227,11 @@ class UsersController extends Controller
 
         $user->load('roles');
         $document = UserDocument::where('user_id',$user->id)->first();
-        return view('admin.users.show', compact('user','document'));
+        
+        if($user->social_id !== 'NULL'){
+            $p = DB::table('social_accounts')->where('provider_user_id','=', $user->social_id)->select('provider')->first();
+            }
+        return view('admin.users.show', compact('user','document','p'));
     }
 
     public function destroy(User $user)
@@ -265,10 +270,25 @@ class UsersController extends Controller
         $status =  $data->status;
         if($status == 'approve'){
             $data->status = 'reject';
+            $msg = "User Blocked successfully";
         }else{
             $data->status = 'approve';
+            $msg = "User Unblocked successfully";
         }
         $data->save();
-        return redirect()->back();
+        return redirect()->back()->with('block', $msg);
+    }
+    public function usersRefrals(Request $request){
+        
+              $referalData = DB::table('user_referals')
+                ->join('users as ref_by','user_referals.refered_user_id','=','ref_by.id')
+                ->join('users as ref_to','user_referals.user_id','=','ref_to.id')
+                ->select('ref_by.referal_code', 'ref_by.name as refer_name', 'ref_to.name as refer_to_name','ref_to.created_at');
+        if(!empty($request->search)){
+            $referalData = $referalData->where('ref_to.name','LIKE',"%$request->search%");
+        }
+        $data =$referalData->paginate(10);
+
+        return view('admin.users.indexrefrals',compact('data'));
     }
 }
