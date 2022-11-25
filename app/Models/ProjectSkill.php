@@ -19,9 +19,10 @@ class ProjectSkill extends Model
 
     protected $fillable = [
         'name',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+        'image',
+        'short_description',
+        'long_description',
+        'banner_image',
     ];
     
     public function projects()

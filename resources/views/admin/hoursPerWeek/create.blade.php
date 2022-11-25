@@ -23,7 +23,7 @@
                                 <input type="text" name="description" class="form-control" value="{{ old('description', isset($role) ? $role->description : '') }}" required>
                             </div>
                             <div>
-                                <input class="btn btn-danger mt-3" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn mt-3" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

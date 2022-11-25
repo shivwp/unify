@@ -76,6 +76,14 @@
                                     </div>
                                 </div>
 
+                                @if(!empty($user->social_id))
+                                 <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Provider</strong></h6>
+                                        <p class="mb-0">{{$p->provider}}</p>
+                                    </div>
+                                </div>
+                                @endif
                             </div> 
                             <br>
                             <div class="row">
@@ -169,7 +177,7 @@
                                 </div>
                                 
                             </div>--}}
-                            <a class="btn btn-success btn_back" href="{{ url()->previous() }}">
+                            <a class="btn btn-warning btn_back" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>

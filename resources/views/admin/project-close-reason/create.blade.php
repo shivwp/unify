@@ -8,7 +8,6 @@
         @endif
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card">
                     <div class="card-header border-bottom">
                         Create
@@ -27,7 +26,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <input class="btn btn-success btn_back" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn mt-3" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

@@ -12,7 +12,7 @@
                     <div class="col-lg-12" style="margin-bottom:23px">
                         <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-listing-type')}}">Back
                         </a> -->
-                        <a class="btn-sm ad-btn" style="height: 30px; font-size: smaller; padding: 9px 11px 11px 12px;" href="{{ route("admin.project-listing-type.create") }}">
+                        <a class="btn-sm ad-btn create_btn" style="height: 30px; font-size: smaller; padding: 9px 11px 11px 12px;" href="{{ route("admin.project-listing-type.create") }}">
                             Add
                         </a>
                     </div>
@@ -50,11 +50,11 @@
                                                 {{ $projectListing->name ?? '' }}
                                             </td>
                                             <td>
-                                                @can('project_listing_type_show')
+                                                <!-- @can('project_listing_type_show')
                                                     <a href="{{ route('admin.project-listing-type.show', $projectListing->id) }}">
                                                     <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
                                                     </a>
-                                                @endcan
+                                                @endcan -->
                 
                                                 @can('project_listing_type_edit')
                                                     <a href="{{ route('admin.project-listing-type.edit', $projectListing->id) }}">
@@ -63,7 +63,7 @@
                                                 @endcan
                 
                                                 @can('project_listing_type_delete')
-                                                    <form action="{{ route('admin.project-listing-type.destroy', $projectListing->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <form action="{{ route('admin.project-listing-type.destroy', $projectListing->id) }}" method="POST" style="display: inline-block;">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button type="submit" class="btn btn-sm btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"><i class="bx bx-trash"></i></button>

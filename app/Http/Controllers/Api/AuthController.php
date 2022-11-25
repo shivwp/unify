@@ -44,6 +44,7 @@ class AuthController extends Controller
                 'country'   =>'required',
                 'agree_terms'   =>'in:0,1',
                 'send_email'   =>'in:0,1',
+                'referal_code'  =>'nullable|exists:users,referal_code'
                     
             ]);
             if ($validator->fails()) {   
@@ -61,7 +62,10 @@ class AuthController extends Controller
                         $user->update([
                             'otp' => $otpp,
                             'otp_created_at' => now()->addMinutes(3),
-                            'deleted_at' => null
+                            'deleted_at' => null,
+                            'name'  => $request->first_name.' '.$request->last_name,
+                            'first_name'  => $request->first_name,
+                            'last_name'  => $request->last_name
                         ]);
                         $this->response->email = $user->email;
                         $this->response->otp = $user->otp;
@@ -118,11 +122,10 @@ class AuthController extends Controller
                     'password' => Hash::make($request->password),
                     'country' => $request->country,
                     'status' => 'approve',
-                    'referal_code' => $request->referal_code,
+                    'referal_code' => $this->referCode($request->first_name),
                     'agree_terms' => $request->agree_terms,
                     'send_email' => $request->send_email,
                 ]);
-                
                 $token = $user->createToken('Token')->accessToken;
 
 
@@ -146,8 +149,8 @@ class AuthController extends Controller
                     $referalrecord = User::where('referal_code',$request->referal_code)->first();
                     if($referalrecord){
                         $referaldata = new UserReferal;
-                        $referaldata->refer_coder_id = $referalrecord->id;
-                        $referaldata->user_id  = $user_data->id;
+                        $referaldata->refered_user_id = $referalrecord->id;
+                        $referaldata->user_id  = $user->id;
                         $referaldata->save();
                     }
                 }
@@ -317,7 +320,7 @@ class AuthController extends Controller
                             
                         }
                         else{
-                           return ResponseBuilder::error( __("These credentials do not match our records"), $this->badRequest);
+                           return ResponseBuilder::error( __("Password does not match"), $this->badRequest);
                         }
                     }else{
                         return ResponseBuilder::successMessage( __("Your account is not approved"), $this->badRequest);
@@ -532,7 +535,7 @@ class AuthController extends Controller
 
     public function social(Request $request)
     {
-        // try {
+        try {
 
             $validator = Validator::make($request->all(), [
                 'provider'  => 'required|in:google,apple',
@@ -575,6 +578,7 @@ class AuthController extends Controller
                     $pwd = Str::random(10);
                     $user = new User;
                     $user->email = $loginEmail;
+                    $user->name = $loginName;
                     $user->first_name = $loginName;
                     $user->social_id = $social_user->getId();
                     $user->password = Hash::make($pwd);
@@ -632,12 +636,11 @@ class AuthController extends Controller
                 $data->token = $user->createToken(env('APP_NAME'))->accessToken;
                 $this->setAuthResponse($user);
                 return ResponseBuilder::successWithToken($data->token, $this->response, 'Login Successfully');
-                // return response()->json(['data' => $data, 'status' => true, 'message' => 'Your account logged in successfully', 'details' => $user]);
             }
-        // } 
-        // catch (\Exception $e) {
-        //    return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
-        // }
+        } 
+        catch (\Exception $e) {
+           return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        }
     }
 
     public function additional_account(Request $request)
@@ -747,7 +750,7 @@ class AuthController extends Controller
     public function connected_service(Request $request)
     {
         try{
-           if (Auth::guard('api')->check()) {
+            if (Auth::guard('api')->check()) {
                 $singleuser = Auth::guard('api')->user();
                 $user_id = $singleuser->id;
             } 
@@ -774,6 +777,29 @@ class AuthController extends Controller
         }catch(\Exception $e)
         {
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+        }
+    }
+
+    public function submitProfile()
+    {
+        try
+        {
+            if (Auth::guard('api')->check()) {
+                $singleuser = Auth::guard('api')->user();
+                $user_id = $singleuser->id;
+            } 
+            else{
+                return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+            }
+
+            $userGet =  User::where('id',$user_id)->first();
+            $userGet->is_profile_complete = 1;
+            $userGet->save();
+            return ResponseBuilder::successMessage("Profile submitted successfully", $this->success);
+        }
+        catch(\Exception $e)
+        {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
         }
     }
 }

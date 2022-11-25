@@ -180,7 +180,7 @@
                                 </div>
                             </div>
                             
-                            <a class="btn btn-success btn_back" href="{{ url()->previous() }}">
+                            <a class="btn btn-warning btn_back" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>

@@ -364,7 +364,7 @@
                             <input type="file" class="form-control" name="image" value="">
                             <br>
                             <div>
-                                <input class="btn btn-danger" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
 

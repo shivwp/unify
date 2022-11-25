@@ -10,11 +10,12 @@
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row ">
+            <div class="col-lg-12">
                 @can('project_status_create')
                 <div class="row tabelhed d-flex justify-content-between">
                     <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
                         @can('user_create')
-                        <a class="btn-sm ad-btn text-center pt-2" href="{{ route("admin.project-category.create") }}"> Add</a>
+                        <a class="btn-sm ad-btn create_btn text-center pt-2" href="{{ route("admin.project-category.create") }}"> Add</a>
                         @endcan
                         <button id="btnExport" onClick="fnExcelReport()" class="btn-sm ad-btn clearfix">Excel</button>
                     </div>
@@ -92,9 +93,15 @@
                        
                                            
                                              <td>
-                                                <a href="{{ route('admin.project-category.sub_category', $projectCate->id) }}">{{ $projectCate->name ?? '' }}</a>
+                                                {{ $projectCate->name ?? '' }}
                                             </td>
-                                            <td>{{ $count ?? '' }}</td>
+                                            <td>
+                                                @if($count>0)
+                                                <a href="{{ route('admin.project-category.sub_category', $projectCate->id) }}">{{ $count ?? '' }}</a>
+                                                @else
+                                                    {{$count ?? ''}}
+                                                    @endif
+                                            </td>
                                             <td>
                                                 @can('project_category_show')
                                                     <a href="{{ route('admin.project-category.show', $projectCate->id) }}">
@@ -167,6 +174,7 @@
             </div>
         </div>
     </div>
+</div>
 @endsection
 @section('scripts')
 @parent

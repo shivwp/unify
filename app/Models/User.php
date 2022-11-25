@@ -58,6 +58,8 @@ class User extends Authenticatable
         'avg_rating',
         'agree_terms',
         'send_email',
+        'payment_verified',
+        'is_profile_complete'
     ];
 
     public function getEmailVerifiedAtAttribute($value)
@@ -96,6 +98,6 @@ class User extends Authenticatable
     }
     public function freelancer()
     {
-        return $this->hasOne(Freelancer::class,'user_id');
+        return $this->hasOne(Freelancer::class,'user_id', 'id');
     }
 }

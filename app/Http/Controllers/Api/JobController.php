@@ -154,7 +154,6 @@ class JobController extends Controller
          }
 
          $project = Project::where('id',$request->project_id)->first();
-         // dd($project);
          $project->client_id  = $user_id;
          $project->name  = isset($request->job_title) ? $request->job_title : $project->name;
          $project->description  = isset($request->description) ? $request->description : $project->description;

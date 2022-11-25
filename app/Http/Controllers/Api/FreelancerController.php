@@ -43,8 +43,8 @@ class FreelancerController extends Controller
 {
 	public function get_profile_info()
 	{
-		try
-		{
+		// try
+		// {
 			if (Auth::guard('api')->check()) {
 	            $singleuser = Auth::guard('api')->user();
 	            $userRole = strtolower($singleuser->roles()->first()->title);
@@ -59,7 +59,9 @@ class FreelancerController extends Controller
          	}
          	$checkclient = Client::where('user_id',$user_id)->first();
          	$checkagency = Agency::where('user_id',$user_id)->first();
+         	$freelancer_meta = $this->getFreelancerMeta($user_id);
          	$freelancer_profile_data = $this->getFreelancerInfo($user_id);
+         	$freelancer_profile_data['hours_per_week'] = isset($freelancer_meta['hours_per_week']) ? $freelancer_meta['hours_per_week'] : '';
          	$this->response->basic_info = new FreelancerResource($freelancer_profile_data);
          	if(!empty($checkclient)){
          		$client = true;
@@ -80,7 +82,6 @@ class FreelancerController extends Controller
          	$this->response->employment = new FreelancerExperienceResource($freelancer_profile_data->freelancer->freelancer_experiences);
          	$this->response->education = new FreelancerEducationCollection($freelancer_profile_data->freelancer->freelancer_education);
 
-         	$freelancer_meta = $this->getFreelancerMeta($user_id);
 
          	//language
          	$language = [];
@@ -104,11 +105,11 @@ class FreelancerController extends Controller
          	$this->response->video = isset($video) ? $video : '';
 
          	return ResponseBuilder::success($this->response, "Freelancer Profile Data");
-		}
-		catch(\Exception $e)
-		{
-			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
-		}
+		// }
+		// catch(\Exception $e)
+		// {
+		// 	return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		// }
 	}
 
 	public function edit_name_info(Request $request)
@@ -147,7 +148,7 @@ class FreelancerController extends Controller
          	$user_name->profile_image = !empty($request->hasFile('profile_image')) ? $this->uploadProfile_image($request->profile_image) : (($user_name->profile_image) ? $user_name->profile_image : '');
          	$user_name->save();
 
-         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	return ResponseBuilder::successMessage("Updated Successfully", $this->success);
         }
         	catch(\Exception $e){
          	return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -187,7 +188,7 @@ class FreelancerController extends Controller
 
          	$freelancer_profile_data = User::with('freelancer')->where('id',$user_id)->first();
          	$this->response->freelancer = new FreelancerResource($freelancer_profile_data);
-         	return ResponseBuilder::successMessage("Update Successfully",$this->success);
+         	return ResponseBuilder::successMessage("Updated Successfully",$this->success);
         }
         	catch(\Exception $e){
          	return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -243,7 +244,7 @@ class FreelancerController extends Controller
 		                $skilll_id->delete();
 		            }
 		        }
-		        return ResponseBuilder::successMessage("Update Successfully", $this->success);
+		        return ResponseBuilder::successMessage("Updated Successfully", $this->success);
 		    }
 		}
 		catch(\Exception $e)
@@ -290,9 +291,9 @@ class FreelancerController extends Controller
          	]);
          	if(!empty($portfolioData)){
          		if(!empty($request->id)){
-         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         			return ResponseBuilder::successMessage("Updated Successfully", $this->success);
          		}else{
-         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         			return ResponseBuilder::successMessage("Added Successfully", $this->success);
          		}
          	}
 		}
@@ -467,9 +468,9 @@ class FreelancerController extends Controller
          	]);
          	if(!empty($certificateData)){
          		if(!empty($request->id)){
-         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         			return ResponseBuilder::successMessage("Updated Successfully", $this->success);
          		}else{
-         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         			return ResponseBuilder::successMessage("Added Successfully", $this->success);
          		}
          	}
 		}
@@ -522,9 +523,9 @@ class FreelancerController extends Controller
          	]);
          	if(!empty($experienceData)){
          		if(!empty($request->id)){
-         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         			return ResponseBuilder::success($experienceData, "Updated Successfully");
          		}else{
-         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         			return ResponseBuilder::success($experienceData,"Added Successfully");
          		}
          	}
 		}
@@ -560,7 +561,7 @@ class FreelancerController extends Controller
          	// dd($dltPortfolio);
          	if(!empty($dltPortfolio)){
          		$dltPortfolio->delete();
-         		return ResponseBuilder::successMessage("Delete Successfully", $this->success);
+         		return ResponseBuilder::successMessage("Deleted Successfully", $this->success);
          	}else{
          		return ResponseBuilder::error("No Data Available", $this->success);
          	}
@@ -595,7 +596,7 @@ class FreelancerController extends Controller
          	// dd($dltPortfolio);
          	if(!empty($dltPortfolio)){
          		$dltPortfolio->delete();
-         		return ResponseBuilder::successMessage("Delete Successfully", $this->success);
+         		return ResponseBuilder::successMessage("Deleted Successfully", $this->success);
          	}else{
          		return ResponseBuilder::error("No Data Available", $this->success);
          	}
@@ -630,7 +631,7 @@ class FreelancerController extends Controller
          	// dd($dltPortfolio);
          	if(!empty($dltPortfolio)){
          		$dltPortfolio->delete();
-         		return ResponseBuilder::successMessage("Delete Successfully", $this->success);
+         		return ResponseBuilder::successMessage("Deleted Successfully", $this->success);
          	}else{
          		return ResponseBuilder::error("No Data Available", $this->success);
          	}
@@ -665,7 +666,7 @@ class FreelancerController extends Controller
          	// dd($dltPortfolio);
          	if(!empty($dltPortfolio)){
          		$dltPortfolio->delete();
-         		return ResponseBuilder::successMessage("Delete Successfully", $this->success);
+         		return ResponseBuilder::successMessage("Deleted Successfully", $this->success);
          	}else{
          		return ResponseBuilder::error("No Data Available", $this->success);
          	}
@@ -704,7 +705,7 @@ class FreelancerController extends Controller
 			];
 			if(!empty($video_meta)){
 				$uploadvideo = $this->updateFreelancerAllMeta($user_id,$video_meta);
-				return ResponseBuilder::successMessage("Update Successfully", $this->success);
+				return ResponseBuilder::successMessage("Updated Successfully", $this->success);
 			}else{
 				return ResponseBuilder::error("No Data available", $this->badRequest);
 			}
@@ -750,9 +751,9 @@ class FreelancerController extends Controller
          	]);
          	if(!empty($educationData)){
          		if(!empty($request->id)){
-         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         			return ResponseBuilder::success($educationData, "Updated Successfully");
          		}else{
-         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         			return ResponseBuilder::success($educationData, "Added Successfully");
          		}
          	}
 		}
@@ -779,7 +780,7 @@ class FreelancerController extends Controller
 			if(!empty($request->languages)){
 				$lang = 'language';
 				$uploadvideo = $this->updateFreelancerMeta($user_id,$lang,json_encode($request->languages));
-				return ResponseBuilder::successMessage("Update Successfully", $this->success);
+				return ResponseBuilder::successMessage("Updated Successfully", $this->success);
 			}else{
 				return ResponseBuilder::error("No Data available", $this->badRequest);
 			}
@@ -817,7 +818,7 @@ class FreelancerController extends Controller
          	$visibleData->project_preference = $request->project_preference;
          	$visibleData->save();
 
-         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	return ResponseBuilder::successMessage("Updated Successfully", $this->success);
         }
 		catch(\Exception $e)
 		{
@@ -851,7 +852,7 @@ class FreelancerController extends Controller
          	$expData->experience_level = $request->experience_level;
          	$expData->save();
 
-         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	return ResponseBuilder::successMessage("Updated Successfully", $this->success);
         }
 		catch(\Exception $e)
 		{
@@ -892,9 +893,9 @@ class FreelancerController extends Controller
          	]);
          	if(!empty($expeData)){
          		if(!empty($request->id)){
-         			return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         			return ResponseBuilder::successMessage("Updated Successfully", $this->success);
          		}else{
-         			return ResponseBuilder::successMessage("Add Successfully", $this->success);
+         			return ResponseBuilder::successMessage("Added Successfully", $this->success);
          		}
          	}
 		}
@@ -940,7 +941,7 @@ class FreelancerController extends Controller
          		'zip_code'		=>	isset($request->zip_code) ? $request->zip_code : (isset($user->zip_code) ? $user->zip_code : null),
          	]);
          	if(!empty($locationData)){
-         		return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         		return ResponseBuilder::successMessage("Updated Successfully", $this->success);
          	}
 		}
 		catch(\Exception $e)
@@ -984,7 +985,7 @@ class FreelancerController extends Controller
 				$hours_title = HoursPerWeek::where('id',$request->hours_id)->select('title')->first();
 				$hour = 'hours_per_week';
 				$uploadvideo = $this->updateFreelancerMeta($user_id,$hour,$hours_title->title);
-				return ResponseBuilder::successMessage("Update Successfully", $this->success);
+				return ResponseBuilder::successMessage("Updated Successfully", $this->success);
 			}else{
 				return ResponseBuilder::error("No Data available", $this->badRequest);
 			}
@@ -1027,7 +1028,7 @@ class FreelancerController extends Controller
          	}
          	$user_name->save();
 
-         	return ResponseBuilder::successMessage("Update Successfully", $this->success);
+         	return ResponseBuilder::successMessage("Updated Successfully", $this->success);
 		}catch(\Exception $e)
 		{
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -1076,7 +1077,7 @@ class FreelancerController extends Controller
    
          	if(!empty($educationDelete)){
          		$educationDelete->delete();
-         		return ResponseBuilder::successMessage("Delete Successfully", $this->success);
+         		return ResponseBuilder::successMessage("Deleted Successfully", $this->success);
          	}else{
          		return ResponseBuilder::error("No Data Available", $this->success);
          	}
@@ -1214,6 +1215,38 @@ class FreelancerController extends Controller
 		catch(\Exception $e)
 		{
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function addCategory(Request $request)
+	{
+		try{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$validator = Validator::make($request->all(), [
+         		'category_id'	=>	'required|exists:project_category,id'
+         	]);
+
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+	        $freelanceData = Freelancer::where('user_id',$user_id)->first();
+	        if(!empty($freelanceData)){
+	        	$freelanceData->category = $request->category_id;
+	        	$freelanceData->save();
+         		return ResponseBuilder::successMessage("Updated Successfully", $this->success);
+	        }else{
+				return ResponseBuilder::error("No User found",$this->serverError);
+	        }
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error($e->getMessage(),$this->serverError);
 		}
 	}
 }

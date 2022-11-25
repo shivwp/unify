@@ -19,14 +19,18 @@ class ProjectCategory extends Model
 
     protected $fillable = [
         'name',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+        'short_description',
+        'long_description',
+        'banner_image',
     ];
 
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+    public function skills()
+    {
+        return $this->hasMany(ProjectSkill::class,'cate_id');
     }
     public function parentcategory()
     {

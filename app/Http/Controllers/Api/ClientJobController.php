@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Admin\ProjectResource;
+use App\Http\Resources\Admin\FreelancerCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
@@ -19,6 +20,7 @@ use App\Models\User;
 use App\Models\CloseJob;
 use App\Models\Agency;
 use App\Models\Client;
+use App\Models\SavedTalent;
 use App\Models\IncomeSource;
 use App\Models\InviteFreelacner;
 use Illuminate\Http\Request;
@@ -40,7 +42,7 @@ class ClientJobController extends Controller
 	            return ResponseBuilder::error(__("User not found"), $this->unauthorized);
 	        }
 	        $page = !empty($request->pagination) ? $request->pagination : 10; 
-	        $job_list = Project::where('client_id',$user_id)->where('status','!=','close')->orderBy('created_at','DESC')->with('skills','categories');
+	        $job_list = Project::where('client_id',$user_id)->where('status','publish')->orderBy('created_at','DESC')->with('skills','categories');
 
        		if(!empty($request->title)){
        			$job_list->where('name', 'LIKE', "%$request->title%");
@@ -103,7 +105,7 @@ class ClientJobController extends Controller
 		{
 			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
 		}
-	}
+	} 
 
 	public function inviteFreelancer(Request $request)
 	{
@@ -197,25 +199,112 @@ class ClientJobController extends Controller
 		}
 	}
 
-	// public function inviteFreelancerList(Request $request)
-	// {
-	// 	try
-	// 	{
-	// 		if (Auth::guard('api')->check()) {
-	//             $singleuser = Auth::guard('api')->user();
-	//             $user_id = $singleuser->id;
-	//         } 
- //         	else{
- //             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
- //         	}
- //         	$all_inviteFreelance = InviteFreelacner::where('client_id',$user_id)->get();
- //         	dd($all_inviteFreelance);
+	public function savedTalent(Request $request)
+	{
+		try {
+			if(Auth::guard('api')->check()){
+				$singleuser = Auth::guard('api')->user();
+				$user_id = $singleuser->id;
+			}
+			else{
+				return ResponseBuilder::error(__("User not found"),$this->unauthorized);
+			}
 
-	// 	}
-	// 	catch(\Expection $e)
-	// 	{
-	// 		return ResponseBuilder::error($e->getMessage(), $this->serverError);
-	// 	}
-	// } 
+			$validator = Validator::make($request->all(),[
+				'freelancer_id' => 'required|exists:freelancer,user_id',
+			]);
+
+			if($validator->fails()){
+				return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+			}
+
+			$data = SavedTalent::where('client_id','=', $user_id)->where('freelancer_id','=', $request->freelancer_id)->first();
+
+			if(!empty($data))
+			{
+				return ResponseBuilder::error('Already saved talent', $this->badRequest);
+			}
+			else
+			{
+				$savetalent = new SavedTalent;
+				$savetalent->client_id = $user_id;
+				$savetalent->freelancer_id = $request->freelancer_id;
+				$savetalent->save();
+
+				return ResponseBuilder::successMessage('Talent saved Successfully', $this->success);
+			}
+
+		} catch (\Exception $e) {
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
+	}
+
+	public function saveTalentList(Request $request)
+	{
+		try
+		{
+			if(Auth::guard('api')->check()){
+				$singleuser = Auth::guard('api')->user();
+				$user_id = $singleuser->id;
+			}
+			else{
+				return ResponseBuilder::error(__("User not found"),$this->unauthorized);
+			}
+			$allsavetalent = SavedTalent::where('client_id',$user_id)->pluck('freelancer_id')->toArray();
+
+			if(!empty($allsavetalent)){
+				$talentuser = User::whereIn('id',$allsavetalent)->with('freelancer')->get();
+				if(!empty($talentuser))
+		        {
+		            $this->response = new FreelancerCollection($talentuser);
+		            return ResponseBuilder::success($this->response, "All Saved Talent List");
+		        }
+		        else{
+		        	return ResponseBuilder::error("No Data found", $this->serverError);
+		        }
+			}else{
+				return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+			}
+		}
+		catch(\Expection $e)
+		{
+
+		}
+	}	
+
+	public function inviteFreelancerList(Request $request)
+	{
+		try
+		{
+			if (Auth::guard('api')->check()) {
+	            $singleuser = Auth::guard('api')->user();
+	            $user_id = $singleuser->id;
+	        } 
+         	else{
+             	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
+         	}
+         	$all_inviteFreelance = InviteFreelacner::where('client_id',$user_id)->pluck('freelancer_id')->toArray();
+
+         	if(!empty($all_inviteFreelance)){
+				$freelance_data = User::whereIn('id',$all_inviteFreelance)->with('freelancer')->get();
+				// dd($freelance_data);
+				if(count($freelance_data) > 0)
+		        {
+		            $this->response = new FreelancerCollection($freelance_data);
+		            return ResponseBuilder::success($this->response, "Invited freelacner's List");
+		        }
+		        else{
+		        	return ResponseBuilder::error("No Data found", $this->notFound);
+		        }
+			}else{
+				return ResponseBuilder::error('No data found', $this->serverError);
+			}
+
+		}
+		catch(\Expection $e)
+		{
+			return ResponseBuilder::error($e->getMessage(), $this->serverError);
+		}
+	} 
 
 }

@@ -60,6 +60,9 @@ Route::middleware('auth:api')->group(function () {
 
 	// Contracts List
 	Route::get('contracts', [App\Http\Controllers\Api\Freelancer\ContractsController::class, 'ContractsList']);
+
+	// freelancer category
+	Route::post('add-category', [App\Http\Controllers\Api\FreelancerController::class, 'addCategory']);
 });
 
 //freelancer List

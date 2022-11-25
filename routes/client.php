@@ -38,6 +38,11 @@ Route::middleware('auth:api')->group(function () {
 	//invite freelancer list
 	Route::get('all-invite-freelancers', [App\Http\Controllers\Api\ClientJobController::class, 'inviteFreelancerList']);
 
+	// saved Talent
+	Route::post('save-talent', [App\Http\Controllers\Api\ClientJobController::class, 'savedTalent']);
+
+	//save talent list
+	Route::post('save-talent-list', [App\Http\Controllers\Api\ClientJobController::class, 'saveTalentList']);
 });
 
 //category-list

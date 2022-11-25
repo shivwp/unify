@@ -361,7 +361,48 @@
                             @else
                                 <p class="mb-0">No data Found</p>
                             @endif
-                            <a class="btn btn-success btn_back" href="{{ url()->previous() }}">
+                            <br>
+                            <h5><strong>Working hours info</strong></h5>
+                            @if(isset($work_time))
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Hours Per Week</strong></h6>
+                                            <p class="mb-0">{{ $work_time ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <p class="mb-0">No data Found</p>
+                            @endif
+                            <br>
+                            <h5><strong>Videos info</strong></h5>
+                            <div class="row">
+                                @if(isset($video_type))
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Video Type</strong></h6>
+                                            <p class="mb-0">{{ $video_type ?? '-'}}</p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <p class="mb-0">No data Found</p>
+                                @endif
+                                @if(isset($video_link))
+                                    <div class="col-md-6">
+                                        <div class="p-3 listViewclr">
+                                            <h6><strong>Video</strong></h6>
+                                            <p class="mb-0">
+                                                {{-- $video_link ?? '-' --}}
+                                                <iframe width="420" height="345" src="https://www.youtube.com/embed/5Peo-ivmupE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                            </p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <p class="mb-0">No data Found</p>
+                                @endif
+                            </div>
+                            <a class="btn btn-warning btn_back" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>
