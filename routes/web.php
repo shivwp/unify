@@ -23,6 +23,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
     Route::resource('users', 'UsersController');
     Route::get('user/statusupdate/{id}', 'UsersController@statusupdate');
+    Route::get('users/statusblock/{id}','UsersController@statusBlock')->name('users.block');
 
     // Currencies
     Route::delete('currencies/destroy', 'CurrencyController@massDestroy')->name('currencies.massDestroy');
@@ -50,12 +51,20 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //Close Reason
     Route::resource('close-reason', 'CloseReasonController');
 
+    // Project Close Reason
+    Route::resource('project-close-reason', 'ProjectCloseReasonController');
+
+    //Dislike Reason
+    Route::resource('dislike-reason', 'DislikeReasonController');
+
     //hoursPerWeek
     Route::resource('hours-per-week', 'HoursController');
 
     // Projectscategory
     Route::delete('project-category/destroy', 'ProjectCategoryController@massDestroy')->name('project-category.massDestroy');
     Route::resource('project-category', 'ProjectCategoryController');
+    Route::get('project-sub-category/{id}', 'ProjectCategoryController@sub_category')->name('project-category.sub_category');
+    Route::get('project-sub-category/create/{id}', 'ProjectCategoryController@sub_category_create')->name('project-category.sub_category_create');
 
     // Projectskill
     Route::delete('project-skill/destroy', 'ProjectSkillController@massDestroy')->name('project-skill.massDestroy');
@@ -85,6 +94,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('/project-delete/{id}', 'ProjectController@destroy');
     Route::POST('/project-multi-delete', 'ProjectController@project_multi_delete');
 
+    Route::get('project-proposal/{id}', 'ProjectController@project_proposal')->name('project-proposal');
+
+    // Contracts
+    Route::resource('contracts', 'ContractController');
+
     //Jobs
     Route::resource('jobs', 'JobController');
     Route::get('/jobs-delete/{id}', 'JobController@destroy');
@@ -96,6 +110,18 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     
     // Industry
     Route::resource('industry', 'IndustryController');
+
+    // Certificate
+    Route::resource('certificate', 'CertificateController');
+
+    // Degree
+    Route::resource('degree', 'DegreeController');
+
+    // Specialization
+    Route::resource('specialization', 'SpecializationController');
+
+    // Pages
+    Route::resource('page', 'PageController');
 
     //subscription
     Route::post('service/{id}', 'ServicesController@destroy')->name('service');

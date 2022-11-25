@@ -29,6 +29,17 @@
                         </select>
                     </form> 
                 </div>
+                <?php if(!empty($_GET['user_status_filter'])){$status_filter= $_GET['user_status_filter'];}else{ $status_filter='';} ?>
+                <div class="col-xl-2 p-0">
+                    <form action="" method="get" id="status_filter_form">
+                        <select class="form-control" id="user_status_filter" name="user_status_filter">
+                            <option value="" class="text-center">Select Status</option>
+                            <option value="pending" class="text-center" @if($status_filter=="pending") selected @endif>Pending</option>
+                            <option value="approve" class="text-center" @if($status_filter=="approve") selected @endif>Approve</option>
+                            <option value="reject" class="text-center"  @if($status_filter=="reject") selected @endif>Rejected</option>
+                        </select>
+                    </form> 
+                </div>
                 <div class="col-lg-5 col-md-5 col-sm-5 "> 
                     <?php 
                     if(!empty($_GET['search'])){
@@ -116,13 +127,30 @@
                                                     
                                                 </form>
                                             @endcan
-            
+<!--                                             <a href="{{route('admin.users.block', $user->id)}}">
+                                                <span class="btn btn-xs btn-warning text-capitalize">{{ 'Block' }}</span></a> -->
+                                                 @if($user->status == 'approve')
+                                                     <a href="{{route('admin.users.block', $user->id)}}">
+                                                        <button class="btn btn-sm btn-icon me-2"><i class="fa fa-lock" aria-hidden="true"></i></button>
+                                                    </a>
+                                                @else
+                                                    <a href="{{route('admin.users.block', $user->id)}}">
+                                                        <button class="btn btn-sm  btn-icon me-2"><i class="fa fa-unlock-alt" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Unblock</span>"></i></button>
+                                                    </a>
+                                                @endif
+
+
                                         </td>
+
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        {!! $users->links() !!}
+                        @if ((request()->get('search')) || (request()->get('user_status_filter')) || (request()->get('user_filter')))
+                            {{ $users->appends(['search' => request()->get('search'),'user_status_filter' => request()->get('user_status_filter'),'user_filter' => request()->get('user_filter')])->links() }}
+                        @else
+                            {!! $users->links() !!}
+                        @endif
                     </div>
                 </div>
             </div>
@@ -177,6 +205,8 @@ $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
         .columns.adjust();
 });
 })
+
+
 
 </script>
 

@@ -12,6 +12,7 @@ class FreelancerPortfolio extends Model
 
     protected $fillable = [
         'user_id',
+        'specialize_profile_id',
         'title',
         'description',
         'image',

@@ -12,25 +12,34 @@ class SendProposal extends Model
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
     ];
 
     protected $fillable = [
-        'job_id',
-        'user_id',
-        'status',
-        'bid_amount',
-        'platform_fee',
-        'receive_amount',
-        'project_duration',
-        'cover_letter',
+        'project_id',
+        'client_id',
+        'freelancer_id',
+        'budget_type',
+        'amount',
+        'weekly_limit',
+        'title',
+        'date',
+        'cover_letter', 
         'image',
+        'status'
     ];
     
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        // return $this->belongsToMany(Project::class);
+        return $this->hasMany(Project::class, 'id', 'project_id');
     }
 
-    
+    public function users()
+    {
+        return $this->hasMany(User::class,'id','freelancer_id');
+    }
+    public function client()
+    {
+        return $this->hasMany(User::class,'id','client_id');
+    }
 }

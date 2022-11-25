@@ -9,7 +9,7 @@ class Jobs extends Model
 {
   
 
-    public $table = 'jobs';
+    public $table = 'contracts';
 
     protected $dates = [
         'created_at',

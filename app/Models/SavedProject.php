@@ -22,7 +22,7 @@ class SavedProject extends Model
     
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany(Project::class,'saved_projects','id','project_id');
     }
 
     

@@ -10,14 +10,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\AccountCloseReason;
+use App\Models\ProjectCloseReason;
 use App\Models\ProjectCategory;
 use App\Models\SpecializeProfile;
 use App\Models\HoursPerWeek;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
 use App\Models\ProjectSkill;
+use App\Models\DislikeReason;
 use App\Models\TimeZone;
 use App\Models\Business_size;
+use App\Models\Certificate;
 use App\Models\Industries;
 use App\Models\Page;
 use Carbon\Carbon;
@@ -202,6 +205,56 @@ class CommonController extends Controller
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function certificatelist(Request $request)
+      {
+         try
+         {
+            $certificate_list =  Certificate::select('id','name')->get();
+            if(count($certificate_list) > 0){
+               return ResponseBuilder::success($certificate_list, "Certificates List");
+            }else{
+               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function dislike_reasons(Request $request)
+      {
+         try
+         {
+            $dislikeReaons_list =  DislikeReason::select('id','name')->get();
+            if(count($dislikeReaons_list) > 0){
+               return ResponseBuilder::success($dislikeReaons_list, "Dislike Reasons List");
+            }else{
+               return ResponseBuilder::error(__("No Data found"), $this->notFound);
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function jobCloseReasonList()
+      {
+         try{
+            $projectCloseReason = ProjectCloseReason::select('id','name')->get();
+            if(count($projectCloseReason) > 0){
+               return ResponseBuilder::success($projectCloseReason, "Job Close Reasons List");
+            }else{
+               return ResponseBuilder::error("No data found", $this->notFound);
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error($e->getMessage(), $this->serverError);
          }
       }
 

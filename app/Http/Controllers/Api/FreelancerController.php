@@ -28,6 +28,8 @@ use App\Models\ProjectSkill;
 use App\Models\HoursPerWeek;
 use App\Models\Freelancer;
 use App\Models\User;
+use App\Models\Agency;
+use App\Models\Client;
 use App\Models\Role;
 use App\Models\Mails;
 use Carbon\Carbon;
@@ -55,8 +57,22 @@ class FreelancerController extends Controller
          	else{
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
+         	$checkclient = Client::where('user_id',$user_id)->first();
+         	$checkagency = Agency::where('user_id',$user_id)->first();
          	$freelancer_profile_data = $this->getFreelancerInfo($user_id);
          	$this->response->basic_info = new FreelancerResource($freelancer_profile_data);
+         	if(!empty($checkclient)){
+         		$client = true;
+         	}else{
+         		$client = false;
+         	}
+         	if(!empty($checkagency)){
+         		$agency = true;
+         	}else{
+         		$agency = false;
+         	}
+         	$this->response->is_client = $client;
+         	$this->response->is_agency = $agency;
          	$this->response->skills = new FreelancerSkillResource($freelancer_profile_data->freelancer->freelancer_skills);
          	$this->response->portfolio = new FreelancerPortfolioResource($freelancer_profile_data->freelancer->freelancer_portfolio);
          	$this->response->testimonial = new FreelancerTestimonialResource($freelancer_profile_data->freelancer->freelancer_testimonial);
@@ -108,7 +124,6 @@ class FreelancerController extends Controller
          	}
          	$validator = Validator::make($request->all(), [
          		'first_name'  => 'required',
-         		'last_name'  => 'required',
          		'profile_image'=>'image'
          	]);
 
@@ -251,6 +266,7 @@ class FreelancerController extends Controller
          	$validator = Validator::make($request->all(), [
          		'title'  => 'required',
          		'image'=>'image',
+         		// 'specialize_profile_id'	=>'required|exists:user_specialize,id',
          	]);
 
 	        if ($validator->fails()) {
@@ -259,13 +275,18 @@ class FreelancerController extends Controller
 
          	$parameters = $request->all();
          	extract($parameters);
+
+         	$pImage = FreelancerPortfolio::where('id',$request->id)->first();
+         	
          	$portfolioData = FreelancerPortfolio::updateOrCreate([
          		'id'		=>	$request->id,
          		'user_id'	=>	$user_id,
+         		// 'specialize_profile_id'	=>	$request->specialize_profile_id,
          	],[
+         		// 'specialize_profile_id'	=>	$request->specialize_profile_id,
          		'title'		=>	$request->title,
          		'description'=>	$request->description,
-         		'image'		=>	isset($request->image) ? $this->freelancerPortfolioImage($request->image) : '',
+         		'image'		=>	isset($request->image) ? $this->freelancerPortfolioImage($request->image) : (isset($pImage->image) ? $pImage->image : ''),
          	]);
          	if(!empty($portfolioData)){
          		if(!empty($request->id)){
@@ -322,32 +343,31 @@ class FreelancerController extends Controller
          	if(!empty($testimonialData)){
          		//mail to client
                    
-                    $mail_data = Mails::where('user_category', 'client')->where('mail_category', 'request_testimonial')->first();
-                    $basicinfo = [
-                    	'{id}'=> $testimonialData->id,
-                        '{freelancer_name}'=>$singleuser->name,
-                        '{client_name}'=> $request->first_name,
-                    ];
+                $mail_data = Mails::where('user_category', 'client')->where('mail_category', 'request_testimonial')->first();
+                $basicinfo = [
+                	'{id}'=> $testimonialData->id,
+                    '{freelancer_name}'=>$singleuser->name,
+                    '{client_name}'=> $request->first_name,
+                ];
 
-                    $msg = $mail_data->message;
-                    foreach($basicinfo as $key=> $info){
-                        $msg = str_replace($key,$info,$msg);
-                    }
-                    
-                    $config = 
-                    [	'from_email' => $mail_data->mail_from,
-                        'reply_email' => $mail_data->reply_email,
-                        'subject' => $mail_data->subject, 
-                        'name' => $mail_data->name,
-                        'message' => $msg,
-                    ];
+                $msg = $mail_data->message;
+                foreach($basicinfo as $key=> $info){
+                    $msg = str_replace($key,$info,$msg);
+                }
+                
+                $config = 
+                [	'from_email' => $mail_data->mail_from,
+                    'reply_email' => $mail_data->reply_email,
+                    'subject' => $mail_data->subject, 
+                    'name' => $mail_data->name,
+                    'message' => $msg,
+                ];
 
-                    Mail::to($request->email)->send(new SendMail($config));
-                    $testimonial_data = [
-                    	'id'	=> $testimonialData->id,
-                    	'Request Sent'	=>  Carbon::now()->format('M d Y')
-,
-                    ];
+                Mail::to($request->email)->send(new SendMail($config));
+                $testimonial_data = [
+                	'id'	=> $testimonialData->id,
+                	'Request Sent'	=>  Carbon::now()->format('M d Y'),
+                ];
          		return ResponseBuilder::success($testimonial_data, "Your testimonial request is awaiting ".$request->first_name." 's response");
          	}
 		}
@@ -368,7 +388,12 @@ class FreelancerController extends Controller
 	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
 	        }
 
-         	$find_testimonial = FreelancerTestimonial::where('id',$request->id)->select('first_name','last_name','title','email','description_freelancer')->first();
+         	$find_testimonial = FreelancerTestimonial::where('id',$request->id)->select('id','user_id','first_name','last_name','title','email')->first();
+         	$freelancer_name = User::where('id',$find_testimonial->user_id)->select('first_name','profile_image')->first();
+         	$freelacner_occcuption = Freelancer::where('user_id',$find_testimonial->user_id)->select('occcuption')->first();
+         	$find_testimonial['freelancer_name'] = $freelancer_name->first_name;
+         	$find_testimonial['freelancer_profile_image'] = isset($freelancer_name->profile_image) ? url('/images/profile-image',$freelancer_name->profile_image) : '';
+         	$find_testimonial['occcuption'] = $freelacner_occcuption->occcuption;
          	if(!empty($find_testimonial)){
          		return ResponseBuilder::success($find_testimonial, "Testimonial Data");
          	}else{
@@ -381,9 +406,33 @@ class FreelancerController extends Controller
 		}
 	}
 
-	public function client_testimonial(Request $request)
+	public function clientTestimonial(Request $request)
 	{
+		try{
+			$validator = Validator::make($request->all(), [
+         		'id'		=> 'required|exists:freelancer_testimonial,id',
+         		'description'		=> 'required',
+         	]);
 
+	        if ($validator->fails()) {
+	            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+	        }
+	        $testimonialData = FreelancerTestimonial::where('id',$request->id)->first();
+	        if(!empty($testimonialData)){
+		        $testimonialData->description_client = $request->description;
+		        $testimonialData->first_name = $request->first_name;
+		        $testimonialData->last_name = $request->last_name;
+		        $testimonialData->status = '1';
+		        $testimonialData->save();
+		        return ResponseBuilder::successMessage("Thank You for submitting testimonial ", $this->success);
+	        }else{
+	        	return ResponseBuilder::error("No data found", $this->serverError);
+	        }
+		}
+		catch(\Exception $e)
+		{
+			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+		}
 	}
 
 	public function edit_certificate_info(Request $request)
@@ -888,6 +937,7 @@ class FreelancerController extends Controller
          		'address'		=>	isset($request->address) ? $request->address : (isset($user->address) ? $user->address : null),
          		'country'		=>	isset($request->country) ? $request->country : (isset($user->country) ? $user->country : null),
          		'city'			=>	isset($request->city) ? $request->city : (isset($user->city) ? $user->city : null),
+         		'zip_code'		=>	isset($request->zip_code) ? $request->zip_code : (isset($user->zip_code) ? $user->zip_code : null),
          	]);
          	if(!empty($locationData)){
          		return ResponseBuilder::successMessage("Update Successfully", $this->success);
@@ -913,6 +963,7 @@ class FreelancerController extends Controller
          	
          	$validator = Validator::make($request->all(), [
             	'hours_id'  => 'required|exists:hours_per_week,id',
+            	'hours_price'  => 'required',
          	]);
 
 	        if ($validator->fails()) {
@@ -922,6 +973,13 @@ class FreelancerController extends Controller
          	$parameters = $request->all();
          	extract($parameters);
 			
+			$addhr = Freelancer::where('user_id',$user_id)->first();
+			if(!empty($addhr)){
+				$addhr->amount = $request->hours_price;
+				$addhr->save();
+			}
+			
+
 			if(!empty($request->hours_id)){
 				$hours_title = HoursPerWeek::where('id',$request->hours_id)->select('title')->first();
 				$hour = 'hours_per_week';
@@ -1106,7 +1164,15 @@ class FreelancerController extends Controller
 	        	return ResponseBuilder::error(__("Already 2 out of 2 Published"), $this->badRequest);
 	        }
 	        else{
-	        	$newProfile = new UserSpecialize;
+	        	$newProfile = UserSpecialize::updateOrCreate([
+	        		'specialize_profile_id'=>$request->specialize_profile_id,
+	        		'user_id'=>$user_id,
+	        	],[
+	        		'title'=>$request->title,
+	        		'description'=>$request->description,
+	        		'status'=>$request->status,
+
+	        	]);
 	        	$newProfile->specialize_profile_id = $request->specialize_profile_id;
 	        	$newProfile->user_id = $user_id;
 	        	$newProfile->title = $request->title;
@@ -1122,13 +1188,12 @@ class FreelancerController extends Controller
 			    foreach($skills as $val){
 			        $freelanceSkill[] = $val;
 			    }
-			    
 			        foreach($projectSkill as $val){
-
 			            if(in_array($val->id, $freelanceSkill)){
 			                $save_d[] = FreelancerSkill::updateOrCreate([
 			                    'user_id'   => $user_id,
 			                    'skill_id'   => $val->id,
+			                    'specialize_profile_id'   => $request->specialize_profile_id,
 			                ],
 			                [
 			                    'skill_id'   => $val->id,
@@ -1141,7 +1206,6 @@ class FreelancerController extends Controller
 			                $skilll_id->delete();
 			            }
 			        }
-			        return ResponseBuilder::successMessage("Update Successfully", $this->success);
 			    }
 	        	return ResponseBuilder::successMessage(__("Created Profile successfully"), $this->success);
 	        }

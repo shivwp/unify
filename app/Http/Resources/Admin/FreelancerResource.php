@@ -24,12 +24,14 @@ class FreelancerResource extends JsonResource
             'total_jobs'        =>(integer)$this->freelancer->total_jobs,
             'total_hours'       =>(integer)$this->freelancer->total_hours,
             'pending_project'   =>(integer)$this->freelancer->pending_project,
+            'amount'            =>(string)$this->freelancer->amount,
             'timezone'          =>(string)$this->timezone,
             'address'           =>(string)$this->address,
             'phone'             =>(string)$this->phone,
             'country'           =>(string)$this->country,
             'state'             =>(string)$this->state,
             'city'              =>(string)$this->city,
+            'zip_code'          =>(string)$this->zip_code,
             'is_verified'       =>(string)$this->is_verified,
         ];
     }
