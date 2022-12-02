@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Helper\ResponseBuilder;
 use App\Http\Resources\Admin\ClientResource;
 use App\Http\Resources\Admin\ClientCollection;
+use App\Http\Resources\Admin\SubscriptionSingleResource;
 use App\Models\AccountCloseReason;
 use App\Http\Resources\Admin\FreelancerCollection;
 use App\Models\ProjectProjectSkill;
@@ -20,6 +21,7 @@ use App\Models\Industries;
 use App\Models\Client;
 use App\Models\SocialAccount;
 use App\Models\User;
+use App\Models\Plans;
 use App\Models\Role;
 use Carbon\Carbon;
 use Validator;
@@ -119,8 +121,12 @@ class ClientController extends Controller
          }
          
          $client_profile_data = $this->getClientInfo($user_id);
-
          $this->response->client = new ClientResource($client_profile_data);
+         $plan = Plans::with('services:service_name,description')->where('id',$client_profile_data->plan_id)->select('id','plans_title','validity','amount','description')->first();
+         if(!empty($plan)){
+            
+         $this->response->subscription = new SubscriptionSingleResource($plan);
+         }
 
          return ResponseBuilder::success($this->response, "Client Profile data");
 
@@ -270,7 +276,7 @@ class ClientController extends Controller
    {
       try{
          $validator = Validator::make($request->all(), [
-               'user_id'  =>'required|exists:client,user_id',
+               'user_id'  =>'required|exists:client,user_id|exists:users,id',
          ]);
 
          if ($validator->fails()) {
@@ -278,7 +284,6 @@ class ClientController extends Controller
          }
          
          $client_profile_data = $this->getClientInfo($request->user_id);
-
          $this->response->client = new ClientResource($client_profile_data);
 
          return ResponseBuilder::success($this->response, "Client Profile data");

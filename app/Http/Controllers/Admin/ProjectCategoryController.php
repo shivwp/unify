@@ -11,6 +11,7 @@ use Gate;
 use App\Models\ProjectProjectCategory;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Str;
 
 class ProjectCategoryController extends Controller
 {
@@ -41,9 +42,24 @@ class ProjectCategoryController extends Controller
 
     public function store(Request $request)
     {
+        $request['slug'] = Str::slug($request->name);
+        $request['new_slug'] = $request['slug'];
+
+        $count=1;
+        while(ProjectCategory::where('slug', '=', $request['new_slug'])->exists())
+        {
+            $request['new_slug'] = $request['slug'].'-'.$count;
+            $count++;
+        }
+
         $projectCategory = new ProjectCategory;
-        $projectCategory->name=$request->name;
-        $projectCategory->parent_id=$request->parent_id;
+        $projectCategory->name = $request->name;
+        $projectCategory->slug = $request['new_slug'];
+        $projectCategory->parent_id = $request->parent_id;
+        $projectCategory->short_description = $request->short_description;
+        $projectCategory->long_description = $request->long_description;
+        $projectCategory->image = !empty($request->file('image')) ? $this->categoryImage($request->file('image')) : '';
+        $projectCategory->banner_image = !empty($request->hasfile('banner_image')) ? $this->categoryImage($request->file('banner_image')) : '';
         $projectCategory->save();
 
         return redirect()->route('admin.project-category.index');
@@ -59,10 +75,15 @@ class ProjectCategoryController extends Controller
 
     public function update(Request $request, ProjectCategory $projectCategory)
     {
-        $projectCategory1=ProjectCategory::where('id',$projectCategory->id)->first();
-        $projectCategory1->name=$request->name;
-        $projectCategory1->parent_id=$request->parent_id;
-        $projectCategory1->save();
+        $categoryData = ProjectCategory::where('id',$projectCategory->id)->first();
+
+        $categoryData->name = $request->name;
+        $categoryData->parent_id = $request->parent_id;
+        $categoryData->short_description = $request->short_description;
+        $categoryData->long_description = $request->long_description;
+        $categoryData->image = ($request->hasfile('image')) ? $this->categoryImage($request->file('image')) : (($request->image_old) ? $request->image_old : '');
+        $categoryData->banner_image = ($request->hasfile('banner_image')) ? $this->categoryImage($request->file('banner_image')) : (($request->banner_image_old) ? $request->banner_image_old : '');
+        $categoryData->save();
 
         return redirect()->route('admin.project-category.index');
     }

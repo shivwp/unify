@@ -13,7 +13,14 @@ class IndustryController extends Controller
     {
         $q = Industries::query();
     
-        $d['pagination']='10';
+        if(!empty($request->pagination)){
+            $n = $request->pagination;
+        }
+        else{
+            $n = 10;
+        }
+
+        $d['pagination']= $n;
         if($request->search){
           
             $q->where('title', 'like', "%$request->search%")->paginate(10);

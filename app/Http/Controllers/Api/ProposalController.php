@@ -57,8 +57,8 @@ class ProposalController extends Controller
 
 	public function hireFreelancer(Request $request)
 	{
-		// try
-		// {
+		try
+		{
 			DB::beginTransaction();
 			if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
@@ -146,12 +146,12 @@ class ProposalController extends Controller
             	return ResponseBuilder::successMessage("Send offer successfully",$this->success);
 
             }
-		// }
-		// catch(\Exception $e)
-		// {
-		// 	 DB::rollback();
-		// 	return ResponseBuilder::error($e->getMessage(), $this->serverError);
-		// }
+		}
+		catch(\Exception $e)
+		{
+			 DB::rollback();
+			return ResponseBuilder::error($e->getMessage(), $this->serverError);
+		}
 	}
 
 }

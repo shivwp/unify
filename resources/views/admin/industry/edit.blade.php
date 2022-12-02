@@ -11,7 +11,7 @@
 
                 <div class="card">
                     <div class="card-header border-bottom">
-                        Create
+                        <h5>Edit Industry Details</h5>
                     </div>
                     <div class="card-body">
                         <form action="{{ route("admin.industry.update", [$industry->id]) }}" method="POST" enctype="multipart/form-data">
@@ -27,7 +27,7 @@
                                 <input type="text" id="description" name="description" class="form-control" value="{{ old('description', isset($industry) ? $industry->description : '') }}">
                             </div>
                             <div>
-                                <input class="btn btn-success btn_back" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn mt-3" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

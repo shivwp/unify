@@ -9,9 +9,9 @@
             
                 <div class="card">
                     <div class="card-header">
-                        Edit Plan List
+                        <h5>Edit Plan</h5>
                     </div>
-
+                    <hr class="m-0">
                     <div class="card-body">
                         <form action="{{ route("admin.plan.update", [$service->id]) }}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -29,10 +29,10 @@
                             <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }} mt-3">
                                 <label for="client">Validity</label>
                                 <select name="validity" id="client" class="form-control " required>
-                                <option value="one_month" @if($service->validity=="one_month") selected @endif >One Month</option>
-                                    <option value="three_month" @if($service->validity=="three_month") selected @endif >Three Month</option>
-                                    <option value="six_month" @if($service->validity=="six_month") selected @endif >Six Month</option>
-                                    <option value="one_year" @if($service->validity=="one_year") selected @endif >One Year</option>
+                                <option value="1 month" @if($service->validity=="1 month") selected @endif >One Month</option>
+                                    <option value="3 month" @if($service->validity=="3 month") selected @endif >Three Month</option>
+                                    <option value="6 month" @if($service->validity=="6 month") selected @endif >Six Month</option>
+                                    <option value="1 year" @if($service->validity=="1 year") selected @endif >One Year</option>
                              </select>
                                
                             </div>
@@ -58,7 +58,7 @@
                                 </select>
                             </div>
                             <div class="mt-3">
-                                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
 

@@ -23,20 +23,31 @@ class FreelancerController extends Controller
 {
     public function index(Request $request)
     {
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
+        if($request->items){
+            $d['pagination'] = $request->items;
         }
-        $q =DB::table('users')
-        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
-        ->where('role_user.role_id', '=', 2)
-        ->where('users.deleted_at','=',null)
-        ->orderBy('users.id','DESC');
+        else{
+            $d['pagination'] = 10;
+        }
 
-        if($request->search){
-            $q->where('users.name', 'like', "%$request->search%");
+        $q =DB::table('users')
+            ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+            ->where('role_user.role_id', '=', 2)
+            ->where('users.deleted_at','=',null)
+            ->orderBy('users.id','DESC');
+
+        if($request->keyword){
+            $d['search'] = $request->keyword;
+
+            $q->where(function($query) use ($d){
+                $query->where('users.name', 'like', '%'.$d['search'].'%')
+                    ->orwhere('users.email', 'like', '%'.$d['search'].'%');
+            });
+
         }
-        $d['freelance']=$q->paginate($pagination)->withQueryString();
+
+        $d['freelance']=$q->paginate($d['pagination'])->withQueryString();
+
         return view('admin.freelancer.index',$d);
     }
 
@@ -71,6 +82,22 @@ class FreelancerController extends Controller
         if(!empty($lang_data)){
             $d['languages'] = json_decode($lang_data['language']);
         }
+
+        $work_time = $this->getFreelancerMeta($id, 'hours_per_week');
+        if(!empty($work_time)){
+            $d['work_time'] = $work_time['hours_per_week'];
+        }
+
+        $video_data = $this->getFreelancerMeta($id, 'freelancer_video');
+        if(!empty($video_data)){
+            $d['video_link'] = $video_data['freelancer_video'];
+        }
+
+        $video_type = $this->getFreelancerMeta($id, 'freelancer_video_type');
+        if(!empty($video_type)){
+            $d['video_type'] = $video_type['freelancer_video_type'];
+        }
+
         return view('admin.freelancer.show',$d);
     }
 

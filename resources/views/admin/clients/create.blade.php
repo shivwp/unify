@@ -8,7 +8,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        {{ trans('global.create') }} {{ trans('cruds.client.title_singular') }}
+                       <h5> {{ trans('global.create') }} {{ trans('cruds.client.title_singular') }}</h5>
                     </div>
                 
                     <div class="card-body">

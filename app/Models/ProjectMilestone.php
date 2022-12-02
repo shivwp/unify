@@ -20,6 +20,7 @@ class ProjectMilestone extends Model
         'client_id',
         'freelancer_id',
         'description',
+        'project_duration',
         'amount',
         'due_date',
         'status',

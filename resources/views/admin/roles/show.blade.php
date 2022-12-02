@@ -8,9 +8,9 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        Show Capabilities
+                        <h5>Show Capabilities</h5>
                     </div>
-
+                    <hr class="m-0">
                     <div class="card-body">
                         <div class="mb-2">
                             <table class="table table-bordered table-striped">
@@ -43,7 +43,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <a style="margin-top:20px;" class="btn btn-default" href="{{ url()->previous() }}">
+                            <a style="margin-top:20px;" class="btn btn-warning" href="{{ url()->previous() }}">
                                 {{ trans('global.back_to_list') }}
                             </a>
                         </div>

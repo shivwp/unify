@@ -21,20 +21,31 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $pagination=10;
-        if(isset($_GET['paginate'])){
-            $pagination=$_GET['paginate'];
+        if($request->items){
+            $d['pagination'] = $request->items;
         }
-        $q =DB::table('users')
-        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
-        ->where('role_user.role_id', '=', 3)
-        ->where('users.deleted_at','=',null)
-        ->orderBy('users.id','DESC');
+        else{
+            $d['pagination'] = 10;
+        }
 
-        if($request->search){
-            $q->where('users.name', 'like', "%$request->search%");
+        $q =DB::table('users')
+            ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+            ->where('role_user.role_id', '=', 3)
+            ->where('users.deleted_at','=',null)
+            ->orderBy('users.id','DESC');
+
+        if($request->keyword){
+            $d['search'] = $request->keyword;
+
+            $q->where(function($query) use ($d){
+                $query->where('users.name', 'like', '%'.$d['search'].'%')
+                    ->orwhere('users.email', 'like', '%'.$d['search'].'%');
+            });
+
         }
-        $d['clients']=$q->paginate($pagination)->withQueryString();
+
+        $d['clients']=$q->paginate($d['pagination'])->withQueryString();
+
         return view('admin.clients.index', $d);
     }
 

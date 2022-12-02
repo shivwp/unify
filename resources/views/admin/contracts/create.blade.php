@@ -18,7 +18,7 @@
                 @endif
                 <div class="card">
                     <div class="card-header">
-                        Create Contract
+                       <h5> Create Contract</h5>
                     </div>
                     <div class="card-body">
                         {{ $errors }}

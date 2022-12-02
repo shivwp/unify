@@ -24,12 +24,23 @@ use Intervention\Image\ImageManagerStatic as Image;
 use DateTime;
 class ServicesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('project_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $d['Services']=Services::paginate(10);
+        $serv = Services::query();
+        if(!empty($request->search)){
+            $serv = $serv->where('service_name', 'LIKE', '%'.$request->search.'%');
+        }
+         if(!empty($request->pagination)){
+            $n = $request->pagination;
+        }
+        else{
+            $n = 10;
+        }
 
+        $d['pagination']= $n;
+        $d['Services'] = $serv->paginate($d['pagination']);
         return view('admin.service.index', $d);
     }
 

@@ -16,7 +16,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-xl-6">
-                                Notification List
+                               <h5> Notification List</h5>
                             </div>
                             <div class="col-xl-6">
                                 <?php 

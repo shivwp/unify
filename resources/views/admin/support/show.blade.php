@@ -1,54 +1,60 @@
 @extends('layouts.master') @section('content')
-
+<style>
+    h5 strong{
+        padding-left: 10px;
+    }
+</style>
 <div class="content-wrapper">
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-            
-<div class="card">
-    <div class="card-header">
-        Ticket
-    </div>
-
-    <div class="card-body ">
-        <div class="mb-2">
-            <table class="table table-bordered table-striped">
-                <tbody>
-                    <tr>
-                        <th>ID</th>
-                        <td>{{ $support->id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Project Name</th>
-                        <td>{{ $support->project->name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Ticket #ID</th>
-                        <td>{!! $support->ticket !!}</td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>{!! $support->description !!}</td>
-                    </tr>
-                    <tr>
-                        <th>User</th>
-                        <td>{{ $support->user->name ?? '' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Date</th>
-                        <td> {{ date('j \\ F Y', strtotime($support->created_at)) }}</td>
-                    </tr>
-                   
-                    <tr>
-                        <th>Ticket Status</th>
-                        <td> <span class="badge badge-info">{{ $support->status }}</span></td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Ticket Images</th>
-                        <td>@if(!empty($support->image))
+                <div class="card">
+                    <div class="card-header border-bottom">
+                        <h5>Show Ticket Details</h5>
+                    </div>
+                    <br>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <div class="row">
+                                <h5><strong>Basic Information</strong></h5>
+                                <div class="col-md-4 ">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>User Name</strong></h6>
+                                        <p class="mb-0">{{ $user->name ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>User Email</strong></h6>
+                                        <p class="mb-0">{{ $user->email ?? '-'}}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Job Link</strong></h6>
+                                        <p class="mb-0">{{ $support->job_link}}</p>
+                                    </div>
+                                </div>
+                                    <div class="col-md-4">
+                                    <div class="p-3 listViewclr">  
+                                        <h6><strong>Description</strong></h6>
+                                        <p class="mb-0">{{ $support->description ?? '-'}}</p>
+                                    </div>
+                                </div>
+                               
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">  
+                                        <h6><strong>Status</strong></h6>
+                                        <p class="mb-0">{{ $support->status ?? '-'}}</p>
+                                    </div>
+                                </div>
+                               
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Images</strong></h6>
+                                        @if(!empty($support->image))
                                 @php
                                 $value = json_decode($support->image);
                                 @endphp
@@ -66,46 +72,24 @@
                                 @endif
                                
                             @endif
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-    </div>
-        @if(!empty($support->solution))
-        <div class="card">
-<div class="card-header p-0 mt-2 mb-2">
-      Solution
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-bordered table-striped">
-            <tbody>
+                                    </div>
+                                </div>
+
+                            </div> 
+                            <br>
+                       
+                        
+                            <a class="btn btn-warning" href="{{ url()->previous() }}">
+                                {{ trans('global.back_to_list') }}
+                            </a>
+                        </div>
                 
-                <tr>
-               
-                    <th>
-                     {!! $support->solution !!}
-                    </th>
-                </tr>
-            </tbody>
-        </table>
+                
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-        @endif
-            <a style="margin-top:20px;" class="btn btn-success" href="{{ url()->previous() }}">
-                Back to list
-            </a>
-        </div>
-
-        <nav class="mb-3">
-            <div class="nav nav-tabs">
-
-            </div>
-        </nav>
-        <div class="tab-content">
-
-        </div>
-    </div>
-</div> 
 @endsection

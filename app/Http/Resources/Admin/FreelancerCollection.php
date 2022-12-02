@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Admin;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Carbon\Carbon;
 
 class FreelancerCollection extends ResourceCollection
 {
@@ -21,11 +22,13 @@ class FreelancerCollection extends ResourceCollection
             'occuption'         =>isset($data->freelancer->occcuption) ? $data->freelancer->occcuption : '',
             'description'       =>isset($data->freelancer->description) ? $data->freelancer->description : '',
             'rating'            =>isset($data->freelancer->rating) ? $data->freelancer->rating : '',
+            'amount'            =>isset($data->freelancer->amount) ? (float)$data->freelancer->amount : '',
             'total_earning'     =>isset($data->freelancer->total_earning) ? (float)$data->freelancer->total_earning : 0.00,
             'total_jobs'        =>isset($data->freelancer->total_jobs) ? (integer)$data->freelancer->total_jobs : 0,
             'total_hours'       =>isset($data->freelancer->total_hours) ? (integer)$data->freelancer->total_hours : 0,
             'pending_project'   =>isset($data->freelancer->pending_project) ? (integer)$data->freelancer->pending_project : 0,
             'timezone'          =>isset($data->timezone) ? $data->timezone : '',
+            'local_time'        =>!empty($data->timezone) ? Carbon::now()->timezone($data->timezone)->format('h:m A') : '',
             'address'           =>isset($data->address) ? $data->address : '',
             'phone'             =>isset($data->phone) ? $data->phone : '',
             'country'           =>isset($data->country) ? $data->country : '',
@@ -34,6 +37,11 @@ class FreelancerCollection extends ResourceCollection
             'zip_code'          =>isset($data->zip_code) ? $data->zip_code : '',
             'online_status'     =>isset($data->online_status) ? $data->online_status : '',
             'is_verified'       =>(string)$data->is_verified,
+            'hours_per_week'    =>(string)$data->hours_per_week,
+            'category_id'       =>isset($data->category->id) ?$data->category->id  : '',
+            'category'          =>isset($data->category->name) ?$data->category->name  : '',
+            'is_profile_complete'=>boolval($data->is_profile_complete),
+            'skills'            => $data->skills,
         ];
         });
     }

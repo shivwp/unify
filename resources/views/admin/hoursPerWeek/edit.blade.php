@@ -8,7 +8,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header border-bottom">
-                        Update Reason
+                        <h5>Edit</h5>
                     </div>
                 
                     <div class="card-body mt-3">
@@ -25,7 +25,7 @@
                                 <input type="text" name="description" class="form-control" value="{{ old('description', isset($hours) ? $hours->description : '') }}" required>
                             </div>
                             <div>
-                                <input class="btn btn-danger mt-3" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn mt-3" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

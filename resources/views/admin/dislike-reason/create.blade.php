@@ -8,10 +8,16 @@
         @endif
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card">
                     <div class="card-header border-bottom">
-                        Create
+                         @php
+                            if(isset($reason->id)){
+                            $msg = "Edit Dislike Resion";
+                        }else{
+                        $msg = "Create Dislike Resion";
+                    }
+                        @endphp
+                        <h5>{{$msg}}</h5>
                     </div>
                     <div class="card-body">
                         <form action="{{ route("admin.dislike-reason.store") }}" method="POST" enctype="multipart/form-data">
@@ -27,7 +33,7 @@
                                 @enderror
                             </div>
                             <div>
-                                <input class="btn btn-success btn_back" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn mt-3" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

@@ -24,6 +24,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('users', 'UsersController');
     Route::get('user/statusupdate/{id}', 'UsersController@statusupdate');
     Route::get('users/statusblock/{id}','UsersController@statusBlock')->name('users.block');
+    Route::get('indexrefrals','UsersController@usersRefrals')->name('users.indexrefrals');
 
     // Currencies
     Route::delete('currencies/destroy', 'CurrencyController@massDestroy')->name('currencies.massDestroy');
@@ -93,11 +94,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('/projects-excel', 'ProjectController@export_in_excel');
     Route::get('/project-delete/{id}', 'ProjectController@destroy');
     Route::POST('/project-multi-delete', 'ProjectController@project_multi_delete');
+    Route::get('draft-project', 'ProjectController@draft')->name('draft.index');   
 
     Route::get('project-proposal/{id}', 'ProjectController@project_proposal')->name('project-proposal');
+    Route::get('project-contract/{id}', 'ProjectController@project_contract')->name('project-contract');
+
 
     // Contracts
     Route::resource('contracts', 'ContractController');
+
 
     //Jobs
     Route::resource('jobs', 'JobController');

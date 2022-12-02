@@ -48,7 +48,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
 <!-- Main JS -->
 <script src="{{asset('admin/assets/js/main.js') }}"></script>
-<script src="//cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+<script src="//cdn.ckeditor.com/4.20.0/standard/ckeditor.js"></script>
+<!-- <script src="{{asset('admin/assets/js/ckeditor.js')}}"></script> -->
+
+<!-- SweetAlert -->
+<script src="{{asset('admin/assets/js/sweetalert.min.js')}}"></script>
 <!-- Page JS -->
 <script src="{{asset('admin/assets/js/dashboards-analytics.js') }}"></script>
 
@@ -59,338 +63,468 @@
 
 
 <script type="text/javascript">
+    function fnExcelReport() {
+        let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
+        TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
+            name: `export.xlsx`, // fileName you could use any name
+            sheet: {
+                name: 'Sheet 1' // sheetName
+            }
+        });
+    }
     $(document).ready(function() {
-       $('.ckeditor').ckeditor();
-    });
-</script>
 
-<script>
-      
-    $( document ).ready(function() {
+        if($(document).hasClass("ckeditor")){
+            CKEDITOR.replace('content');
+            CKEDITOR.config.allowedContent = true;
+        }
+   
         $('#end_date').change(function(){
-        var start_date=$('#start_date').val();
-      
-        var end_date=$('#end_date').val();
-        
-       var date1 = new Date(start_date); 
-      
-	var date2 = new Date(end_date); 
-  
-    var Time = date2.getTime() - date1.getTime(); 
-    var Days = Time / (1000 * 3600 * 24);
-    if(Days<0){
-        $("#project_duration").val("End date should be greater than Start date")+'Day';
-     
-        }else{
-            $("#project_duration").val(Days)+'Day';
-        } 
-       
-});
-    
+            var start_date=$('#start_date').val();
+          
+            var end_date=$('#end_date').val();
+            
+            var date1 = new Date(start_date); 
+                  
+        	var date2 = new Date(end_date); 
+          
+            var Time = date2.getTime() - date1.getTime(); 
+            var Days = Time / (1000 * 3600 * 24);
 
-});
-    
-</script>
-<script>
-      
-    $( document ).ready(function() {
+            if(Days<0){
+                $("#project_duration").val("End date should be greater than Start date")+'Day';
+            }else{
+                $("#project_duration").val(Days)+'Day';
+            } 
+        });
+ 
         $('#start_date').change(function(){
-        var start_date=$('#start_date').val();
-      
-        var end_date=$('#end_date').val();
-        
-       var date1 = new Date(start_date); 
-	var date2 = new Date(end_date); 
-  
-    var Time = date2.getTime() - date1.getTime(); 
-    var Days = Time / (1000 * 3600 * 24);
-  
-    if(Days<0){
-        $("#project_duration").val("End date should be greater than Start date")+'Day';
-     
-        }else{
-            $("#project_duration").val(Days)+'Day';
-        }     
-});
+            var start_date=$('#start_date').val();
+          
+            var end_date=$('#end_date').val();
+            
+            var date1 = new Date(start_date); 
+        	var date2 = new Date(end_date); 
+          
+            var Time = date2.getTime() - date1.getTime(); 
+            var Days = Time / (1000 * 3600 * 24);
+          
+            if(Days<0){
+                $("#project_duration").val("End date should be greater than Start date")+'Day';
+            }else{
+                $("#project_duration").val(Days)+'Day';
+            }     
+        });
     
-
-});
-    
-</script>
-
-<script type="text/javascript">
-    $( document ).ready(function() {
         $("#Enddate").change(function () {
            
-        var start_date = $("#Startdate").val();
-        var end_date = $("#Enddate").val();
+            var start_date = $("#Startdate").val();
+            var end_date = $("#Enddate").val();
 
-        var date1 = new Date(start_date); 
-        var date2 = new Date(end_date); 
-  
-        var Time = date2.getTime() - date1.getTime(); 
-        var Days = Time / (1000 * 3600 * 24);
+            var date1 = new Date(start_date); 
+            var date2 = new Date(end_date); 
+      
+            var Time = date2.getTime() - date1.getTime(); 
+            var Days = Time / (1000 * 3600 * 24);
   
 
             if(Days<0){
                 alert("End date should be greater than Start date");
                 $("#Enddate").val('');
-            }else{
-                
-            }
+            } 
         });
-    });
-</script> 
 
-<script>
-    $('#paymethod').on('change', function() {
-  var paymethod=(this.value );
-  if(paymethod=='hourly'){
-    $(".per_hour_budget").show();
-    $(".total_budget").hide();
-  }
-  if(paymethod=='fixed'){
-    $(".total_budget").show();
-    $(".per_hour_budget").hide();
-  }
-  if(paymethod==''){
-    $(".total_budget").hide();
-    $(".per_hour_budget").hide();
-  }
-});
-</script>
-<script>
-    $(".select2").select2();
-</script>
-<script>
-    $(function() {
+        $('#paymethod').on('change', function() {
+              var paymethod=(this.value );
+              if(paymethod=='hourly'){
+                $(".per_hour_budget").show();
+                $(".total_budget").hide();
+              }
+              if(paymethod=='fixed'){
+                $(".total_budget").show();
+                $(".per_hour_budget").hide();
+              }
+              if(paymethod==''){
+                $(".total_budget").hide();
+                $(".per_hour_budget").hide();
+              }
+        });
+
+        $(".select2").select2();
+
         $("#Project").change(function(){
             var element = $(this);
             $project_id=$(this).val();
             $('#project_id').val($project_id);
             var payment_base = $('option:selected', this).attr('data');
-           if(payment_base=='fixed'){
-            $("#amount_label").html('Amount(fixed)')
-            $(".amount").attr("placeholder", "Enter fixed amount");
-           }
-           if(payment_base=='hourly'){
-            $("#amount_label").html('Amount(per hour)')
-            $(".amount").attr("placeholder", "Enter per hour amount");
-           }
-     
+            
+            if(payment_base=='fixed'){
+                $("#amount_label").html('Amount(fixed)')
+                $(".amount").attr("placeholder", "Enter fixed amount");
+            }
+            if(payment_base=='hourly'){
+                $("#amount_label").html('Amount(per hour)')
+                $(".amount").attr("placeholder", "Enter per hour amount");
+            }
         });
-    });
-</script>
-<script type="text/javascript">
-    $('#amount').on('keyup',function(){
-  
-    $amount_value=$(this).val();
-    $unify_service_fee=$("#servicefee").val();
-    $service_fee= ($amount_value*$unify_service_fee)/100;
-    $freelance_amount=$amount_value-$service_fee;
-    $("#unify_service_fee").val($service_fee);
-    $("#freelancr_amount").val($freelance_amount);
-    })
-</script>
 
-
-
-
-<script type="text/javascript">
-    $(document).ready(function(){
+        $('#amount').on('keyup',function(){
+            $amount_value=$(this).val();
+            $unify_service_fee=$("#servicefee").val();
+            $service_fee= ($amount_value*$unify_service_fee)/100;
+            $freelance_amount=$amount_value-$service_fee;
+            $("#unify_service_fee").val($service_fee);
+            $("#freelancr_amount").val($freelance_amount);
+        });
           
         $("#formsubmit").click(function(e){
             
-          e.preventDefault();
-          checkoutvalue = 1;
-         
-           
-      
-          
-          var project_description = $('#project_description').val().length;
-          
-           
-  
-   
-          
-          if (project_description<100) {
-              $('#project_description_error').text('Description minimum words limit is 100');
-              checkoutvalue = 0;
-          }else{
-              $('.project_description_error').text('');
-          }
-  
-          if (project_description>1000) {
-             $( '#project_description_error' ).text('Description maximum words limit is 1000');
-              checkoutvalue = 0;
-          }else{
-              $('.project_description_error').text('');
-          }
-  
-         
-  
-         
-  
-         
-          if (checkoutvalue == 1) {
-            $('#formId').submit();
-             
-          }
+            e.preventDefault();
+            checkoutvalue = 1;
+
+            var project_description = $('#project_description').val().length;
+
+            if (project_description<100) {
+                $('#project_description_error').text('Description minimum words limit is 100');
+                checkoutvalue = 0;
+            }else{
+                $('.project_description_error').text('');
+            }
+
+            if (project_description>1000) {
+                $( '#project_description_error' ).text('Description maximum words limit is 1000');
+                checkoutvalue = 0;
+            }else{
+                $('.project_description_error').text('');
+            }
+
+            if (checkoutvalue == 1) {
+                $('#formId').submit();
+            }
         });
-      });
 
+        $("#end_date").on("change", function() {
+            this.setAttribute(
+                "data-date",
+                moment(this.value, "YYYY-MM-DD")
+                .format( this.getAttribute("data-date-format") )
+            )
+        }).trigger("change");
 
-      
-</script>
+        
 
-<script>
-    $("#end_date").on("change", function() {
-    this.setAttribute(
-        "data-date",
-        moment(this.value, "YYYY-MM-DD")
-        .format( this.getAttribute("data-date-format") )
-    )
-}).trigger("change")
-</script>
-<script>
-    function fnExcelReport() {
+        $('#user_filter').change(function(){
+            var user_filter = $(this).val();
+            var user_status_filter = $('#user_status_filter').val();
+            var search = $('#search_field').val();
+            var items = $('#pagination').val();
+            // console.log(user_filter);
+            // console.log(user_status_filter);
+            // console.log(search);
+            // console.log(items);
 
-        let table = document.getElementsByTagName("table"); // you can use document.getElementById('tableId') as well by providing id to the table tag
-  TableToExcel.convert(table[0], { // html code may contain multiple tables so here we are refering to 1st table tag
-    name: `export.xlsx`, // fileName you could use any name
-    sheet: {
-      name: 'Sheet 1' // sheetName
-    }
-  });
-    }
-</script>
-<script>
+            if(items == 10)
+            {
+                items = '';
+            }
 
-   $('#user_filter').change(function(){
-    $('#filter_form').submit();
-    });
+            if(user_status_filter && search && items)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
 
-</script>
-<script>
+            else if(user_status_filter && search)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search;
+            }
 
-   $('#user_status_filter').change(function(){
-    $('#status_filter_form').submit();
-    });
+            else if(search && items)
+            {
+                window.location.href = '?role='+user_filter+'&keyword='+search+'&items='+items;
+            }
 
-</script>
-<script>
+            else if(user_status_filter && items)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&items='+items;
+            }
 
-   $('#project_status_filter').change(function(){
-    $('#status_filter_form').submit();
-    });
+            else if(user_status_filter)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter;
+            }
 
-</script>
-<script>
-    $('#materialUnchecked').click(function(event) {   
-    if(this.checked) {
-        // Iterate each checkbox
-        $(':checkbox').each(function() {
-            this.checked = true;                        
+            else if(search)
+            {
+                window.location.href = '?role='+user_filter+'&keyword='+search;
+            }
+
+            else if(items)
+            {
+                window.location.href = '?role='+user_filter+'&items='+items;
+            }
+
+            else
+            {
+                window.location.href = '?role='+user_filter;
+            }
+
         });
-    } else {
-        $(':checkbox').each(function() {
-            this.checked = false;                       
+
+        $('#user_status_filter').change(function(){
+            var user_status_filter = $(this).val();
+            var user_filter = $('#user_filter').val();
+            var search = $('#search_field').val();
+            var items = $('#pagination').val();
+
+            if(items == 10)
+            {
+                items = '';
+            }
+
+            if(user_filter && search && items)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
+
+            else if(user_filter && search)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search;
+            }
+
+            else if(search && items)
+            {
+                window.location.href = '?status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
+
+            else if(user_filter && items)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&items='+items;
+            }
+
+            else if(user_filter)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter;
+            }
+
+            else if(search)
+            {
+                window.location.href = '?status='+user_status_filter+'&keyword='+search;
+            }
+
+            else if(items)
+            {
+                window.location.href = '?status='+user_status_filter+'&items='+items;
+            }
+
+            else
+            {
+                window.location.href = '?status='+user_status_filter;
+            }
+
         });
-    }
-}); 
-</script>
-<script>
 
-   $('#pagination').change(function(){
-    $('#pagination').submit();
-    });
+        $('.search-btn').click(function(){
+            var search = $('#search_field').val()
+            var user_filter = $('#user_filter').val();
+            var user_status_filter = $('#user_status_filter').val();
+            var items = $('#pagination').val();
+            // console.log(search);
+            if(items == 10)
+            {
+                items = '';
+            }
 
-</script>
-<script>
+            if(user_filter && user_status_filter && items)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
 
-   $('#project_filter').change(function(){
-    $('#project_filter').submit();
-    });
+            else if(user_filter && user_status_filter)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search;
+            }
 
-</script>
-<script>
+            else if(user_status_filter && items)
+            {
+                window.location.href = '?status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
 
-   $('#freelancer_filter').change(function(){
-    $('#freelancer_filter').submit();
-    });
+            else if(user_filter && items)
+            {
+                window.location.href = '?role='+user_filter+'&keyword='+search+'&items='+items;
+            }
 
-</script>
-<script>
-     $(document).ready(function(){
+            else if(user_filter)
+            {
+                window.location.href = '?role='+user_filter+'&keyword='+search;
+            }
+
+            else if(user_status_filter)
+            {
+                window.location.href = '?status='+user_status_filter+'&keyword='+search;
+            }
+
+            else if(items)
+            {
+                window.location.href = '?keyword='+search+'&items='+items;
+            }
+
+            else
+            {
+                window.location.href = '?keyword='+search;
+            }
+
+        });
+
+        $('#pagination').change(function(){
+            var items = $(this).val();
+            var user_filter = $('#user_filter').val();
+            var user_status_filter = $('#user_status_filter').val();
+            var search = $('#search_field').val();
+
+            if(user_filter && user_status_filter && search)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
+
+            else if(user_filter && user_status_filter)
+            {
+                window.location.href = '?role='+user_filter+'&status='+user_status_filter+'&items='+items;
+            }
+
+            else if(user_status_filter && search)
+            {
+                window.location.href = '?status='+user_status_filter+'&keyword='+search+'&items='+items;
+            }
+
+            else if(user_filter && search)
+            {
+                window.location.href = '?role='+user_filter+'&keyword='+search+'&items='+items;
+            }
+
+            else if(user_filter)
+            {
+                window.location.href = '?role='+user_filter+'&items='+items;
+            }
+
+            else if(user_status_filter)
+            {
+                window.location.href = '?status='+user_status_filter+'&items='+items;
+            }
+
+            else if(search)
+            {
+                window.location.href = '?keyword='+search+'&items='+items;
+            }
+
+            else
+            {
+                window.location.href = '?items='+items;
+            }
+        })
+
+        $('#project_status_filter').change(function(){
+            $('#status_filter_form').submit();
+        });
+
+        $('#materialUnchecked').click(function(event) {   
+            if(this.checked) {
+                // Iterate each checkbox
+                $(':checkbox').each(function() {
+                    this.checked = true;                        
+                });
+            } else {
+                $(':checkbox').each(function() {
+                    this.checked = false;                       
+                });
+            }
+        }); 
+
+        $('#pagination').change(function(){
+            $('#pagination').submit();
+        });
+
+        $('#project_filter').change(function(){
+            $('#project_filter').submit();
+        });
+
+        $('#freelancer_filter').change(function(){
+            $('#freelancer_filter').submit();
+        });
+
         $(".category_re").click(function(e){
-         var delete_category_id = $(this).val();
+            var delete_category_id = $(this).val();
             $('#nameBasic').val(delete_category_id);
 
             $.ajax({
-        type: 'get',
-        dataType : 'json',
-        url: "{{ url('admin/category-replace') }}",
-        data: {
-            id:delete_category_id,
-           
-        },
-        success:function(response){
-        if (response.status) {
-            jQuery('#select2Basic').html(response.online);
-            
-        }
-        }
-
-    });
+                type: 'get',
+                dataType : 'json',
+                url: "{{ url('admin/category-replace') }}",
+                data: {
+                    id:delete_category_id,
+                },
+                success:function(response){
+                    if (response.status) {
+                        jQuery('#select2Basic').html(response.online);
+                    }
+                }
+            });
         });
-     });
-</script>
-
-<script type="text/javascript">
-    $(document).ready(function () {
    
-     $(".example").dataTable({
-        aaSorting: [[0, 'asc']],
-        bPaginate: false,
-        bFilter: false,
-        bInfo: false,
-        bSortable: true,
-        bRetrieve: true,
-        aoColumnDefs: [
-            { "aTargets": [ 0 ], "bSortable": true },
-            { "aTargets": [ 1 ], "bSortable": true },
-            { "aTargets": [ 2 ], "bSortable": true },
-            { "aTargets": [ 3 ], "bSortable": false }
-        ]
-    }); 
-});
-</script>
-<script>
-    
-</script>
-<script>
-  var maxGroup = 100;
+        $(".example").dataTable({
+            aaSorting: [[0, 'asc']],
+            bPaginate: false,
+            bFilter: false,
+            bInfo: false,
+            bSortable: true,
+            bRetrieve: true,
+            aoColumnDefs: [
+                { "aTargets": [ 0 ], "bSortable": true },
+                { "aTargets": [ 1 ], "bSortable": true },
+                { "aTargets": [ 2 ], "bSortable": true },
+                { "aTargets": [ 3 ], "bSortable": false }
+            ]
+        }); 
+
+        var maxGroup = 100;
   
-  $(".addMore").click(function(){
+        $(".addMore").click(function(){
 
-   var Qus=$("#Qus_no_replace").val();
+            var Qus=$("#Qus_no_replace").val();
 
-    if($('body').find('.fieldGroup').length < maxGroup){
-        var fieldHTML = '<div class="fieldGroup">'+$(".fieldGroupCopy").html()+'</div>';
-        $('body').find('.fieldGroup:last').after(fieldHTML);
-        var new_qus=parseInt(Qus) +1;
-        $("#Qus_no_replace").val(new_qus);
-        
-        // $(".Qus_no").html('Qus'+ new_qus);
-          
-       
-       
-    }else{
-        alert('Maximum '+maxGroup+' groups are allowed.');
-    }
-});
-$("body").on("click",".remove",function(){
-    $(this).parents(".fieldGroup").remove();
-});
-  </script>
+            if($('body').find('.fieldGroup').length < maxGroup){
+                var fieldHTML = '<div class="fieldGroup">'+$(".fieldGroupCopy").html()+'</div>';
+                $('body').find('.fieldGroup:last').after(fieldHTML);
+                var new_qus=parseInt(Qus) +1;
+                $("#Qus_no_replace").val(new_qus);
+                // $(".Qus_no").html('Qus'+ new_qus);
+            }else{
+                alert('Maximum '+maxGroup+' groups are allowed.');
+            }
+        });
+
+        $("body").on("click",".remove",function(){
+            $(this).parents(".fieldGroup").remove();
+        });
+
+        $('.delete-record').on('click', function(event){
+
+            event.preventDefault();
+
+            let form = $(this).closest('form');
+            swal({
+                title: "You want to delete?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                closeOnClickOutside: false,
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                form.submit();
+            }
+            });
+        });
+    });
+</script>
 </html>

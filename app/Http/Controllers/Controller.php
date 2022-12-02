@@ -8,6 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\FreelancerMeta;
 use App\Models\Freelancer;
+use App\Models\ClientRating;
 use App\Models\User;
 use stdClass;
 
@@ -70,7 +71,33 @@ class Controller extends BaseController
     {
         $file = $image;
         $name = $file->getClientOriginalName();
-        $destinationPath = 'project-files';
+        $destinationPath = 'images/jobs';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+
+    public function homepageImage($image)
+    {
+        $file = $image;
+        $name =time() .'-'. $file->getClientOriginalName();
+        $destinationPath = 'images/home';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+    public function categoryImage($image)
+    {
+        $file = $image;
+        $name =time() .'-'. $file->getClientOriginalName();
+        $destinationPath = 'images/category';
+        $file->move($destinationPath, $name);
+        return $name;
+    }
+
+    public function skillsImage($image)
+    {
+        $file = $image;
+        $name = time().'-'.$file->getClientOriginalName();
+        $destinationPath = 'images/skills';
         $file->move($destinationPath, $name);
         return $name;
     }
@@ -146,8 +173,18 @@ class Controller extends BaseController
 
     public function getClientInfo($clientId)
     {
-        $clientData = User::with('client')->where('id',$clientId)->first();
+        $clientData = User::with('client')->where('id', $clientId)->first();
+        $ClientRating = ClientRating::where('client_id', $clientId)->get();
+        // $clientData->rating = 
         return $clientData;
+    }
+
+    public function referCode($name)
+    {
+        $capitalName = strtoupper($name);
+        $randomCode = rand(1000, 9999);
+        $code = $capitalName.$randomCode;
+        return $code;
     }
 
 

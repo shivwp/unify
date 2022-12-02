@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             'send_email'        =>boolval($this->send_email),
             'user_type'         =>(string)$request->user_type,
             'is_verified'       =>(string)$this->is_verified,
+            'is_profile_complete'=>boolval($this->is_profile_complete),
         ];
     }
 }

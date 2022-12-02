@@ -36,7 +36,19 @@ Route::middleware('auth:api')->group(function () {
 	Route::post('hire-freelancer', [App\Http\Controllers\Api\ProposalController::class, 'hireFreelancer']);
 
 	//invite freelancer list
-	Route::get('all-invite-freelancers', [App\Http\Controllers\Api\ClientJobController::class, 'inviteFreelancerList']);
+	Route::post('all-invite-freelancers', [App\Http\Controllers\Api\ClientJobController::class, 'inviteFreelancerList']);
+
+	// saved Talent
+	Route::post('save-talent', [App\Http\Controllers\Api\ClientJobController::class, 'savedTalent']);
+
+	//save talent list
+	Route::post('save-talent-list', [App\Http\Controllers\Api\ClientJobController::class, 'saveTalentList']);
+
+	//save talent list
+	Route::post('job-freelancer-list', [App\Http\Controllers\Api\ClientListController::class, 'jobFreelancerList']);
+
+	//proposal list
+	Route::post('job-proposal-list', [App\Http\Controllers\Api\ClientListController::class, 'jobProposalList']);
 
 });
 

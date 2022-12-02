@@ -153,9 +153,9 @@
                 @endif
                 <div class="card">
                     <div class="card-header">
-                        {{ trans('global.edit') }} {{ trans('cruds.project.title_singular') }}
+                       <h5> {{ trans('global.edit') }} {{ trans('cruds.project.title_singular') }}</h5>
                     </div>
-
+                    <hr class="m-0">
                     <div class="card-body">
                         <form action="{{ route("admin.projects.update", [$project->id]) }}" method="POST" enctype="multipart/form-data" id="formId">
                             @csrf
@@ -364,7 +364,7 @@
                             <input type="file" class="form-control" name="image" value="">
                             <br>
                             <div>
-                                <input class="btn btn-danger" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
 

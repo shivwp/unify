@@ -9,9 +9,9 @@
             
                 <div class="card">
                     <div class="card-header">
-                        Create Plan
+                        <h5>Create Plan</h5>
                     </div>
-
+                    <hr class="m-0">
                     <div class="card-body">
                         <form action="{{ route("admin.plan.store") }}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -28,10 +28,10 @@
                             <div class="form-group {{ $errors->has('client_id') ? 'has-error' : '' }} mt-3">
                                 <label for="client">Validity</label>
                                 <select name="validity" id="client" class="form-control " required>
-                                    <option value="one_month">One Month</option>
-                                    <option value="three_month">Three Month</option>
-                                    <option value="six_month">Six Month</option>
-                                    <option value="one_year">One Year</option>
+                                    <option value="1 month">1 Month</option>
+                                    <option value="3 month">3 Month</option>
+                                    <option value="6 month">6 Month</option>
+                                    <option value="1 year">1 Year</option>
                              </select>
                                
                             </div>
@@ -55,7 +55,7 @@
                                 </select>
                             </div>
                             <div class="mt-3">
-                                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>

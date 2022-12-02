@@ -24,7 +24,7 @@ class MailController extends Controller
         }
          $q=Mails::select('*');
             if($request->search){
-                $q->where('subject', 'like', "%$request->search%");  
+                $q->where('subject', 'like', "%$request->search%")->orwhere('name','like',"%$request->search%")->orwhere('from_email','like',"%$request->search%");  
             }
              $d['all_msg']=$q->get();
         

@@ -13,6 +13,7 @@ use App\Helper\ResponseBuilder;
 use App\Models\ProjectProjectSkill;
 use App\Models\ProjectCategory;
 use App\Models\FreelancerSkill;
+use App\Models\InviteFreelacner;
 use App\Models\SendProposal;
 use App\Models\DislikeJob;
 use App\Models\SavedProject;
@@ -21,6 +22,7 @@ use App\Models\User;
 use App\Models\IncomeSource;
 use Illuminate\Http\Request;
 use App\Models\ProjectMilestone;
+use App\Models\SaveArchive;
 use Validator;
 use DB;
 
@@ -122,7 +124,7 @@ class JobController extends Controller
                'project_images' => $name
             ]);
          }
-         return ResponseBuilder::successMessage("Post Job Sucessfully", $this->success);
+         return ResponseBuilder::success($project->id,"Post job successfully");
 
       }catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -154,7 +156,6 @@ class JobController extends Controller
          }
 
          $project = Project::where('id',$request->project_id)->first();
-         // dd($project);
          $project->client_id  = $user_id;
          $project->name  = isset($request->job_title) ? $request->job_title : $project->name;
          $project->description  = isset($request->description) ? $request->description : $project->description;
@@ -200,7 +201,7 @@ class JobController extends Controller
    {
       try
       {
-         $user_id = '';
+         // $user_id = '';
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             $user_id = $singleuser->id;
@@ -266,11 +267,13 @@ class JobController extends Controller
          }
 
          $jobdata = $query->paginate($page);
-         $jobdata->user_id = $user_id;
 
+         // $jobdata->user_id = $user_id;
+         // dd($user_id);
+         // dd( $jobdata); 
          $this->response = new ProjectResource($jobdata);
          
-         return ResponseBuilder::successWithPagination($jobdata,$this->response, "Jobs List Data",$this->success);
+         return ResponseBuilder::successWithPagination($jobdata, $this->response, "Jobs List Data",$this->success);
       }
       catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -311,6 +314,7 @@ class JobController extends Controller
    {
       try
       {
+         $user_id = '';
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             $user_id = $singleuser->id;
@@ -331,7 +335,7 @@ class JobController extends Controller
          
          $job_list = $query->get();
 
-         $job_list->user_id = $user_id;
+         // $job_list['user_id'] = $user_id;
          $this->response = new ProjectResource($job_list);
          return ResponseBuilder::success($this->response, "Best Match Jobs List");
       }
@@ -413,34 +417,34 @@ class JobController extends Controller
 
    public function sendProposal(Request $request)
    {
+      
       try
       {
+
          if (Auth::guard('api')->check()) {
             $singleuser = Auth::guard('api')->user();
             $user_id = $singleuser->id;
          } 
          else{
             return ResponseBuilder::error(__("User not found"), $this->unauthorized);
-         }
-         
+         } 
+
          $validator = Validator::make($request->all(), [
-            'client_id'       => 'required|exists:client,user_id',
             'job_id'   	      =>	'required|exists:projects,id',
-            'budget_type'	   =>	'required|in:fixed,hourly',
-            'weekly_limit'	   =>	'required_if:budget_type,hourly|integer',
-            'milestone_type'  =>	'required_if:budget_type,fixed|in:single,multiple',
+            'milestone_type'  =>	'nullable|in:single,multiple',
          ]);
 
          if ($validator->fails()) {
             return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
-         }
-         
+         } 
+
+         $client_id = Project::where('id',$request->job_id)->select('client_id','budget_type')->first();
          $send_proposal = SendProposal::where('project_id',$request->job_id)->where('freelancer_id',$user_id)->first();
+         
          if(!empty($send_proposal))
          {
             return ResponseBuilder::error(__("Already Send Proposal"), $this->badRequest);
-         }
-         else {
+         } else {
             DB::beginTransaction();
             $get_fee = IncomeSource::where('name','Unify')->first();
             $platform_fee = $get_fee->fee_percent;
@@ -450,72 +454,45 @@ class JobController extends Controller
             $proposal = SendProposal::updateOrCreate([
                'id' => $request->id
             ], [
-               'client_id'       => $request->client_id,
+               'client_id'       => $client_id->client_id,
                'freelancer_id'   => $user_id,
                'project_id'      => $request->job_id,
-               'budget_type'     => $request->budget_type,
+               'budget_type'     => $client_id->budget_type,
                'status'          => 'pending',
                'amount'          => $bidAmount,
                'platform_fee'    => $platform_fee,
-               'weekly_limit'    => ($request->weekly_limit)??null,
                'title'           => ($request->title)??'',
-               'date'            => ($request->date)??null,
                'cover_letter'    => $request->cover_letter,
                'image'           => !empty($request->file('image')) ? $this->proposalImage($request->file('image')  ) : '',
             ]);
 
-            if($request->budget_type == 'fixed') {
-               // 
-               if($request->milestone_type == 'single') {
-                  $mileStones = [
-                     'proposal_id' => $proposal->id,
-                     'project_id' => $request->job_id,
-                     'client_id' => $request->client_id,
-                     'freelancer_id' => $user_id,
-                     'description' => $request->milestone_description[0],
-                     'amount' => $request->milestone_amount[0],
-                     'due_date' => $request->milestone_due_date[0],
-                     'status' => 'created',
-                     'note' => '',
-                     'type' => $request->milestone_type
-                  ];
-                  ProjectMilestone::create($mileStones);
-                  // 
-               } else {
-                  
-                  $mileStonesDescription = $request->milestone_description;
-                  $mileStonesAmount = $request->milestone_amount;
-                  $mileStonesDueDate = $request->milestone_due_date;
-
-                  foreach ($mileStonesDescription as $key => $value) {
-                     # code...
+            $mileStones = [];
+            if($client_id->budget_type == 'fixed') {
+               $milestone_data = json_decode($request->milestone_data,1);
+               if(!empty($milestone_data)){
+                  foreach ($milestone_data as $value) {
                      $mileStones[] = [
                         'proposal_id' => $proposal->id,
                         'project_id' => $request->job_id,
-                        'client_id' => $request->client_id,
+                        'client_id' => $client_id->client_id,
                         'freelancer_id' => $user_id,
-                        'description' => $value,
-                        'amount' => $mileStonesAmount[$key],
-                        'due_date' => $mileStonesDueDate[$key],
+                        'project_duration'=>$request->project_duration,
+                        'description' => $value['description'],
+                        'due_date' => $value['due_date'],
+                        'amount' => $value['amount'],
                         'status' => 'created',
                         'note' => '',
                         'type' => $request->milestone_type
                      ];
                   }
-
-                  ProjectMilestone::insert($mileStones);
                }
+               ProjectMilestone::insert($mileStones);
             }
-
-            // if($request->budget_type == 'hourly') { 
-               
-            // }
-
             DB::commit();
             return ResponseBuilder::successMessage("Sent Proposal Sucessfully",$this->success);
          }
-      }catch(\Exception $e)
-      {
+      }catch(\Exception $e){
+         // return print_r($e->getMessage());die;
          DB::rollback();
          return ResponseBuilder::error($e->getMessage(),$this->serverError);
       }
@@ -532,24 +509,33 @@ class JobController extends Controller
             return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
          }
          $job_list = Project::where('id',$request->job_id)->with('skills','categories')->first();
-         $proposalss= SendProposal::join('users','send_proposals.freelancer_id','users.id')->where('project_id',$job_list->id)->select('users.id as freelancer_id','send_proposals.id as send_proposals_id','send_proposals.cover_letter','send_proposals.status','send_proposals.amount','send_proposals.created_at','users.first_name','users.profile_image')->get();
+         $proposalss= SendProposal::join('users','send_proposals.freelancer_id','users.id')->join('freelancer','freelancer.user_id','users.id')->where('project_id',$job_list->id)->select('users.id as freelancer_id','send_proposals.id as send_proposals_id','send_proposals.cover_letter','send_proposals.status','send_proposals.amount','send_proposals.created_at','users.first_name','users.profile_image','freelancer.amount as hour_rate')->get();
+         $recentHistory = Project::where('client_id',$job_list->client_id)->select('name','description','created_at','budget_type','min_price','price')->limit(3)->get();
+         $invite_sent = InviteFreelacner::where('project_id',$request->job_id)->count();
+         $unanswered_invite = InviteFreelacner::where('project_id',$request->job_id)->where('status','pending')->count();
          $proposalList = [];
          if(count($proposalss) > 0){
             foreach($proposalss as $value)
             {
+               $skills = FreelancerSkill::where('user_id',$value->freelancer_id)->select('skill_id','skill_name')->get();
                $proposalList[] = [
-                  'freelancer_id'         =>(string)$value->user_id,
+                  'freelancer_id'         =>(string)$value->freelancer_id,
                   'freelancer_name'       =>(string)$value->first_name,
                   'profile_image'         =>isset($value->profile_image) ? url('/images/profile-image',$value->profile_image) : '',
                   'proposal_id'           =>(string)$value->send_proposals_id,
                   'proposal_description'  =>(string)$value->cover_letter,
                   'status'                =>(string)$value->status,
-                  'amount'                =>(string)$value->amount,
-                  'time'                  =>$value->created_at->diffForHumans()
+                  'proposal_amount'       =>(float)$value->amount,
+                  'hour_rate'             =>(float)$value->hour_rate,
+                  'time'                  =>$value->created_at->diffForHumans(),
+                  'skills'                =>$skills
                ];
             }
          }
          $job_list['proposal_list'] = $proposalList;
+         $job_list['recent_history'] = $recentHistory;
+         $job_list['invite_sent'] = isset($invite_sent) ? $invite_sent : '';
+         $job_list['unanswered_invite'] = isset($unanswered_invite) ? $unanswered_invite : '';
          $job_list['cdata'] = $this->getClientInfo($job_list->client_id);
 
          if (Auth::guard('api')->check()) {

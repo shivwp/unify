@@ -18,8 +18,9 @@
                 @endif
                 <div class="card">
                     <div class="card-header">
-                        {{ trans('global.create') }} {{ trans('cruds.project.title_singular') }}
+                       <h5> {{ trans('global.create') }} {{ trans('cruds.project.title_singular') }}</h5>
                     </div>
+                    <hr class="m-0">
                     <div class="card-body">
                         <form action="{{ route("admin.projects.store") }}" method="POST" enctype="multipart/form-data" id="formId">
                             @csrf
@@ -33,7 +34,6 @@
                                         </span>
                                     @enderror
                                 </div>
-                                
                                 <div class="form-group col-md-6">
                                     <label for="project_type">Project Type *</label>
                                     <select name="project_type" id="project_type" class="form-control @error('project_type') is-invalid @enderror" required>
@@ -224,7 +224,7 @@
                             <label class="form-label mt-3">Add Images/Files </label>
                             <input type="file" class="form-control" name="image" value="">
                             <div class="mt-3">
-                                <input class="btn btn-danger" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" id="formsubmit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>  

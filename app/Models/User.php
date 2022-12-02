@@ -38,6 +38,8 @@ class User extends Authenticatable
         'api_token',
         'device_id',
         'device_token',
+        'customer_id',
+        'plan_id',
         'email_verified_at',
         'otp',
         'otp_created_at',
@@ -58,6 +60,9 @@ class User extends Authenticatable
         'avg_rating',
         'agree_terms',
         'send_email',
+        'payment_verified',
+        'is_profile_complete',
+        'last_activity',
     ];
 
     public function getEmailVerifiedAtAttribute($value)
@@ -96,6 +101,6 @@ class User extends Authenticatable
     }
     public function freelancer()
     {
-        return $this->hasOne(Freelancer::class,'user_id');
+        return $this->hasOne(Freelancer::class,'user_id', 'id');
     }
 }

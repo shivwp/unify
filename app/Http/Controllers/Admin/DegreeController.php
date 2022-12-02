@@ -13,11 +13,16 @@ class DegreeController extends Controller
     public function index(Request $request)
     {
         $q = Degree_list::query();
+        if(!empty($request->pagination)){
+            $num = $request->pagination;
+        }else{
+            $num = 10;
+        }
     
-        $d['pagination']='10';
+        $d['pagination']= $num;
         if($request->search){
           
-            $q->where('title', 'like', "%$request->search%")->paginate(10);
+            $q->where('title', 'like', "%$request->search%");
         }
         $d['degree']=$q->orderBy('title', 'ASC')->paginate($d['pagination']);
 

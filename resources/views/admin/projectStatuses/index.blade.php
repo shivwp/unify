@@ -5,24 +5,23 @@
 
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
-            <div class="col-lg-12 ">
-
-                @can('project_status_create')
-                <div style="margin-bottom: 10px;" class="row">
-                    <div class="col-lg-12" style="margin-bottom: 32px;">
-                        <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-statuses')}}">Back
-                        </a> -->
-                        <a class="btn-sm btn-success" style="height: 30px; font-size: smaller; padding: 9px 9px 10px 12px;" href="{{ route("admin.project-statuses.create") }}">
-                          Add
-                        </a>
+            <div class="col-lg-12">
+                <div class="row tabelhed d-flex justify-content-between">
+                    <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
+                        @can('project_status_create')
+                            <!-- <a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 6px 7px 7px 8px; margin-left: 11px;" href="{{url('admin/project-statuses')}}">Back
+                            </a> -->
+                            <a class="btn-sm ad-btn create_btn pt-2" href="{{ route("admin.project-statuses.create") }}">
+                              Add
+                            </a>
+                        @endcan
                     </div>
                 </div>
-                @endcan
                 <div class="card">
                     <div class="card-header">
-                        {{ trans('cruds.projectStatus.title_singular') }} {{ trans('global.list') }}
+                      {{-- <h5> {{ trans('cruds.projectStatus.title_singular') }}</h5>--}}
+                      <h5>Projects Status</h5>
                     </div>
-                
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class=" table table-bordered table-striped table-hover datatable datatable-ProjectStatus example">
@@ -50,12 +49,12 @@
                                                 {{ $projectStatus->name ?? '' }}
                                             </td>
                                             <td>
-                                                @can('project_status_show')
+                                                <!-- @can('project_status_show')
                                                     <a  href="{{ route('admin.project-statuses.show', $projectStatus->id) }}">
                                                     <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
 
                                                     </a>
-                                                @endcan
+                                                @endcan -->
                 
                                                 @can('project_status_edit')
                                                     <a href="{{ route('admin.project-statuses.edit', $projectStatus->id) }}">
@@ -65,7 +64,7 @@
                                                 @endcan
                 
                                                 @can('project_status_delete')
-                                                    <form action="{{ route('admin.project-statuses.destroy', $projectStatus->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <form action="{{ route('admin.project-statuses.destroy', $projectStatus->id) }}" method="POST" style="display: inline-block;">
                                                         <input type="hidden" name="_method" value="DELETE">
                                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                         <button  type="submit" class="btn btn-sm btn-icon delete-record" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"><i class="bx bx-trash"></i></button>
@@ -85,6 +84,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 @section('scripts')
 @parent

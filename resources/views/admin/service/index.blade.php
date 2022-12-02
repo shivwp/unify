@@ -1,4 +1,12 @@
 @extends('layouts.master') @section('content')
+<style>
+    .search-btn {
+        border: 1px solid #d7cbcb;
+        padding: 8px 10px 6px 11px;
+        border-radius: 8px;
+        margin-left: 6px;
+    }
+</style>
 
 <div class="content-wrapper">
     <!-- Content -->
@@ -6,21 +14,60 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-            
-                @can('project_status_create')
-                <div style="margin-bottom: 10px;" class="row">
-                    <div class="col-lg-12" style="margin-bottom: 23px;">
-                        {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 9px 10px 10px 12px; margin-left: 11px;" href="{{url('admin/service')}}">Back
-                                        </a>--}}
-                        <a class="btn-sm btn-success" style="margin-left: 10px;height: 30px; font-size: smaller; padding: 9px 10px 10px 12px;" href="{{ route("admin.service.create") }}">
-                            Add
-                        </a>
+                <div class="row tabelhed d-flex justify-content-between">
+
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 d-flex">
+                        @can('project_status_create')
+                            {{--<a class="btn-sm btn-info" style="height: 30px; font-size: smaller; padding: 9px 10px 10px 12px; margin-left: 11px;" href="{{url('admin/service')}}">Back
+                                            </a>--}}
+                            <a class="btn-sm ad-btn create_btn pt-2" href="{{ route("admin.service.create") }}">
+                                Add
+                            </a>
+                        @endcan
                     </div>
+
+                    <div class="col-lg-5 col-md-5 col-sm-5 "> 
+                        <?php 
+                        if(!empty($_GET['search'])){
+                            $search= $_GET['search'];
+                        }else{ 
+                            $search='';
+                        }?>
+                        <div class="right-item" >
+                            <form action="" class="d-flex" method="get">
+                                <input type="text" name="search" class="form-control" value="{{$search}}" style="height: 39px;" placeholder="Search Service" required>
+                                <button class="btn-sm search-btn" type="submit"  style="margin-left:6px"> <i class="fa fa-search pl-3" aria-hidden="true"></i> </button>
+                                <a href="{{url('admin/service')}}">
+                                    <i class="fa fa-refresh pl-3 redirect-icon" aria-hidden="true"></i>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+
+
                 </div>
-                @endcan
                 <div class="card">
                     <div class="card-header">
-                        Service List
+                        <div class="row">
+                            <div class="col-xl-6">
+                        <h5 style="margin: 0">Services</h5>
+                        </div>
+                         <div class="col-lg-6">  
+                                <div class="items" style="margin-left: 1px; width: 85px !important; float: right;">
+                                    <form action="" id="pagination" method="get">
+                                        <select class="form-select m-0" name="pagination" style="width: 94%; font-size: 11px;  height: 32px;" id="pagination" aria-label="Default select example">
+                                            <option value="10" @if($pagination=='10') selected @endif>10</option>
+                                            <option  value='20' @if($pagination=='20') selected @endif>20</option>
+                                            <option value='30' @if($pagination=='30') selected @endif>30</option>
+                                            <option value='40' @if($pagination=='40') selected @endif>40</option>
+                                            <option value='50' @if($pagination=='50') selected @endif>50</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -70,7 +117,7 @@
                                                 @endcan
 
                                                 @can('project_category_delete')
-                                                    <form action="{{ route('admin.service.destroy', $projectCate->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
+                                                    <form action="{{ route('admin.service.destroy', $projectCate->id) }}" method="POST" style="display: inline-block;">
                                                     @csrf    
                                                     <input type="hidden" name="_method" value="DELETE">
                                                         

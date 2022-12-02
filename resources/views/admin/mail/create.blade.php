@@ -4,9 +4,8 @@
     <!-- Content -->
 
    <div class="container-xxl flex-grow-1 container-p-y">
-      <div class="row">
+      <div class="row">            
          <div class="col-lg-12">
-            
             <style type="text/css">
                 .select2-container--default .select2-selection--multiple .select2-selection__choice {
                 background-color: #787878 !important;
@@ -15,9 +14,9 @@
             </style>
             <div class="card">
                 <div class="card-header">
-                  Create Mail Template
+                  <h5>Create Mail Template</h5>
                 </div>
-
+                <hr class="m-0">
                 <div class="card-body">
                 <form method="POST" action="{{ route('admin.mail.store') }}" enctype="multipart/form-data">
                      @csrf
@@ -86,9 +85,9 @@
                      </div>
                   
                      @if(isset($mail->id))
-                     <button class="btn btn-danger mt-3 " type="submit">Update</button>
+                     <button class="btn ad-btn create_btn mt-3 " type="submit">Update</button>
                      @else
-                     <button class="btn btn-danger mt-3 " type="submit">Save</button>
+                     <button class="btn ad-btn create_btn mt-3 " type="submit">Save</button>
                      @endif
                   </form>
                 </div>

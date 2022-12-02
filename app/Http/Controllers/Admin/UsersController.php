@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\UserDocument;
 use App\Models\Client;
 use App\Models\Freelancer;
+use App\Models\SocialAccount;
 use App\Models\Agency;
 use Carbon\Carbon;
 use Validator;
@@ -27,35 +28,38 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $users = User::orderBy('created_at','DESC')->paginate(10);
+        $q = User::query();
 
-        if($request->search){
-          
-            $users = User::where('name', 'like', "%$request->search%")->paginate(10);
+        if($request->keyword){
+            $d['search'] = $request->keyword;
+
+            $q->where(function($query) use ($d){
+                $query->where('name', 'like', '%'.$d['search'].'%')
+                    ->orwhere('email', 'like', '%'.$d['search'].'%');
+            });
         }
-        if($request->user_filter){
-            if($request->user_filter=='Client'){
-                $users = User::whereHas('roles', function($q){
-                    $q->where('title', '=', 'Client');})->paginate(10);
-            }
-            if($request->user_filter=='Freelancer'){
-                $users = User::whereHas('roles', function($q){
-                    $q->where('title', '=', 'Freelancer');})->paginate(10);
-            }
+
+        if($request->role){
+            $d['role'] = $request->role;
+            $q->whereHas('roles', function($query) use ($d){
+                    $query->where('title', '=', $d['role']);});
         }
-        if($request->user_status_filter){
-            if($request->user_status_filter=='pending'){
-                $users = User::where('status', '=', 'pending')->paginate(10);
-            }
-            if($request->user_status_filter=='approve'){
-                $users = User::where('status', '=', 'approve')->paginate(10);
-            }
-            if($request->user_status_filter=='reject'){
-                $users = User::where('status', '=', 'reject')->paginate(10);
-            }
+
+        if($request->status){
+            $d['status'] = $request->status;
+            $q->where('status', '=', $d['status']);
         }
+
+        if($request->items){
+            $d['pagination'] = $request->items;
+        }
+        else{
+            $d['pagination'] = 10;
+        }
+
+        $d['users'] = $q->orderBy('created_at','DESC')->paginate($d['pagination']);
         
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', $d);
     }
 
     public function create()
@@ -63,25 +67,20 @@ class UsersController extends Controller
         abort_if(Gate::denies('user_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $roles = Role::all()->pluck('title', 'id');
+
         return view('admin.users.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
-        // dd($request->roles);
-        //validation
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'email' => 'unique:users,email|email',
-            'password' => 'min:8',
+            'password' => 'min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[\d\x])(?=.*[!$#%@]).*$/',
         ]);
-       
-        if ($validator->fails()) {  
-            $error = $validator->errors()->first();
-            return redirect()->back()->with('error',$error);   
-        } 
 
         // entry in user table 
         $user = new User;
+
         $user->name = $request->first_name.' '.$request->last_name;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
@@ -90,13 +89,15 @@ class UsersController extends Controller
         $user->email_verified_at =  Carbon::now()->toDateTimeString();
         $user->status = $request->status;
         $user->referal_code = isset($request->referal_code) ? $request->referal_code : null;
+
         if(!empty($request->file('profile_image'))){
             $file = $request->file('profile_image');
-            $name =$file->getClientOriginalName();
-            $destinationPath = 'profile-image';
+            $name = time().'-'.$file->getClientOriginalName();
+            $destinationPath = 'images/profile-image';
             $file->move($destinationPath, $name);
             $user->profile_image = $name;
         }
+
         $user->save();
         $user_role = $user->roles()->sync($request->roles);
 
@@ -140,7 +141,13 @@ class UsersController extends Controller
 
     public function update(Request $request)
     {
-        // dd($request->all());
+        if(!empty($request->password))
+        {
+            $request->validate([
+                'password' => 'min:8|regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[\d\x])(?=.*[!$#%@]).*$/',
+            ]);
+        }
+
         $user = User::where('id',$request->user_id)->first();
         $user->name = $request->first_name.' '.$request->last_name;
         $user->first_name = $request->first_name;
@@ -148,13 +155,15 @@ class UsersController extends Controller
         $user->status = $request->status;
         $user->is_verified = $request->is_verified;
         $user->referal_code = isset($request->referal_code) ? $request->referal_code : null;
+
         if(!empty($request->password)){
             $user->password = Hash::make($request->password);
         }
+
         if(!empty($request->file('profile_image'))){
             $file = $request->file('profile_image');
-            $name =$file->getClientOriginalName();
-            $destinationPath = 'profile-image';
+            $name =time().'-'.$file->getClientOriginalName();
+            $destinationPath = 'images/profile-image';
             $file->move($destinationPath, $name);
             $user->profile_image = $name;
         }
@@ -164,9 +173,11 @@ class UsersController extends Controller
         $all_roles = DB::table('role_user')->where('user_id',$request->user_id)->get();
 
         $role = $request->roles;
+
         foreach ($role as $value) {
             $roles[]= $value;
         }
+
         foreach ($all_roles as $value) {
             if(!in_array($value->role_id, $roles)){
 
@@ -226,12 +237,18 @@ class UsersController extends Controller
 
         $user->load('roles');
         $document = UserDocument::where('user_id',$user->id)->first();
-        return view('admin.users.show', compact('user','document'));
+        
+        if($user->social_id !== 'NULL'){
+            $p = DB::table('social_accounts')->where('provider_user_id','=', $user->social_id)->select('provider')->first();
+        }
+
+        return view('admin.users.show', compact('user','document','p'));
     }
 
     public function destroy(User $user)
     {
         abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
         $user->delete();
         Client::where('user_id',$user->id)->delete();
         Freelancer::where('user_id',$user->id)->delete();
@@ -240,35 +257,76 @@ class UsersController extends Controller
         return redirect()->back();
     }
 
-    public function massDestroy(MassDestroyUserRequest $request)
-    {
-        User::whereIn('id', request('ids'))->delete();
+    // public function massDestroy(MassDestroyUserRequest $request)
+    // {
+    //     User::whereIn('id', request('ids'))->delete();
 
-        return response(null, Response::HTTP_NO_CONTENT);
-    }
-    public function statusupdate(Request $request, $id){
+    //     return response(null, Response::HTTP_NO_CONTENT);
+    // }
+    public function statusupdate(Request $request, $id)
+    {
+
         $data = User::where('id',$id)->first();
+
         $status =  $data->status;
+
         if($status == 'approve'){
             $data->status = 'pending';
-        }else{
+        }
+        else{
             $data->status = 'approve';
         }
+
         $data->save();
 
         session()->flash('success','User Status Update successfully');
         return redirect()->back();
     }
-    public function statusBlock(Request $request, $id){
+    public function statusBlock(Request $request, $id)
+    {
        
         $data = User::where('id',$id)->first();
+
         $status =  $data->status;
+
         if($status == 'approve'){
             $data->status = 'reject';
-        }else{
-            $data->status = 'approve';
+            $msg = "User Blocked successfully";
         }
+        else{
+            $data->status = 'approve';
+            $msg = "User Unblocked successfully";
+        }
+
         $data->save();
-        return redirect()->back();
+        return redirect()->back()->with('block', $msg);
+    }
+    public function usersRefrals(Request $request){
+        
+        if($request->items){
+            $d['pagination'] = $request->items;
+        }
+        else{
+            $d['pagination'] = 10;
+        }
+
+        $referalData = DB::table('user_referals')
+                ->join('users as ref_by','user_referals.refered_user_id','=','ref_by.id')
+                ->join('users as ref_to','user_referals.user_id','=','ref_to.id')
+                ->select('ref_by.referal_code', 'ref_by.name as refer_name', 'ref_to.name as refer_to_name','ref_to.created_at');
+        
+        if($request->keyword){
+            $d['search'] = $request->keyword;
+
+            $referalData->where(function($query) use ($d){
+                $query->where('ref_to.name','LIKE','%'.$d['search'].'%')
+                ->orwhere('ref_by.name','LIKE','%'.$d['search'].'%');
+            });
+            // $referalData->where('ref_to.name','LIKE','%'.$d['search'].'%');
+        }
+        
+        $d['data'] =$referalData->paginate($d['pagination']);
+
+        return view('admin.users.indexrefrals',$d);
     }
 }

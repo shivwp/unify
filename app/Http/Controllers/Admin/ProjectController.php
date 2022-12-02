@@ -76,6 +76,7 @@ class ProjectController extends Controller
 
         // }else
 
+              
 
         if(isset($request->start_date)){
             $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
@@ -112,6 +113,45 @@ class ProjectController extends Controller
 
         // dd($d);
         return view('admin.projects.index', $d);
+    }
+
+    public function draft(Request $request){
+
+        $q = Project::where('name', 'LIKE', '%'.$request->project_search.'%')->where(function($query){
+            $query->where('status', '=', 'draft')->orwhere('status', '=', 'complete');
+        });
+
+     $d['pagination']='10';
+            if($request->pagination){
+                $d['pagination']=$request->pagination;
+            }
+
+         if(isset($request->start_date)){
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date)->startOfDay();
+        }
+        if(isset($request->end_date)){
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date)->endOfDay();
+        }
+        // echo "<pre>";
+        // print_r($startDate);
+        // print_r($endDate);
+
+        if(isset($request->start_date) && isset($request->end_date)){
+            $q->whereBetween('created_at',[$startDate,$endDate]);
+        }elseif(isset($request->start_date)){
+            $q->where('created_at', '>=', $startDate );        
+        }
+        elseif(isset($request->end_date)){
+            $q->where('created_at', '<=', $endDate);
+        }
+
+        
+       
+
+        $d['projects']=$q->orderBy('id', 'DESC')->paginate($d['pagination']);
+
+        return view('admin.projects.draft-index', $d);
+
     }
 
     public function create()
@@ -367,8 +407,26 @@ class ProjectController extends Controller
         
         $proposals=Project_proposals::where('project_id',$project->id)->orderby('id','desc')->get();
         $project->load('client', 'status','categories','skills','listingtypes');
+        $d['clients'] =DB::table('users')
+        ->leftjoin('role_user', 'role_user.user_id', '=', 'users.id')
+        ->where('role_user.role_id', '=', 3)
+        ->where('users.deleted_at','=',null)->get();
+        $proposals=SendProposal::where('project_id',$project->id)->where('type', '=', 'proposal')->with(['users' => function($query){$query->where('deleted_at', '=', null);}])->orderby('id','desc');
+        $contract=SendProposal::where('project_id',$project->id)->where('type', '=', 'offer')->with(['users' => function($query){$query->where('deleted_at', '=', null);}]);
+        $d['statuses'] = ProjectStatus::orderBy('name', 'ASC')->pluck('name', 'id');
+        $d['category'] = ProjectCategory::all();
+        $d['skill'] = ProjectSkill::all();
+        $d['listing'] = ProjectListingType::all();
+        $project->load('client', 'status','categories','skills','listingtypes');
+        $d['proposals']=$proposals->paginate(5);
+        $d['contract']=$contract->first();
+        $d['project'] = $project;
 
-        return view('admin.projects.show', compact('project','proposals'));
+        
+        
+     
+        return view('admin.projects.show',$d, compact('project', 'proposals'));
+
     }
 
     public function destroy( $id)
@@ -434,6 +492,14 @@ class ProjectController extends Controller
 
         // dd($d['proposal']);
         return view('admin.projects.project-proposal', $d);
+    }
+
+    public function project_contract($id)
+    {
+
+        $d['contract'] = SendProposal::where('id', $id)->with(['client', 'users', 'projects'])->first();
+
+        return view('admin.projects.project-contract', $d);
     }
    
 }

@@ -11,7 +11,15 @@
 
                 <div class="card">
                     <div class="card-header border-bottom">
-                        Create
+                         @php
+                        if(isset($page->id)){
+                            $msg = "Edit page";
+                        }
+                        else{
+                            $msg = "Add New page";
+                        }
+                    @endphp
+                        <h5>{{ $msg }}</h5>
                     </div>
                     <div class="card-body">
                         <form action="{{ route("admin.page.store") }}" method="POST" enctype="multipart/form-data">
@@ -28,10 +36,10 @@
                             </div>
                             <div class="form-group mt-2">
                                 <label class="form-label">Content *</label>
-                                <textarea name="content">{{ empty(old('content')) ? (isset($page) ? $page->content : '') : old('content') }}</textarea>
+                                <textarea name="content" class="ckeditor" id="ckeditor">{{ empty(old('content')) ? (isset($page) ? $page->content : '') : old('content') }}</textarea>
                             </div>
                             <div>
-                                <input class="btn btn-success btn_back" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn mt-3" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                     </div>
@@ -41,10 +49,6 @@
     </div>
 </div>
 
-<script src="https://cdn.ckeditor.com/4.20.0/standard/ckeditor.js"></script>
-<script>
-        CKEDITOR.replace( 'content' );
-        CKEDITOR.config.allowedContent = true;
-</script>
+
 
 @endsection

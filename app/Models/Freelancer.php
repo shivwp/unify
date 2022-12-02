@@ -20,6 +20,7 @@ class Freelancer extends Model
         'project_preference',
         'experience_level',
         'occcuption',
+        'category',
         'description',
         'intro_video',
         'payment_base',
@@ -64,5 +65,41 @@ class Freelancer extends Model
         return $this->hasMany(FreelancerEducation::class, 'user_id', 'user_id');
     }
 
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+    public function invite_freelancer()
+    {
+        return $this->hasMany(InviteFreelacner::class,'freelancer_id','user_id');
+    }
+    public function isInvite($id)
+    {
+        return $this->invite_freelancer()->where('freelancer_id', $id)->exists();
+    }
 
+    public function shortlist()
+    {
+        return $this->hasMany(ShortListed::class,'freelancer_id','user_id');
+    }
+
+    public function isShortlist($id)
+    {
+        return $this->shortlist()->where('freelancer_id', $id)->exists();
+    }
+
+    public function archived()
+    {
+        return $this->hasMany(SaveArchive::class,'freelancer_id','user_id');
+    }
+
+    public function isArchive($id)
+    {
+        return $this->archived()->where('freelancer_id', $id)->exists();
+    }
+
+    public function send_proposal()
+    {
+        return $this->hasMany(SendProposal::class, 'freelancer_id', 'user_id');
+    }
 }

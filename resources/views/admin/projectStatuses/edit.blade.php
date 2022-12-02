@@ -6,12 +6,11 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="card">
                     <div class="card-header">
-                        {{ trans('global.edit') }} {{ trans('cruds.projectStatus.title_singular') }}
+                       <h5> {{ trans('global.edit') }} {{ trans('cruds.projectStatus.title_singular') }}</h5>
                     </div>
-                
+                    <hr class="m-0">
                     <div class="card-body">
                         <form action="{{ route("admin.project-statuses.update", [$projectStatus->id]) }}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -29,7 +28,7 @@
                                 </p>
                             </div>
                             <div class="mt-3">
-                                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
                 
@@ -40,5 +39,4 @@
         </div>
     </div>
 </div>
-
 @endsection

@@ -13,8 +13,14 @@ class CertificateController extends Controller
     public function index(Request $request)
     {
         $q = Certificate::query();
-    
-        $d['pagination']='10';
+        
+        if(!empty($request->pagination)){
+            $n = $request->pagination;
+        }
+        else{
+            $n = 10;
+        }
+        $d['pagination']=$n;
         if($request->search){
           
             $q->where('name', 'like', "%$request->search%")->paginate(10);

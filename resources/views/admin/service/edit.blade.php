@@ -9,9 +9,9 @@
             
                 <div class="card">
                     <div class="card-header">
-                        Edit Category List
+                        <h5>Edit Service</h5>
                     </div>
-
+                    <hr class="m-0">
                     <div class="card-body">
                         <form action="{{ route("admin.service.update", [$service->id]) }}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -37,7 +37,7 @@
                             
                             </div>
                             <div class="mt-3">
-                                <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                                <input class="btn ad-btn create_btn" type="submit" value="{{ trans('global.save') }}">
                             </div>
                         </form>
 
