@@ -42,6 +42,9 @@ class FreelancerCollection extends ResourceCollection
             'category'          =>isset($data->category->name) ?$data->category->name  : '',
             'is_profile_complete'=>boolval($data->is_profile_complete),
             'skills'            => $data->skills,
+            'isInvite'          =>$data->isInvite($data->id),
+            'isSaveTalent'      =>$data->isSaveTalent($data->id),   
+            'success_rate'      =>"90%"      
         ];
         });
     }

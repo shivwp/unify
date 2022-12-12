@@ -136,6 +136,9 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                 
+
                                 <div class="col-md-12">
                                     <div class="p-3 listViewclr">
                                         <h6><strong>Project Description</strong></h6>
@@ -215,9 +218,9 @@
                                   @foreach($proposals as $item)
 
                                   @foreach($item->users as $user)
-                                  
 
                                   <tr>
+
                                     <td>
                                         @if(!empty($user->name)) {{$user->first_name}} @endif
                                     </td>
@@ -226,7 +229,9 @@
                                     </td>
                                     
                                     <td>
-                                        {{ number_format((float)$item->bid_amount, 2, '.', '') }}$
+
+                                       {{-- {{ number_format((float)$item->amount, 1, '.', '') }}$--}}
+                                        ${{ number_format((float)$project->price, 2, '.', '') }}
                                     </td>
                                     <td>
                                         @if($item->status=="pending") <span class="badge bg-label-warning me-1">Pending</span>

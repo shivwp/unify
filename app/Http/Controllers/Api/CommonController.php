@@ -24,6 +24,7 @@ use App\Models\TimeZone;
 use App\Models\Plans;
 use App\Models\Business_size;
 use App\Models\Certificate;
+use App\Models\DeclineReason;
 use App\Models\Industries;
 use App\Models\Project;
 use App\Models\User;
@@ -51,9 +52,9 @@ class CommonController extends Controller
       public function categorylist(){
          $categorylist =  ProjectCategory::where('parent_id','0')->get();
          if(!empty($categorylist)){
-            return response()->json(['categorylist'=>$categorylist,'status'=>true,'message'=>'Category List'], $this->success); 
+            return response()->json(['categorylist'=>$categorylist,'status'=>true,'message'=>'Category list'], $this->success); 
          }else{
-            return response()->json(['categorylist'=>[],'status'=>false,'message'=>'No Category Found'], $this->success); 
+            return response()->json(['categorylist'=>[],'status'=>false,'message'=>'No category found'], $this->success); 
          }
       }
       public function subcategorylist(Request $request){
@@ -67,9 +68,9 @@ class CommonController extends Controller
 
          $subcategorylist =  ProjectCategory::where('parent_id',$request->category_id)->get();
          if(!empty($subcategorylist)){
-            return response()->json(['subcategorylist'=>$subcategorylist,'status'=>true,'message'=>'Sub Category List'], $this->success); 
+            return response()->json(['subcategorylist'=>$subcategorylist,'status'=>true,'message'=>'Sub category list'], $this->success); 
          }else{
-            return response()->json(['subcategorylist'=>[],'status'=>false,'message'=>'No Sub Category Found'], $this->success); 
+            return response()->json(['subcategorylist'=>[],'status'=>false,'message'=>'No sub category found'], $this->success); 
          }
       }
 
@@ -93,9 +94,9 @@ class CommonController extends Controller
             }
             if(!empty($skill)){
                $skills = $skill->get();
-               return ResponseBuilder::success($skills, "Skills List");
+               return ResponseBuilder::success($skills, "Skills list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -107,9 +108,9 @@ class CommonController extends Controller
          try{
             $reason = AccountCloseReason::select('id','title')->get();
             if(!empty($reason)){
-               return ResponseBuilder::success($reason, "Close Account Reasons List");
+               return ResponseBuilder::success($reason, "Close account reasons list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -121,9 +122,9 @@ class CommonController extends Controller
          try{
             $hours = HoursPerWeek::select('id','title')->get();
             if(!empty($hours)){
-               return ResponseBuilder::success($hours, "Hours Per Week List");
+               return ResponseBuilder::success($hours, "Hours per week list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -135,9 +136,9 @@ class CommonController extends Controller
          try{
             $industry = Industries::select('id','title')->get();
             if(!empty($industry)){
-               return ResponseBuilder::success($industry, "Industries List");
+               return ResponseBuilder::success($industry, "Industries list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -149,9 +150,9 @@ class CommonController extends Controller
          try{
             $language_list =  DB::table('languages')->select('id','name')->get();
             if(!empty($language_list)){
-               return ResponseBuilder::success($language_list, "Languages List");
+               return ResponseBuilder::success($language_list, "Languages list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -163,9 +164,9 @@ class CommonController extends Controller
          try{
             $degree_list =  DB::table('degree_list')->select('id','title')->get();
             if(!empty($degree_list)){
-               return ResponseBuilder::success($degree_list, "Degree's List");
+               return ResponseBuilder::success($degree_list, "Degree's list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -178,9 +179,9 @@ class CommonController extends Controller
          {
             $degree_list =  DB::table('pages')->where('slug',$slug)->select('id','title','slug','content')->first();
             if(!empty($degree_list)){
-               return ResponseBuilder::success($degree_list, "Degree's List");
+               return ResponseBuilder::success($degree_list, "Degree's list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }
          catch(\Exception $e)
@@ -198,9 +199,9 @@ class CommonController extends Controller
             }
             if(!empty($specializ)){
                $all_specialProfile = $specializ->get();
-               return ResponseBuilder::success($all_specialProfile, "Specialize Profile List");
+               return ResponseBuilder::success($all_specialProfile, "Specialize profile list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -213,9 +214,9 @@ class CommonController extends Controller
          {
             $certificate_list =  Certificate::select('id','name')->get();
             if(count($certificate_list) > 0){
-               return ResponseBuilder::success($certificate_list, "Certificates List");
+               return ResponseBuilder::success($certificate_list, "Certificates list");
             }else{
-               return ResponseBuilder::successMessage(__("No Data found"), $this->success);
+               return ResponseBuilder::successMessage(__("No data found"), $this->success);
             }
          }
          catch(\Exception $e)
@@ -230,9 +231,26 @@ class CommonController extends Controller
          {
             $dislikeReaons_list =  DislikeReason::select('id','name')->get();
             if(count($dislikeReaons_list) > 0){
-               return ResponseBuilder::success($dislikeReaons_list, "Dislike Reasons List");
+               return ResponseBuilder::success($dislikeReaons_list, "Dislike reasons list");
             }else{
-               return ResponseBuilder::error(__("No Data found"), $this->notFound);
+               return ResponseBuilder::error(__("No data found"), $this->notFound);
+            }
+         }
+         catch(\Exception $e)
+         {
+            return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         }
+      }
+
+      public function decline_reasons($type)
+      {
+         try
+         {
+            $decline_reasons =  DeclineReason::where('type',$type)->select('id','title')->get();
+            if(count($decline_reasons) > 0){
+               return ResponseBuilder::success($decline_reasons, "Decline seasons list");
+            }else{
+               return ResponseBuilder::error(__("No data found"), $this->notFound);
             }
          }
          catch(\Exception $e)
@@ -246,7 +264,7 @@ class CommonController extends Controller
          try{
             $projectCloseReason = ProjectCloseReason::select('id','name')->get();
             if(count($projectCloseReason) > 0){
-               return ResponseBuilder::success($projectCloseReason, "Job Close Reasons List");
+               return ResponseBuilder::success($projectCloseReason, "Job close reasons list");
             }else{
                return ResponseBuilder::error("No data found", $this->notFound);
             }
@@ -301,7 +319,7 @@ class CommonController extends Controller
                $home_Alldata['category'] = $cat_data;
                $this->response = $home_Alldata;
             }
-            return ResponseBuilder::success($this->response, "Home Page data");
+            return ResponseBuilder::success($this->response, "Home page data");
          }
          catch(\Exception $e)
          {
@@ -336,7 +354,7 @@ class CommonController extends Controller
                $category->banner_image = !empty($category->banner_image) ? url('images/category/'.$category->banner_image) : '';
                $this->response->category_data =  $category;
                $this->response->category_skills =  $cateSkills;
-               return ResponseBuilder::success($this->response, "Skills List based on category");
+               return ResponseBuilder::success($this->response, "Skills list based on category");
             }else
             {
                return ResponseBuilder::error('No data found',$this->serverError);

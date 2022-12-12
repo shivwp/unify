@@ -11,7 +11,8 @@ class ContractsResource extends ResourceCollection
         return $this->collection->map(function($data) {
             return [
                 'id'                => (string)$data->id,
-                'type'              => (string)($data->type??''),
+                'type'              => (string)($data->budget_type??''),
+                'weekly_limit'      => (string)($data->weekly_limit??''),
                 'project_id'        => (string)$data->project_id,
                 'project_title'     => (string)($data->project_title??$data->projectDetails->name),
                 'proposal_id'       => (string)($data->proposal_id??''),

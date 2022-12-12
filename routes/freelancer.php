@@ -63,11 +63,26 @@ Route::middleware('auth:api')->group(function () {
 
 	// freelancer category
 	Route::post('add-category', [App\Http\Controllers\Api\FreelancerController::class, 'addCategory']);
+
+	// withdraw proposal
+	Route::post('proposal-withdraw', [App\Http\Controllers\Api\ProposalController::class, 'proposalWithdraw']);
+
+	// invite-decline
+	Route::post('invite-decline', [App\Http\Controllers\Api\ProposalController::class, 'inviteDecline']);
+
+	//update proposal 
+	Route::post('update-proposal', [App\Http\Controllers\Api\ProposalController::class, 'updateProposal']);
+
+	//accept-offer
+	Route::get('accept-offer/{offer_id}', [App\Http\Controllers\Api\Freelancer\ContractsController::class, 'acceptOffer']);
+
+	//decline proposal 
+	Route::post('decline-offer', [App\Http\Controllers\Api\ProposalController::class, 'offerDecline']);
 });
 
 //freelancer List
 Route::get('freelancer-list', [App\Http\Controllers\Api\FreelancerController::class, 'freelancerList']);
-Route::post('single-freelancer', [App\Http\Controllers\Api\FreelancerController::class, 'freelanceSingleData']);
+Route::get('single-freelancer/{id}', [App\Http\Controllers\Api\FreelancerController::class, 'freelanceSingleData']);
 
 Route::post('get-testimonial', [App\Http\Controllers\Api\FreelancerController::class, 'getTestimonial']);
 Route::post('client-testimonial', [App\Http\Controllers\Api\FreelancerController::class, 'clientTestimonial']);

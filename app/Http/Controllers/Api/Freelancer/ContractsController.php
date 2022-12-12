@@ -19,13 +19,14 @@ use App\Models\PaymentRequest;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Contracts;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Validator;
 use Exception;
 
 class ContractsController extends Controller
 {
-    // Contracts List
+    // freelancer Contracts List
     public function ContractsList(Request $request)
     {
         try {
@@ -40,10 +41,13 @@ class ContractsController extends Controller
 
             // $page = !empty($request->pagination) ? $request->pagination : 10; 
 
-            $contractsQuery = Contracts::with('client.client', 'freelancer', 'projectDetails', 'proposal');
-            $HourlyContractsQuery = Contracts::with('client', 'freelancer', 'projectDetails', 'proposal')->where('type', 'hourly');
-            $ActiveMilestoneQuery = Contracts::with('client', 'freelancer', 'projectDetails', 'proposal')->where('type', 'fixed')->where('status', 'active-milestones');
-            $AwaitingMilestoneQuery = Contracts::with('client', 'freelancer', 'projectDetails', 'proposal')->where('type', 'fixed')->where('status', 'awaiting-milestones');
+            $contractsQuery = Contracts::with('client.client', 'freelancer', 'projectDetails', 'proposal')->where('freelancer_id',$user_id);
+            $HourlyContractsQuery = Contracts::with('client', 'freelancer', 'projectDetails', 'proposal')->where('freelancer_id',$user_id)->where('budget_type', 'hourly');
+            $ActiveMilestoneQuery =Contracts::with('client', 'freelancer', 'projectDetails', 'proposal')
+                                            ->where('freelancer_id',$user_id)
+                                            ->where('budget_type', 'fixed')
+                                            ->where('status', 'active');
+            $AwaitingMilestoneQuery = Contracts::with('client', 'freelancer', 'projectDetails', 'proposal')->where('budget_type', 'fixed')->where('freelancer_id',$user_id)->where('status', 'awaiting-milestones');
             $PaymentRequestQuery = PaymentRequest::with('client', 'freelancer', 'projectDetails')->where('status', 'pending')->where('client_id', $user_id);
 
             $order = 'DESC';
@@ -95,7 +99,7 @@ class ContractsController extends Controller
             
             $contracts = $contractsQuery->get();
             if(count($contracts) == 0) {
-                return ResponseBuilder::error(__('No Contract Found'), $this->notFound);
+                return ResponseBuilder::success([],'No Contract Found');
             }
 
             $HourlyContracts = $HourlyContractsQuery->get();
@@ -111,9 +115,54 @@ class ContractsController extends Controller
 
             return ResponseBuilder::success($this->response, "Contracts List Data",$this->success);
 
-        } catch(\Exception $e){
+        } 
+        catch(\Exception $e){
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
         }
     }
+
+    public function acceptOffer($offer_id)
+    {
+        try
+        {
+            if(!Auth::guard('api')->check())
+            {
+                return ResponseBuilder::error("User not found", $this->unauthorized);
+            }
+            $user_id = Auth::guard('api')->user()->id;
+
+            $offerData = SendProposal::where('id',$offer_id)->where('type','offer')->first();
+            if($offerData)
+            {
+                Contracts::updateOrCreate([
+                   'proposal_id'    => $offer_id,
+                ],
+                [
+                    'budget_type'   => $offerData->budget_type,
+                    'project_id'    => $offerData->project_id,
+                    'weekly_limit'  => $offerData->weekly_limit,
+                    'proposal_id'   => $offerData->id,
+                    'start_time'    => Carbon::now(),
+                    'client_id'     => $offerData->client_id,
+                    'freelancer_id' => $offerData->freelancer_id,
+                    'amount'        => $offerData->amount,
+                    'status'        => "active",
+                ]);
+
+                $offerStatus = SendProposal::where('id',$offer_id)->first();
+                $offerStatus->status = "active";
+                $offerStatus->additional_status = "contract";
+                $offerStatus->save();
+                return ResponseBuilder::successMessage("Contract created successfully", $this->success);
+            }else{
+                return ResponseBuilder::error("You don't have an offer",$this->notFound);
+            }
+        }
+        catch(\Exception $e)
+        {
+            return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
+        }
+    }
+
 
 }

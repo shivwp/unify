@@ -94,19 +94,13 @@ table.dataTable thead .sorting_desc {
     margin-left: 5px;
     border:none;
 }
-.search-btn{
-    height: 37px; 
-    margin-right:6px;
-    background-color: transparent;
-        color: #696cff;
-}
 .redirect-icon{
-    border: 1px solid #beb3b3; 
-    padding:10px; 
-    border-radius:6px
+    border: 1px solid #d9dee3; 
+    padding:11px; 
+    border-radius:0.375rem;
 }
 .paginatee{
-    width: 75px !important;"
+    width: 75px !important;
 }
 .C_nme{
     color: #697a8d;
@@ -125,4 +119,30 @@ table.dataTable thead .sorting_desc {
 }
 .btn_back{
     margin-top:20px;
+}
+
+.search-btn
+{
+    border: 1px solid #d9dee3;
+    padding: 8px 12px 8px 12px;
+    border-radius: 0.375rem;
+    margin-right:0.25rem;
+    margin-left:0.25rem;
+    background-color: transparent;
+    color: #696cff;
+}
+.pagination .page-item
+{
+    padding: unset;
+}
+.testimonial_date{
+    float: right;
+}
+.password-info{
+    font-size: 12px;
+}
+select.items {
+    width: 94%;
+    font-size: 11px;
+    height: 32px;
 }

@@ -73,9 +73,9 @@ class Freelancer extends Model
     {
         return $this->hasMany(InviteFreelacner::class,'freelancer_id','user_id');
     }
-    public function isInvite($id)
+    public function isInvite($id,$client, $job)
     {
-        return $this->invite_freelancer()->where('freelancer_id', $id)->exists();
+        return $this->invite_freelancer()->where('freelancer_id', $id)->where('client_id',$client)->where('project_id',$job)->exists();
     }
 
     public function shortlist()
@@ -83,9 +83,9 @@ class Freelancer extends Model
         return $this->hasMany(ShortListed::class,'freelancer_id','user_id');
     }
 
-    public function isShortlist($id)
+    public function isShortlist($id,$client, $job)
     {
-        return $this->shortlist()->where('freelancer_id', $id)->exists();
+        return $this->shortlist()->where('freelancer_id', $id)->where('client_id',$client)->where('job_id',$job)->exists();
     }
 
     public function archived()
@@ -102,4 +102,15 @@ class Freelancer extends Model
     {
         return $this->hasMany(SendProposal::class, 'freelancer_id', 'user_id');
     }
+
+    public function save_talent()
+    {
+        return $this->hasMany(SavedTalent::class, 'freelancer_id', 'user_id');
+    }
+
+    public function isSaveTalent($id,$client)
+    {
+        return $this->save_talent()->where('freelancer_id', $id)->where('client_id',$client)->exists();
+    }
+
 }

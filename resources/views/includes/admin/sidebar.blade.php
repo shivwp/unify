@@ -422,6 +422,13 @@
                         <div data-i18n="Connections">Dislike Reason</div>
                     </a>
                 </li>
+
+                 <li class="menu-item {{ request()->is('admin/decline-reason') || request()->is('admin/decline-reason/*') ? 'active' : '' }}">
+                    <a href="{{ route("admin.decline-reason.index") }}" class="menu-link">
+                        <div data-i18n="Connections">Decline Reason</div>
+                    </a>
+                </li>
+
                 <li class="menu-item {{ request()->is('admin/hours-per-week') || request()->is('admin/hours-per-week/*') ? 'active' : '' }}">
                     <a href="{{ route("admin.hours-per-week.index") }}" class="menu-link">
                         <div data-i18n="Connections">Hours Per Week</div>

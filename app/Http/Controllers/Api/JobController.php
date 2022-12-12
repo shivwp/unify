@@ -17,12 +17,14 @@ use App\Models\InviteFreelacner;
 use App\Models\SendProposal;
 use App\Models\DislikeJob;
 use App\Models\SavedProject;
+use App\Models\ProjectSkill;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\IncomeSource;
 use Illuminate\Http\Request;
 use App\Models\ProjectMilestone;
 use App\Models\SaveArchive;
+use Carbon\Carbon;
 use Validator;
 use DB;
 
@@ -33,13 +35,13 @@ class JobController extends Controller
       try{
          $category = ProjectCategory::where('parent_id','0')->select('id','name')->get();
          if(!empty($category) && count($category) > 0){
-            return ResponseBuilder::success($category, "Category List");
+            return ResponseBuilder::success($category, "Category list");
          }else{
-            return ResponseBuilder::error("No Data found", $this->badRequest);
+            return ResponseBuilder::error("No data found", $this->badRequest);
          }
       }catch(\Exception $e)
       {
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
 
@@ -56,13 +58,13 @@ class JobController extends Controller
 
          $subcategory = ProjectCategory::where('parent_id',$request->category_id)->select('id','name')->get();
          if(!empty($subcategory) && count($subcategory) > 0){
-            return ResponseBuilder::success($subcategory, "Category List");
+            return ResponseBuilder::success($subcategory, "Category list");
          }else{
-            return ResponseBuilder::error("No Data found", $this->badRequest);
+            return ResponseBuilder::error("No data found", $this->badRequest);
          }
       }catch(\Exception $e)
       {
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
    
@@ -127,7 +129,7 @@ class JobController extends Controller
          return ResponseBuilder::success($project->id,"Post job successfully");
 
       }catch(\Exception $e){
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
 
@@ -170,15 +172,30 @@ class JobController extends Controller
          $project->type  = isset($request->job_type) ? $request->job_type : $project->type;
          $project->save();
 
-         if(!empty($request->skills)){   
-            $project_skills= explode(',', $request->skills);
-            foreach($project_skills as $skl){
-               $skil = ProjectProjectSkill::updateOrCreate([
-                  'project_id'=>$project->id,
-                  'project_skill_id'=>$skl,
-               ]);
-               $skil->save();
+         if(!empty($request->skills)){ 
+            $projectSkill = ProjectSkill::all();
+            $skills = explode(',', $request->skills);
+            foreach($skills as $val){
+                $projectsSkill[] = $val;
             }
+            
+                foreach($projectSkill as $val){
+
+                    if(in_array($val->id, $projectsSkill)){
+                        $save_d[] = ProjectProjectSkill::updateOrCreate([
+                            'project_id'   => $request->project_id,
+                            'project_skill_id'   => $val->id,
+                        ],
+                        [
+                            'project_skill_id'   => $val->id,
+                        ]);
+                    }
+                    else{
+                        $skilll_id = ProjectProjectSkill::where('project_id',$request->project_id)->where('project_skill_id',$val->id)->first();
+                        if($skilll_id)
+                        $skilll_id->delete();
+                    }
+                }
          }
          if ($request->hasfile('image')) {
             $file = $request->image;
@@ -189,11 +206,11 @@ class JobController extends Controller
                'project_images' => $name
             ]);
          }
-         return ResponseBuilder::successMessage("Update Job Sucessfully", $this->success);
+         return ResponseBuilder::successMessage("Update job sucessfully", $this->success);
       }
       catch(\Exception $e)
       {
-         return ResponseBuilder::error($e->getMessage(), $this->serverError);
+         return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
       }
    }
 
@@ -209,7 +226,7 @@ class JobController extends Controller
 
          $page = !empty($request->pagination) ? $request->pagination : 10; 
          
-         $query = Project::where('status','!=','close')->with('skills','categories');
+         $query = Project::where('status','publish')->orderBy('created_at','DESC')->where('is_private',0)->with('skills','categories');
 
          // Filter Project Category
          if(isset($request->project_category) ) {
@@ -251,12 +268,6 @@ class JobController extends Controller
             $query->where('english_level', $request->english_level);
          }
 
-         // Filter Project Language
-         if(isset($request->language) ) {
-            $languages = explode(',', $request->language);
-            $query->whereIn('language', $languages);
-         }
-         
          // Filter Project Price - MIN
          if(isset($request->min_price) ) {
             $query->where('min_price', '>=', $request->min_price);
@@ -273,10 +284,10 @@ class JobController extends Controller
          // dd( $jobdata); 
          $this->response = new ProjectResource($jobdata);
          
-         return ResponseBuilder::successWithPagination($jobdata, $this->response, "Jobs List Data",$this->success);
+         return ResponseBuilder::successWithPagination($jobdata, $this->response, "Jobs list data",$this->success);
       }
       catch(\Exception $e){
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
 
@@ -302,11 +313,11 @@ class JobController extends Controller
          $jobdata->user_id = $user_id;
 
          $this->response = new ProjectResource($jobdata);
-         return ResponseBuilder::successWithPagination($jobdata,$this->response, "Recent Jobs List Data",$this->success);
+         return ResponseBuilder::successWithPagination($jobdata,$this->response, "Recent jobs list data",$this->success);
          // return ResponseBuilder::success($this->response, "Recent Jobs List");
       }
       catch(\Exception $e){
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
 
@@ -337,10 +348,10 @@ class JobController extends Controller
 
          // $job_list['user_id'] = $user_id;
          $this->response = new ProjectResource($job_list);
-         return ResponseBuilder::success($this->response, "Best Match Jobs List");
+         return ResponseBuilder::success($this->response, "Best match jobs list");
       }
       catch(\Exception $e){
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
 
@@ -361,10 +372,10 @@ class JobController extends Controller
          if ($validator->fails()) {
             return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
          }
-         $CheckJob = SavedProject::where('project_id', $request->job_id)->where('user_id', $user_id)->first();
+         $CheckJob = SavedProject::where('project_id', $request->job_id)->where('created_at','DESC')->where('user_id', $user_id)->first();
          if(!empty($CheckJob))
          {
-            return ResponseBuilder::error(__("Already Saved Job"), $this->badRequest);
+            return ResponseBuilder::error(__("Already saved job"), $this->badRequest);
          }
          else{
             $savejob = SavedProject::updateOrCreate([
@@ -373,12 +384,12 @@ class JobController extends Controller
                'user_id' => $user_id,
                'project_id' => $request->job_id
             ]);
-            return ResponseBuilder::successMessage("Save Job Sucessfully",$this->success);
+            return ResponseBuilder::successMessage("Save job sucessfully",$this->success);
          }
       }
       catch(\Exception $e)
       {
-         return ResponseBuilder::error($e->getMessage(), $this->serverError);
+         return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
       }
    }
 
@@ -403,7 +414,7 @@ class JobController extends Controller
          if(!empty($CheckJob))
          {
             $CheckJob->delete();
-            return ResponseBuilder::error(__("Removed Sucessfully"), $this->success);
+            return ResponseBuilder::error(__("Removed sucessfully"), $this->success);
          }
          else{
             return ResponseBuilder::error(__("No Data found"), $this->badRequest);
@@ -411,7 +422,7 @@ class JobController extends Controller
       }
       catch(\Exception $e)
       {
-         return ResponseBuilder::error($e->getMessage(), $this->serverError);
+         return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
       }
    }
 
@@ -432,6 +443,7 @@ class JobController extends Controller
          $validator = Validator::make($request->all(), [
             'job_id'   	      =>	'required|exists:projects,id',
             'milestone_type'  =>	'nullable|in:single,multiple',
+            'bid_amount'      => 'max:10'
          ]);
 
          if ($validator->fails()) {
@@ -439,11 +451,11 @@ class JobController extends Controller
          } 
 
          $client_id = Project::where('id',$request->job_id)->select('client_id','budget_type')->first();
-         $send_proposal = SendProposal::where('project_id',$request->job_id)->where('freelancer_id',$user_id)->first();
+         $send_proposal = SendProposal::where('project_id',$request->job_id)->where('freelancer_id',$user_id)->where('type','proposal')->first();
          
          if(!empty($send_proposal))
          {
-            return ResponseBuilder::error(__("Already Send Proposal"), $this->badRequest);
+            return ResponseBuilder::error(__("Already send proposal"), $this->badRequest);
          } else {
             DB::beginTransaction();
             $get_fee = IncomeSource::where('name','Unify')->first();
@@ -457,62 +469,88 @@ class JobController extends Controller
                'client_id'       => $client_id->client_id,
                'freelancer_id'   => $user_id,
                'project_id'      => $request->job_id,
+               'invite_id'       => $request->invite_id,
                'budget_type'     => $client_id->budget_type,
-               'status'          => 'pending',
-               'amount'          => $bidAmount,
-               'platform_fee'    => $platform_fee,
-               'title'           => ($request->title)??'',
+               'status'          => ($request->invite_id) ? "active" : "pending",
+               'amount'          => $request->bid_amount,
+               'project_duration'=> $request->project_duration,
+               'title'           => ($request->title) ?? '',
                'cover_letter'    => $request->cover_letter,
                'image'           => !empty($request->file('image')) ? $this->proposalImage($request->file('image')  ) : '',
             ]);
 
             $mileStones = [];
             if($client_id->budget_type == 'fixed') {
-               $milestone_data = json_decode($request->milestone_data,1);
-               if(!empty($milestone_data)){
-                  foreach ($milestone_data as $value) {
-                     $mileStones[] = [
-                        'proposal_id' => $proposal->id,
-                        'project_id' => $request->job_id,
-                        'client_id' => $client_id->client_id,
-                        'freelancer_id' => $user_id,
-                        'project_duration'=>$request->project_duration,
-                        'description' => $value['description'],
-                        'due_date' => $value['due_date'],
-                        'amount' => $value['amount'],
-                        'status' => 'created',
-                        'note' => '',
-                        'type' => $request->milestone_type
-                     ];
+               if($request->milestone_type == "multiple"){
+                  $milestone_data = json_decode($request->milestone_data,1);
+                  if(!empty($milestone_data)){
+                     foreach ($milestone_data as $value) {
+                        $mileStones[] = [
+                           'proposal_id' => $proposal->id,
+                           'project_id' => $request->job_id,
+                           'client_id' => $client_id->client_id,
+                           'freelancer_id' => $user_id,
+                           'project_duration'=>$request->project_duration,
+                           'description' => $value['description'],
+                           'due_date' => $value['due_date'],
+                           'amount' => $value['amount'],
+                           'status' => 'created',
+                           'note' => '',
+                           'type' => $request->milestone_type
+                        ];
+                     }
+                     ProjectMilestone::insert($mileStones);
                   }
                }
-               ProjectMilestone::insert($mileStones);
             }
             DB::commit();
-            return ResponseBuilder::successMessage("Sent Proposal Sucessfully",$this->success);
+            
+            $this->response = $proposal->id;
+            return ResponseBuilder::success($this->response,"Sent proposal sucessfully");
          }
       }catch(\Exception $e){
-         // return print_r($e->getMessage());die;
+         // return print_r("Oops! Something went wrong.");die;
          DB::rollback();
-         return ResponseBuilder::error($e->getMessage(),$this->serverError);
+         return ResponseBuilder::error("Oops! Something went wrong.",$this->serverError);
       }
    }
 
-   public function singleJob(Request $request)
+   public function singleJob($job_id)
    {
       try
       {
-         $validator = Validator::make($request->all(), [
-            'job_id'       => 'required|exists:projects,id',
-         ]);
-         if ($validator->fails()) {
-            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+         $user_id = "";
+         if (Auth::guard('api')->check()) {
+            $singleuser = Auth::guard('api')->user();
+            $user_id = $singleuser->id;
+         } 
+         $jobExists = Project::where('id',$job_id)->exists();
+            if($jobExists == false){
+               return ResponseBuilder::error("Please enter valid id",$this->badRequest);
+            }
+         $job_list = Project::where('id',$job_id)->with('skills','categories')->first();
+         $inviteData = InviteFreelacner::where('project_id',$job_id)->where('freelancer_id',$user_id)->pluck('id')->first();
+
+         $proposalss= SendProposal::leftjoin('users','send_proposals.freelancer_id','users.id')->leftjoin('freelancer','freelancer.user_id','users.id')->where('project_id',$job_id)->select('users.id as freelancer_id','send_proposals.id as send_proposals_id','send_proposals.cover_letter','send_proposals.status','send_proposals.amount','send_proposals.created_at','users.first_name','users.profile_image','freelancer.amount as hour_rate','send_proposals.invite_id')->get();
+         $open_job = Project::where('client_id',$job_list->client_id)->where('status','publish')->count();
+         $recentHistory = Project::where('client_id',$job_list->client_id)->where('status','close')->select('name','description','start_date','end_date','budget_type','min_price','rating','price')->limit(3)->get();
+         $recent_history = [];
+         if(count($recentHistory) > 0){
+            foreach($recentHistory as $value)
+            {
+               $recent_history[] = [
+                  'name'         =>(string)$value->name,
+                  'description'  =>(string)$value->description,
+                  'start_date'   =>Carbon::parse($value->start_date)->format('M d, Y'),
+                  'end_date'     =>(string)$value->end_date,
+                  'min_price'    =>(string)$value->min_price,
+                  'rating'       =>(string)$value->rating,
+                  'price'        =>(string)$value->price,
+               ];
+            }
          }
-         $job_list = Project::where('id',$request->job_id)->with('skills','categories')->first();
-         $proposalss= SendProposal::join('users','send_proposals.freelancer_id','users.id')->join('freelancer','freelancer.user_id','users.id')->where('project_id',$job_list->id)->select('users.id as freelancer_id','send_proposals.id as send_proposals_id','send_proposals.cover_letter','send_proposals.status','send_proposals.amount','send_proposals.created_at','users.first_name','users.profile_image','freelancer.amount as hour_rate')->get();
-         $recentHistory = Project::where('client_id',$job_list->client_id)->select('name','description','created_at','budget_type','min_price','price')->limit(3)->get();
-         $invite_sent = InviteFreelacner::where('project_id',$request->job_id)->count();
-         $unanswered_invite = InviteFreelacner::where('project_id',$request->job_id)->where('status','pending')->count();
+         $invite_sent = InviteFreelacner::where('project_id',$job_id)->count();
+         $unanswered_invite = InviteFreelacner::where('project_id',$job_id)->where('status','pending')->count();
          $proposalList = [];
          if(count($proposalss) > 0){
             foreach($proposalss as $value)
@@ -520,6 +558,7 @@ class JobController extends Controller
                $skills = FreelancerSkill::where('user_id',$value->freelancer_id)->select('skill_id','skill_name')->get();
                $proposalList[] = [
                   'freelancer_id'         =>(string)$value->freelancer_id,
+                  'invite_id'             =>(string)$value->invite_id,
                   'freelancer_name'       =>(string)$value->first_name,
                   'profile_image'         =>isset($value->profile_image) ? url('/images/profile-image',$value->profile_image) : '',
                   'proposal_id'           =>(string)$value->send_proposals_id,
@@ -532,8 +571,10 @@ class JobController extends Controller
                ];
             }
          }
+         $job_list['invite_id'] = ($inviteData) ? $inviteData : '';
+         $job_list['open_job'] = $open_job;
          $job_list['proposal_list'] = $proposalList;
-         $job_list['recent_history'] = $recentHistory;
+         $job_list['recent_history'] = $recent_history;
          $job_list['invite_sent'] = isset($invite_sent) ? $invite_sent : '';
          $job_list['unanswered_invite'] = isset($unanswered_invite) ? $unanswered_invite : '';
          $job_list['cdata'] = $this->getClientInfo($job_list->client_id);
@@ -550,10 +591,10 @@ class JobController extends Controller
          
          $this->response = new ProjectSingleResource($job_list);
 
-         return ResponseBuilder::success($this->response, "Single Jobs Data");
+         return ResponseBuilder::success($this->response, "Single jobs data");
       }
       catch(\Exception $e){
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }   
    }
 
@@ -588,12 +629,12 @@ class JobController extends Controller
                'job_id'    => $request->job_id,
                'reason_id' => $request->reason_id,
             ]);
-            return ResponseBuilder::successMessage("Dislike Job Sucessfully",$this->success);
+            return ResponseBuilder::successMessage("Dislike job sucessfully",$this->success);
          }
       }
       catch(\Exception $e)
       {
-         return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+         return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
       }
    }
 
@@ -618,7 +659,7 @@ class JobController extends Controller
          if(!empty($CheckJob))
          {
             $CheckJob->delete();
-            return ResponseBuilder::error(__("Removed Sucessfully"), $this->success);
+            return ResponseBuilder::error(__("Removed sucessfully"), $this->success);
          }
          else{
             return ResponseBuilder::error(__("No Data found"), $this->badRequest);
@@ -626,9 +667,41 @@ class JobController extends Controller
       }
       catch(\Exception $e)
       {
-         return ResponseBuilder::error($e->getMessage(), $this->serverError);
+         return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
       }
    }
+
+   public function privatePublicjob(Request $request)
+   {
+      try
+      {
+         $validator = Validator::make($request->all(), [
+            'job_id'       => 'required|exists:projects,id',
+            'type'         => 'required|in:public,private'
+         ]);
+         if ($validator->fails()) {
+            return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+         }
+         $private_project = Project::where('id',$request->job_id)->first();
+
+         if($request->type == 'private'){
+            $private_project->is_private = 1;
+            $private_project->save();
+            return ResponseBuilder::successMessage('Your job is now private and only visible to freelancers you contact directly.',$this->success);
+         }
+         if($request->type == 'public'){
+            $private_project->is_private = 0;
+            $private_project->save();
+            return ResponseBuilder::successMessage('Your job is now public and visible to all freelancers.',$this->success);
+         }
+      }
+      catch(\Exception $e)
+      {
+         return ResponseBuilder::error("Oops! Something went wrong.",$this->serverError);
+      }
+   }
+
+   
 
 }
 

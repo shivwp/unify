@@ -3,140 +3,7 @@
 <div class="content-wrapper">
     <!-- Content -->
    
-        <div class="container-xxl flex-grow-1 container-p-y">
-            <div class="row">
-            <div class="col-lg-12">
-                <div class="">
-                    <div class="nav-align-top mb-4">
-                        <ul class="nav nav-tabs nav-fill" role="tablist">
-                          <li class="nav-item">
-                            <button
-                              type="button"
-                              class="nav-link active"
-                              role="tab"
-                              data-bs-toggle="tab"
-                              data-bs-target="#navs-justified-home"
-                              aria-controls="navs-justified-home"
-                              aria-selected="true"
-                            >
-                              Proposals
-                              <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-label-danger">{{ $proposals->total() }}</span>
-                            </button>
-                          </li>
-                          <li class="nav-item">
-                            <button
-                              type="button"
-                              class="nav-link"
-                              role="tab"
-                              data-bs-toggle="tab"
-                              data-bs-target="#navs-justified-profile"
-                              aria-controls="navs-justified-profile"
-                              aria-selected="false"
-                            >
-                             Messages
-                            </button>
-                          </li>
-                          <li class="nav-item">
-                            <button
-                              type="button"
-                              class="nav-link"
-                              role="tab"
-                              data-bs-toggle="tab"
-                              data-bs-target="#navs-justified-messages"
-                              aria-controls="navs-justified-messages"
-                              aria-selected="false"
-                            >
-                              Hired
-                            </button>
-                          </li>
-                        </ul>
-                        <div class="tab-content">
-                          <div class="tab-pane fade show active" id="navs-justified-home" role="tabpanel">
-                            <h5 class="card-header">Proposals/Bids</h5>
-                            <div class="table-responsive text-nowrap">
-                            @if(count($proposals)>0)
-                              <table class="table">
-                                <thead>
-                                  <tr class="ml-3">
-                                    
-                                    <th>Freelancer Name</th>
-                                    <th>Email</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Submit Date</th>
-                                    <th>Action</th>
-                                  </tr>
-                                </thead>
-
-                                <tbody class="table-border-bottom-0">
-
-                                  @foreach($proposals as $item)
-
-                                  @foreach($item->users as $user)
-                                  
-
-                                  <tr>
-                                    <td>
-                                        @if(!empty($user->name)) {{$user->first_name}} @endif
-                                    </td>
-                                    <td>
-                                        @if(!empty($user->email)) {{$user->email}} @endif
-                                    </td>
-                                    
-                                    <td>
-                                        {{ number_format((float)$item->bid_amount, 2, '.', '') }}$
-                                    </td>
-                                    <td>
-                                        @if($item->status=="pending") <span class="badge bg-label-warning me-1">Pending</span>
-                                        @elseif($item->status=="approve") <span class="badge bg-label-success me-1">Approve</span> 
-                                        @elseif($item->status=="reject") <span class="badge bg-label-danger me-1">Reject</span> 
-                                        @elseif($item->status=="hold") <span class="badge bg-label-primary me-1">On-Hold</span> @endif
-                                    </td>
-                                    <td>
-                                        {{$item->created_at->toFormattedDateString()}}
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('admin.project-proposal',$item->id) }}">
-                                            <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
-                                        </a>
-                                    </td>
-                                  </tr>
-                                  @endforeach
-                                  @endforeach
-                                 
-                                </tbody>
-                                
-                              </table>
-                              {!! $proposals->links() !!}
-                              @else
-                              <h6 class="card-header">No Proposal On This Job</h6>
-                              
-                              @endif
-                            </div>
-                          </div>
-                          <div class="tab-pane fade" id="navs-justified-profile" role="tabpanel">
-                            <p>
-                                You don't have any Messages yet
-                             </p>
-                            <p class="mb-0">
-                              
-                           
-
-                            </p>
-                          </div>
-                          <div class="tab-pane fade" id="navs-justified-messages" role="tabpanel">
-                            <p>
-                               You don't have any offers yet
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                   
-                  </div>
-            </div>
-            </div>
         
-          </div>
        
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
@@ -374,5 +241,140 @@
             </div>
         </div>
     </div>
+    <!-- proposal , contract and Hire section -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row">
+            <div class="col-lg-12">
+                <div class="">
+                    <div class="nav-align-top mb-4">
+                        <ul class="nav nav-tabs nav-fill" role="tablist">
+                          <li class="nav-item">
+                            <button
+                              type="button"
+                              class="nav-link active"
+                              role="tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#navs-justified-home"
+                              aria-controls="navs-justified-home"
+                              aria-selected="true"
+                            >
+                              Proposals
+                              <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-label-danger">{{ $proposals->total() }}</span>
+                            </button>
+                          </li>
+                          <li class="nav-item">
+                            <button
+                              type="button"
+                              class="nav-link"
+                              role="tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#navs-justified-profile"
+                              aria-controls="navs-justified-profile"
+                              aria-selected="false"
+                            >
+                             Messages
+                            </button>
+                          </li>
+                          <li class="nav-item">
+                            <button
+                              type="button"
+                              class="nav-link"
+                              role="tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#navs-justified-messages"
+                              aria-controls="navs-justified-messages"
+                              aria-selected="false"
+                            >
+                              Hired
+                            </button>
+                          </li>
+                        </ul>
+                        <div class="tab-content">
+                          <div class="tab-pane fade show active" id="navs-justified-home" role="tabpanel">
+                            <h5 class="card-header">Proposals/Bids</h5>
+                            <div class="table-responsive text-nowrap">
+                            @if(count($proposals)>0)
+                              <table class="table">
+                                <thead>
+                                  <tr class="ml-3">
+                                    
+                                    <th>Freelancer Name</th>
+                                    <th>Email</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Submit Date</th>
+                                    <th>Action</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody class="table-border-bottom-0">
+
+                                  @foreach($proposals as $item)
+
+                                  @foreach($item->users as $user)
+                                  
+
+                                  <tr>
+                                    <td>
+                                        @if(!empty($user->name)) {{$user->first_name}} @endif
+                                    </td>
+                                    <td>
+                                        @if(!empty($user->email)) {{$user->email}} @endif
+                                    </td>
+                                    
+                                    <td>
+                                        {{ number_format((float)$item->bid_amount, 2, '.', '') }}$
+                                    </td>
+                                    <td>
+                                        @if($item->status=="pending") <span class="badge bg-label-warning me-1">Pending</span>
+                                        @elseif($item->status=="approve") <span class="badge bg-label-success me-1">Approve</span> 
+                                        @elseif($item->status=="reject") <span class="badge bg-label-danger me-1">Reject</span> 
+                                        @elseif($item->status=="hold") <span class="badge bg-label-primary me-1">On-Hold</span> @endif
+                                    </td>
+                                    <td>
+                                        {{$item->created_at->toFormattedDateString()}}
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.project-proposal',$item->id) }}">
+                                            <button class="btn btn-sm btn-icon me-2" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>View</span>"><i class="bx bx-show mx-1"></i></button>
+                                        </a>
+                                    </td>
+                                  </tr>
+                                  @endforeach
+                                  @endforeach
+                                 
+                                </tbody>
+                                
+                              </table>
+                              {!! $proposals->links() !!}
+                              @else
+                              <h6 class="card-header">No Proposal On This Job</h6>
+                              
+                              @endif
+                            </div>
+                          </div>
+                          <div class="tab-pane fade" id="navs-justified-profile" role="tabpanel">
+                            <p>
+                                You don't have any Messages yet
+                             </p>
+                            <p class="mb-0">
+                              
+                           
+
+                            </p>
+                          </div>
+                          <div class="tab-pane fade" id="navs-justified-messages" role="tabpanel">
+                            <p>
+                               You don't have any offers yet
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                   
+                  </div>
+            </div>
+            </div>
+        
+          </div>
 </div>
 @endsection

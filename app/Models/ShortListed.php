@@ -29,5 +29,7 @@ class ShortListed extends Authenticatable
       'job_id',
     ];
 
+    
+
 
 }

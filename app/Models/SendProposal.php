@@ -18,14 +18,17 @@ class SendProposal extends Model
         'project_id',
         'client_id',
         'freelancer_id',
+        'invite_id',
         'budget_type',
         'amount',
         'weekly_limit',
+        'project_duration',
         'title',
         'date',
         'cover_letter', 
         'image',
-        'status'
+        'status',
+        'additional_status',
     ];
     
     public function projects()
@@ -41,5 +44,15 @@ class SendProposal extends Model
     public function client()
     {
         return $this->hasMany(User::class,'id','client_id');
+    }
+
+    public function short_list()
+    {
+        return $this->hasMany(ShortListed::class, 'freelancer_id', 'freelancer_id');
+    }
+
+    public function isShortlist($id,$client, $job)
+    {
+        return $this->short_list()->where('freelancer_id', $id)->where('client_id',$client)->where('job_id',$job)->exists();
     }
 }

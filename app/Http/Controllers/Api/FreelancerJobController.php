@@ -100,7 +100,7 @@ class FreelancerJobController extends Controller
 		        $this->response = new ProjectResource($jobdata);
 		        return ResponseBuilder::successWithPagination($jobdata,$this->response, "Saved job list",$this->success);
 			}else{
-				return ResponseBuilder::error('No Saved jobs', $this->notFound);
+				return ResponseBuilder::successWithPagination($jobdata,[],'No saved jobs', $this->success);
 			}
 			
 	        // return ResponseBuilder::successWithPagination($jobdata,$this->response, "Jobs List Data",$this->success);

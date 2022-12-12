@@ -103,4 +103,22 @@ class User extends Authenticatable
     {
         return $this->hasOne(Freelancer::class,'user_id', 'id');
     }
+    public function invite_freelancer()
+    {
+        return $this->hasMany(InviteFreelacner::class,'freelancer_id','id');
+    }
+    public function isInvite($id)
+    {
+        return $this->invite_freelancer()->where('freelancer_id', $id)->exists();
+    }
+
+    public function save_talent()
+    {
+        return $this->hasMany(SavedTalent::class, 'freelancer_id', 'id');
+    }
+
+    public function isSaveTalent($id)
+    {
+        return $this->save_talent()->where('freelancer_id', $id)->exists();
+    }
 }

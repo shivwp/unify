@@ -14,6 +14,8 @@ class ProjectResource extends ResourceCollection
         return $this->collection->map(function($data){
             return [
                 'id'                => (string)$data->id,
+                'client_id'         => (string)$data->client_id,
+                'location'          =>  User::where('id',$data->client_id)->pluck('country')->first(),
                 'image'             => isset($data->project_images) ? url('/images/jobs',$data->project_images) : '',
                 'image_name'        => isset($data->project_images) ? (string)($data->project_images) : '',
                 'name'              => isset($data->name) ? $data->name : '',

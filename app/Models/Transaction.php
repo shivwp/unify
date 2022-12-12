@@ -20,17 +20,21 @@ class Transaction extends Model
     ];
 
     protected $fillable = [
-        'name',
+        'user_id',
+        'transaction_id',
         'amount',
-        'project_id',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'currency_id',
-        'description',
-        'income_source_id',
         'transaction_date',
+        'name',
+        'description',
         'transaction_type_id',
+        'capture_method',
+        'client_secret',
+        'confirmation_method',
+        'currency',
+        'customer_id',
+        'source',
+        'status',
+        'complete_response',
     ];
 
     public function project()

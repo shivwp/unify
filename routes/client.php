@@ -35,6 +35,9 @@ Route::middleware('auth:api')->group(function () {
 	//hire freelancer
 	Route::post('hire-freelancer', [App\Http\Controllers\Api\ProposalController::class, 'hireFreelancer']);
 
+	//contract-payment
+	Route::post('contract-payment', [App\Http\Controllers\Api\ProposalController::class, 'contractPayment']);
+
 	//invite freelancer list
 	Route::post('all-invite-freelancers', [App\Http\Controllers\Api\ClientJobController::class, 'inviteFreelancerList']);
 
@@ -44,11 +47,20 @@ Route::middleware('auth:api')->group(function () {
 	//save talent list
 	Route::post('save-talent-list', [App\Http\Controllers\Api\ClientJobController::class, 'saveTalentList']);
 
+	//remove save talent list
+	Route::post('remove-save-talent', [App\Http\Controllers\Api\ClientJobController::class, 'removeSaveTalent']);
+
 	//save talent list
 	Route::post('job-freelancer-list', [App\Http\Controllers\Api\ClientListController::class, 'jobFreelancerList']);
 
 	//proposal list
 	Route::post('job-proposal-list', [App\Http\Controllers\Api\ClientListController::class, 'jobProposalList']);
+
+	//public private job
+	Route::post('public-private-job', [App\Http\Controllers\Api\JobController::class, 'privatePublicjob']);
+
+	//proposal status
+	Route::post('proposal-decline', [App\Http\Controllers\Api\ProposalController::class, 'proposalDecline']);
 
 });
 

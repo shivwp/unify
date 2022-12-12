@@ -38,13 +38,13 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), [
                 'first_name' => 'required',
                 'last_name'  => 'required',
-                'email'     => 'required|email',
-                'password' => 'required|min:8',
-                'user_type' => 'in:freelancer,client',
-                'country'   =>'required',
-                'agree_terms'   =>'required|in:1',
-                'send_email'   =>'in:0,1',
-                'referal_code'  =>'nullable|exists:users,referal_code'
+                'email'      => 'required|email',
+                'password'   => 'required|min:8',
+                'user_type'  => 'in:freelancer,client',
+                'country'    =>'required',
+                'agree_terms'=>'required|in:1',
+                'send_email' =>'in:0,1',
+                'referal_code'=>'nullable|exists:users,referal_code'
                     
             ]);
             if ($validator->fails()) {   
@@ -56,9 +56,20 @@ class AuthController extends Controller
             if($user){
                 // add here delete case | suspended(blocked) | 
 
+                if($request->user_type == "freelancer"){
+                    $roleUser = 2;
+                }
+                if($request->user_type == "client"){
+                    $roleUser = 3;
+                }
                 if($user->deleted_at == null){
+                    $checkRole = DB::table('role_user')->where('user_id',$user->id)->first();
+                    if($checkRole->role_id  != $roleUser){
+                        return ResponseBuilder::error(__("Email already exists"), $this->badRequest);
+                    }
+                
                     if($user->email_verified_at){
-                        return ResponseBuilder::error(__("User Already Exist with this email"), $this->badRequest);
+                        return ResponseBuilder::error(__("User already exist with this email"), $this->badRequest);
                     }else{
                         // generate OTP
                         $user->update([
@@ -94,7 +105,7 @@ class AuthController extends Controller
                         ];
 
                         Mail::to($user->email)->send(new SendMail($config));
-                        return ResponseBuilder::success($this->response, 'Registered Successfully! Please verify your email ');
+                        return ResponseBuilder::success($this->response, 'Registered successfully! Please verify your email ');
                     }
                 }else{
                     $user->name=$request->first_name.' '.$request->last_name;
@@ -188,7 +199,7 @@ class AuthController extends Controller
             $this->response->email = $user->email;
             $this->response->otp = $user->otp;
 
-            return ResponseBuilder::success($this->response, 'Registered Successfully ! Please verify your email ');
+            return ResponseBuilder::success($this->response, 'Registered successfully ! Please verify your email ');
             
         }
         catch (exception $e) {
@@ -215,7 +226,7 @@ class AuthController extends Controller
             }
             if(strtotime($user->otp_created_at) < strtotime(now())) 
             {
-                return ResponseBuilder::error(__('Your OTP is Expired , Please Resend OTP'), $this->badRequest);    
+                return ResponseBuilder::error(__('Entered OTP expired, Please resend OTP'), $this->badRequest);    
             }
             if($user->otp == $request->otp){
                 $user->otp_created_at = $user->otp = null;
@@ -226,12 +237,12 @@ class AuthController extends Controller
                 $token = $user->createToken('Token')->accessToken;
                 $this->setAuthResponse($user);
 
-                return ResponseBuilder::successWithToken($token, $this->response, "Your Account Succcessfully Verified");
+                return ResponseBuilder::successWithToken($token, $this->response, "Your account succcessfully verified");
                
             }
         }catch (\Exception $e) {
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
-        }
+        }   
 
     }
 
@@ -284,7 +295,7 @@ class AuthController extends Controller
 
             Mail::to($request->email)->send(new SendMail($config));
 
-            return ResponseBuilder::success($this->response,'Resend OTP Successfully');
+            return ResponseBuilder::success($this->response,'Resend OTP successfully');
         } catch (exception $e) {
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
         }
@@ -317,6 +328,9 @@ class AuthController extends Controller
             }
                 if($user->email_verified_at){
                     if($user->status == 'approve'){
+                        if($user->deleted_at != null){
+                            return ResponseBuilder::error("Your account is closed! please contact to support.",$this->badRequest);
+                        }
                         if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){
                             $user = Auth::user();
                             $userRole = strtolower($user->roles()->first()->title);
@@ -326,9 +340,9 @@ class AuthController extends Controller
                                 $user->last_activity = now();
                                 $user->save();
                                 $this->setAuthResponse($user);
-                                return ResponseBuilder::successWithToken($token, $this->response, 'Login Successfully');
+                                return ResponseBuilder::successWithToken($token, $this->response, 'Login successfully');
                             }else{
-                                return ResponseBuilder::error( __("These credentials do not match our records"), $this->badRequest);
+                                return ResponseBuilder::error( __("Above credentials doesn't match with our records"), $this->badRequest);
                             }
                             
                         }
@@ -339,7 +353,7 @@ class AuthController extends Controller
                         return ResponseBuilder::successMessage( __("Your account is not approved"), $this->badRequest);
                     }
                 }else{
-                    return ResponseBuilder::successMessage( __("Please verify your email address"), $this->badRequest);
+                    return ResponseBuilder::successMessage( __("Please signup again to verify the account."), $this->badRequest);
                 }
             
         } catch (\Exception $e) {
@@ -354,6 +368,8 @@ class AuthController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'email'  => 'required|email|exists:users',
+            ],[
+                'exists'   =>"Selected email is not matched with our record."
             ]);
 
             if ($validator->fails()) {
@@ -363,7 +379,7 @@ class AuthController extends Controller
             $otp = Helper::generateOtp();
             $user = User::where('email', '=', $request->email)->first();
             if(empty($user)){
-                return ResponseBuilder::error(__("User Not Registered"), $this->badRequest);
+                return ResponseBuilder::error(__("User not registered"), $this->badRequest);
             }
             else
             {
@@ -393,7 +409,7 @@ class AuthController extends Controller
              
                 Mail::to($request->email)->send(new SendMail($config));
                 $this->response->otp = $user->otp;
-                return ResponseBuilder::success($this->response,"OTP Sent Successfully on you Email address");
+                return ResponseBuilder::success($this->response,"OTP sent on your email");
             }
         } catch (\Exception $e) {
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -415,13 +431,13 @@ class AuthController extends Controller
             $user = User::where('email', $request->get('email'))->first();
 
             if ($user->otp != $request->otp) {
-                return ResponseBuilder::error(__("Your OTP is Invalid"), $this->badRequest);
+                return ResponseBuilder::error(__("Your OTP is invalid"), $this->badRequest);
             }
 
             // check otp is expired or not
             if(strtotime($user->otp_created_at) < strtotime(now())) 
             {
-                return ResponseBuilder::error(__("Your OTP is Expired "), $this->badRequest);
+                return ResponseBuilder::error(__("Entered OTP expired"), $this->badRequest);
             }
             
             if (!$user->email_verified_at) {
@@ -433,7 +449,7 @@ class AuthController extends Controller
             
             $this->response->email  = $user->email;
             
-            return ResponseBuilder::success($this->response, "OTP Verify Successfully ");
+            return ResponseBuilder::success($this->response, "OTP verify successfully ");
         } catch (\Exception $e) {
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
         }
@@ -461,7 +477,7 @@ class AuthController extends Controller
                 $user->save();
                 $token = $user->createToken('Token')->accessToken;
                 $this->setAuthResponse($user);
-                return ResponseBuilder::successWithToken($token, $this->response,"Password Reset Successfully");
+                return ResponseBuilder::successWithToken($token, $this->response,"Password reset successfully");
             } else {
                 return ResponseBuilder::error(__("User Not Registered"), $this->badRequest);
             }
@@ -495,13 +511,13 @@ class AuthController extends Controller
                 if(Hash::check($request->old_password, $user->password)){
                     $user->password = Hash::make($request->new_password);
                     $user->save();
-                    return ResponseBuilder::successMessage(__("Password changed Succcessfully"),$this->success);  
+                    return ResponseBuilder::successMessage(__("Password changed succcessfully"),$this->success);  
                 }
                 else{
-                    return ResponseBuilder::error(__("Old Password did not match"), $this->badRequest);
+                    return ResponseBuilder::error(__("Old password did not match"), $this->badRequest);
                 }
             } else {
-                return ResponseBuilder::error(__("User Not Registered"), $this->badRequest);
+                return ResponseBuilder::error(__("User not registered"), $this->badRequest);
             }
             
         } catch (\Exception $e) {
@@ -537,7 +553,7 @@ class AuthController extends Controller
             $user->online_status = $request->online_status;
             $user->save();
 
-            return ResponseBuilder::successMessage(__("Status Update Successfully"), $this->success);
+            return ResponseBuilder::successMessage(__("Status update successfully"), $this->success);
                         
         } catch (\Exception $e) {
             return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -547,37 +563,81 @@ class AuthController extends Controller
     public function social(Request $request)
     {
         try {
-
             $validator = Validator::make($request->all(), [
                 'provider'  => 'required|in:google,apple',
                 'token'     => 'required',
                 'user_type' =>  'required|in:client,freelancer'
             ]);
+
             if ($validator->fails()) {
                 return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
             }
+
             $social_user = Socialite::driver($request->provider)->stateless()->userFromToken($request->input('token'));
 
+            // dd($social_user);
             if (!$social_user) {
                 throw new Error(Str::replaceArray('?', [$request->provider], __('messages.invalid_social')));
             }
 
             $token = Str::random(80);
-            $account = SocialAccount::where("provider_user_id", $social_user->getId())
+
+            $getUser = SocialAccount::where("provider_user_id", $social_user->getId())
                 ->where("provider", $request->provider)
                 ->with('user')->first();
-                // dds($account);
-            if ($account) {
-                $user = User::where(["id" => $account->user->id])->first();
+             
+
+            if($request->user_type == "freelancer"){
+                $roleUser = 2;
+            }
+            if($request->user_type == "client"){
+                $roleUser = 3;
+            }
+
+            if (!empty($getUser->user)) {
+                $user = User::where(["id" => $getUser->user->id])->first();
+                if($user->deleted_at != NULL){
+                    return ResponseBuilder::error("Your account is closed! please contact to support.",$this->success);
+                }
+                
+                $checkRole = DB::table('role_user')->where('user_id',$user->id)->first();
+
+                if($checkRole->role_id  != $roleUser){
+                    return ResponseBuilder::error(__("Email already exists"), $this->badRequest);
+                }
+                $pwd = Str::random(10);
+
                 $user->api_token = hash('sha256', $token);
                 $user->device_id = $request->input('device_id') ? $request->input('device_id') : "";
                 $user->device_token = $request->input('device_token') ? $request->input('device_token') : "";
+                $user->password = $user->password = Hash::make($pwd);
                 $user->save();
+                
                 $data = new \stdClass();
                 $data->token = $user->createToken(env('APP_NAME'))->accessToken;
                 $this->setAuthResponse($user);
-                return ResponseBuilder::successWithToken($data->token, $this->response, 'Login Successfully');
-                // return response()->json(['data' => $data, 'status' => true, 'message' => 'verify_success', 'details' => $user]);
+
+                $mail_data = Mails::where('user_category', 'user')->where('mail_category', 'social_login')->first();
+                $basicinfo = [
+                    '{password}'=>$pwd,
+                    '{email}'=>$user->email,
+                ];
+
+                $msg = $mail_data->message;
+                foreach($basicinfo as $key=> $info){
+                    $msg = str_replace($key,$info,$msg);
+                }
+                
+                $config = ['from_email' => $mail_data->mail_from,
+                    "reply_email" => $mail_data->reply_email,
+                    'subject' => $mail_data->subject, 
+                    'name' => $mail_data->name,
+                    'message' => $msg,
+                ];
+
+                Mail::to($user->email)->send(new SendMail($config));
+
+                return ResponseBuilder::successWithToken($data->token, $this->response, 'Login successfully');
             } else {
                 $fname = $social_user->getName() ? $social_user->getName() : "";
                 $lname = $social_user->getNickname() ? $social_user->getNickname() : "";
@@ -626,15 +686,16 @@ class AuthController extends Controller
                 
                 if($request->user_type == 'freelancer'){
                     $role = 2;
-                    $freelancer = new Freelancer;
-                    $freelancer->user_id = $user->id;
-                    $freelancer->save();
+                    $freelancer = Freelancer::updateOrCreate([
+                        'user_id' => $user->id,
+                    ]);
+                    
                 }
                 if($request->user_type == 'client'){
                     $role = 3;
-                    $client = new Client;
-                    $client->user_id = $user->id;
-                    $client->save();
+                    $client = Client::updateOrCreate([
+                        'user_id' => $user->id,                        
+                    ]);
                 }
                 $user->roles()->sync($role);
 
@@ -646,7 +707,7 @@ class AuthController extends Controller
                 $data = new \stdClass();
                 $data->token = $user->createToken(env('APP_NAME'))->accessToken;
                 $this->setAuthResponse($user);
-                return ResponseBuilder::successWithToken($data->token, $this->response, 'Login Successfully');
+                return ResponseBuilder::successWithToken($data->token, $this->response, 'Login successfully');
             }
         } 
         catch (\Exception $e) {
@@ -677,37 +738,37 @@ class AuthController extends Controller
                 $clientCheck = Client::where('user_id',$user_id)->first();
                 if(!empty($clientCheck))
                 {
-                    return ResponseBuilder::successMessage(__("Already Registered as a Client"),$this->badRequest);
+                    return ResponseBuilder::successMessage(__("Already registered as a client"),$this->badRequest);
                 }else{
                     $clientCreate = new Client;
                     $clientCreate->user_id = $user_id;
                     $clientCreate->save();
-                    return ResponseBuilder::successMessage(__("Successfully Registered as a Client"),$this->success);
+                    return ResponseBuilder::successMessage(__("Successfully registered as a client"),$this->success);
                 }
             }
             if($request->user_type == "agency"){
                 $agencyCheck = Agency::where('user_id',$user_id)->first();
                 if(!empty($agencyCheck))
                 {
-                    return ResponseBuilder::successMessage(__("Already Registered as an Agency"),$this->success);
+                    return ResponseBuilder::successMessage(__("Already registered as an agency"),$this->success);
                 }else{
                     $agencyCreate = new Agency;
                     $agencyCreate->user_id = $user_id;
                     $agencyCreate->title = $request->agency_name;
                     $agencyCreate->save();
-                    return ResponseBuilder::successMessage(__("Successfully Registered as a Agency"),$this->success);
+                    return ResponseBuilder::successMessage(__("Successfully registered as a agency"),$this->success);
                 }
             }
             if($request->user_type == "freelance"){
                 $freelanceCheck = Freelancer::where('user_id',$user_id)->first();
                 if(!empty($freelanceCheck))
                 {
-                    return ResponseBuilder::successMessage(__("Already Registered as an Freelancer"),$this->success);
+                    return ResponseBuilder::successMessage(__("Already registered as an freelancer"),$this->success);
                 }else{
                     $freelanceCreate = new Freelancer;
                     $freelanceCreate->user_id = $user_id;
                     $freelanceCreate->save();
-                    return ResponseBuilder::successMessage(__("Successfully Registered as a Freelancer"),$this->success);
+                    return ResponseBuilder::successMessage(__("Successfully registered as a freelancer"),$this->success);
                 }
             }
         }
@@ -750,7 +811,7 @@ class AuthController extends Controller
             $user_req->is_verified = 'requested';
             $user_req->save();
 
-            return ResponseBuilder::successMessage("Upload Document Successfully", $this->success);
+            return ResponseBuilder::successMessage("Upload document successfully", $this->success);
 
         }catch(\Exception $e)
         {

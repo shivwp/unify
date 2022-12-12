@@ -10,7 +10,6 @@
                        <h5> Show Freelancer Details</h5>
                     </div>
                     <br>
-                  
                     <div class="card-body">
                         <div class="mb-2">
                             <div class="row">
@@ -68,6 +67,26 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                 <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Experience Level</strong></h6>
+
+                                            <div class="even mt-3">
+                                                <div class="parc">
+                                                    @if($f_data->freelancer->experience_level !== null)
+                                                    <span class="pip">
+                                                        {{$f_data->freelancer->experience_level}}
+                                                    </span>
+                                                    @else
+                                                       {{'Not found'}}
+                                                    @endif
+                                                </div>
+                                            </div>
+                                    
+                                    </div>
+                                </div>
+
                             </div> 
                             <br>
                             <div class="row">
@@ -386,7 +405,7 @@
                                     <div class="p-3 listViewclr">
                                         <h6><strong>Skills</strong></h6>
                                     @foreach($f_data->freelancer->freelancer_skills as $value)
-                                            <span class="btn-primary" style="padding: 10px border-radius: 40%; margin: 5px;">{{ $value->skill_name ?? ''}}</span>
+                                            <span class="btn-xs text-capitalize btn-dark">{{ $value->skill_name ?? ''}}</span>
                                         
 
                                     @endforeach

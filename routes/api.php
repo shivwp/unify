@@ -58,11 +58,12 @@
     Route::post('specialization-list', [App\Http\Controllers\Api\CommonController::class, 'specializationlist']);
     Route::get('certificate-list', [App\Http\Controllers\Api\CommonController::class, 'certificatelist']);
     Route::post('change-password', [App\Http\Controllers\Api\AuthController::class, 'changepassword']);
-    Route::post('single-job', [App\Http\Controllers\Api\JobController::class, 'singleJob']);
+    Route::get('single-job/{job_id}', [App\Http\Controllers\Api\JobController::class, 'singleJob']);
     Route::get('home-data', [App\Http\Controllers\Api\CommonController::class, 'homeData']);
     Route::post('category-skills', [App\Http\Controllers\Api\CommonController::class, 'categorySkills']);
     Route::post('skill-freelancer', [App\Http\Controllers\Api\CommonController::class, 'skillfreelaner']);
     Route::get('subscription-list', [App\Http\Controllers\Api\CommonController::class, 'subscriptionList']);
+    Route::get('decline-reason-list/{type}', [App\Http\Controllers\Api\CommonController::class, 'decline_reasons']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('connected-service', [App\Http\Controllers\Api\AuthController::class, 'connected_service']);
@@ -76,6 +77,15 @@ Route::middleware('auth:api')->group(function () {
     Route::post('save-shortlist',[App\Http\Controllers\Api\ClientJobController::class,'addInShortList']);
     Route::post('remove-shortlist',[App\Http\Controllers\Api\ClientJobController::class,'removeFromShortList']);
     Route::get('shortlist-list/{job_id}',[App\Http\Controllers\Api\ClientJobController::class,'shortListDetail']);
+
+    //user payment cards
+    Route::post('add-payment-card',[App\Http\Controllers\Api\PaymentController::class,'addCard']);
+    Route::get('payment-cards-list',[App\Http\Controllers\Api\PaymentController::class,'allCardList']);
+    Route::post('delete-payment-card',[App\Http\Controllers\Api\PaymentController::class,'deleteCard']);
+
+    //single-proposal details
+    Route::get('single-proposal-details/{proposal_id}/{status}',[App\Http\Controllers\Api\ProposalController::class,'singleProposal']);
+
 });
 
 Route::group(['prefix' => 'v1', 'as' => 'api.', 'namespace' => 'Api\V1\Admin', 'middleware' => ['auth:api']], function () {

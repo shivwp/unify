@@ -10,7 +10,7 @@ class FreelancerResource extends JsonResource
     {
         return [
             'id'                =>(string)$this->id,
-            'profile_image'     =>isset($this->profile_image) ? url('/images/profile-image',$this->profile_image) : '',
+            'profile_image'     =>!empty($this->profile_image) ? url('/images/profile-image',$this->profile_image) : '',
             'visibility'        =>(string)$this->freelancer->visibility,
             'project_preference'=>(string)$this->freelancer->project_preference,
             'experience_level'  =>(string)$this->freelancer->experience_level,
@@ -37,7 +37,8 @@ class FreelancerResource extends JsonResource
             'category_id'       =>isset($this->category->id) ?$this->category->id  : '',
             'category'          =>isset($this->category->name) ?$this->category->name  : '',
             'is_verified'       =>(string)$this->is_verified,
-            'is_profile_complete'=>boolval($this->is_profile_complete)
+            'is_profile_complete'=>boolval($this->is_profile_complete),
+            'success_rate'      =>"90%"
         ];
     }
 }

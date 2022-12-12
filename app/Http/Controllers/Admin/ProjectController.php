@@ -27,6 +27,7 @@ use PDF;
 use DB;
 use App\Models\Project_proposals;
 use App\Models\SendProposal;
+use App\Models\ProjectMilestone;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
@@ -413,6 +414,8 @@ class ProjectController extends Controller
         ->where('users.deleted_at','=',null)->get();
         $proposals=SendProposal::where('project_id',$project->id)->where('type', '=', 'proposal')->with(['users' => function($query){$query->where('deleted_at', '=', null);}])->orderby('id','desc');
         $contract=SendProposal::where('project_id',$project->id)->where('type', '=', 'offer')->with(['users' => function($query){$query->where('deleted_at', '=', null);}]);
+
+
         $d['statuses'] = ProjectStatus::orderBy('name', 'ASC')->pluck('name', 'id');
         $d['category'] = ProjectCategory::all();
         $d['skill'] = ProjectSkill::all();
@@ -421,11 +424,7 @@ class ProjectController extends Controller
         $d['proposals']=$proposals->paginate(5);
         $d['contract']=$contract->first();
         $d['project'] = $project;
-
-        
-        
-     
-        return view('admin.projects.show',$d, compact('project', 'proposals'));
+        return view('admin.projects.show',$d, compact('project', 'proposals',));
 
     }
 
@@ -487,10 +486,9 @@ class ProjectController extends Controller
 
     public function project_proposal($id)
     {
-
-        $d['proposal'] = SendProposal::join('projects', 'send_proposals.project_id', '=', 'projects.id')->where('send_proposals.id', $id)->with('users', 'client')->select('send_proposals.*', 'projects.*', 'send_proposals.status as send_proposal_status')->first();
-
-        // dd($d['proposal']);
+        $proposal = SendProposal::join('projects', 'send_proposals.project_id', '=', 'projects.id')->where('send_proposals.id', $id)->with('users', 'client')->select('send_proposals.*', 'projects.*', 'send_proposals.status as send_proposal_status')->first();
+        $d['milestone']  = ProjectMilestone::where('proposal_id', $id)->where('project_id',$proposal->project_id)->get();
+        $d['proposal'] = $proposal;
         return view('admin.projects.project-proposal', $d);
     }
 

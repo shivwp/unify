@@ -87,7 +87,7 @@
 
                     <div class="card-body">
                         <div class="table">
-                            <table id="example" class="table table-striped table-bordered">
+                            <table id="example" class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>S No.</th>
@@ -106,7 +106,7 @@
                                     @if(count($users)>0)
 
                                         @foreach($users as $key => $user)
-                                            <tr data-entry-id="{{ $user->id }}">
+                                            <tr data-entry-id="{{ $user->id }}" @if($user->deleted_at !== null) style="background-color:#dbc7c7" @endif>
                                                 <td>{{ $user->id ?? ''}}</td>
                                                 <td>{{ $user->name ?? '' }}</td>
                                                 <td>{{ $user->email ?? '' }}</td>
@@ -134,15 +134,7 @@
                                                             <button class="btn btn-sm btn-icon me-2"><i class="bx bx-edit" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Edit</span>"></i></button>
                                                         </a>
                                                     @endcan
-                    
-                                                    @can('user_delete')
-                                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline-block;">
-                                                            <input type="hidden" name="_method" value="DELETE">
-                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                            <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
-                                                            
-                                                        </form>
-                                                    @endcan
+                    								
 
                                                     @if($user->status == 'approve' || $user->status == 'pending')
                                                         <a href="{{route('admin.users.block', $user->id)}}">
@@ -153,6 +145,17 @@
                                                             <button class="btn btn-sm btn-icon me-2"><i class="bx bx-lock" style="color: green" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Unblock</span>"></i></button>
                                                         </a>
                                                     @endif
+
+                                                    @can('user_delete')
+                                                    @if($user->deleted_at ==null)
+                                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display: inline-block;">
+                                                            <input type="hidden" name="_method" value="DELETE">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                            <button type="submit" class="btn btn-sm btn-icon delete-record"><i class="bx bx-trash" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title=" <span>Delete</span>"></i></button>
+                                                            
+                                                        </form>
+                                                    @endif
+                                                    @endcan
                                                 </td>
                                             </tr>
                                         @endforeach

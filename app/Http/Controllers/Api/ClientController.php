@@ -40,7 +40,7 @@ class ClientController extends Controller
             if($singleuser->roles()->first()->title == "Client"){
                $user_id = $singleuser->id;
             }else{
-               return ResponseBuilder::error(__("Please Login with Valid Credentials"), $this->badRequest);
+               return ResponseBuilder::error(__("Please login with valid credentials"), $this->badRequest);
             }
          } 
          else{
@@ -97,7 +97,7 @@ class ClientController extends Controller
          }
          $user_name->save();
 
-         return ResponseBuilder::successMessage("Update Successfully",$this->success);
+         return ResponseBuilder::successMessage("Update successfully",$this->success);
 
       // }catch(\Exception $e){
       //    return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -113,7 +113,7 @@ class ClientController extends Controller
             if($singleuser->roles()->first()->title == "Client"){
                $user_id = $singleuser->id;
             }else{
-               return ResponseBuilder::error(__("Please Login with Valid Credentials"), $this->badRequest);
+               return ResponseBuilder::error(__("Please login with valid credentials"), $this->badRequest);
             }
          } 
          else{
@@ -124,11 +124,10 @@ class ClientController extends Controller
          $this->response->client = new ClientResource($client_profile_data);
          $plan = Plans::with('services:service_name,description')->where('id',$client_profile_data->plan_id)->select('id','plans_title','validity','amount','description')->first();
          if(!empty($plan)){
-            
-         $this->response->subscription = new SubscriptionSingleResource($plan);
+            $this->response->subscription = new SubscriptionSingleResource($plan);
          }
 
-         return ResponseBuilder::success($this->response, "Client Profile data");
+         return ResponseBuilder::success($this->response, "Client profile data");
 
       }catch(\Exception $e)
       {
@@ -161,13 +160,14 @@ class ClientController extends Controller
          $reasonTitle = AccountCloseReason::where('id',$reason_id)->select('title')->first();
          $userAccountStatus = User::where('id',$user_id)->first();
          $userAccountStatus->close_status = $reasonTitle->title;
-         $userAccountStatus->delete();
+         $userAccountStatus->deleted_at = now();
+         $userAccountStatus->save();
 
          $socialUser = SocialAccount::where('user_id',$user_id)->first();
          if(!empty($socialUser)){
             $socialUser->delete();
          }
-         return ResponseBuilder::successMessage("Close Account successfulyy", $this->success);
+         return ResponseBuilder::successMessage("Close account successfully", $this->success);
 
       }catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -183,7 +183,7 @@ class ClientController extends Controller
             if($singleuser->roles()->first()->title == "Client"){
                $user_id = $singleuser->id;
             }else{
-               return ResponseBuilder::error(__("Please Login with Valid Credentials"), $this->badRequest);
+               return ResponseBuilder::error(__("Please login with valid credentials"), $this->badRequest);
             }
          } 
          else{
@@ -209,7 +209,7 @@ class ClientController extends Controller
          $client->description = $request->description;
          $client->save();
 
-         return ResponseBuilder::successMessage("Add Rating Successfully",$this->success);
+         return ResponseBuilder::successMessage("Add rating successfully",$this->success);
 
       }catch(\Exception $e){
          return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
@@ -225,7 +225,7 @@ class ClientController extends Controller
          if(!empty($client_data))
          {
             $this->response = new ClientCollection($client_data);
-            return ResponseBuilder::success($this->response, "Client Profile data");
+            return ResponseBuilder::success($this->response, "Client profile data");
          }
       }catch(\Exception $e)
       {
@@ -286,7 +286,7 @@ class ClientController extends Controller
          $client_profile_data = $this->getClientInfo($request->user_id);
          $this->response->client = new ClientResource($client_profile_data);
 
-         return ResponseBuilder::success($this->response, "Client Profile data");
+         return ResponseBuilder::success($this->response, "Client profile data");
 
       }catch(\Exception $e)
       {

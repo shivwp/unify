@@ -58,6 +58,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //Dislike Reason
     Route::resource('dislike-reason', 'DislikeReasonController');
 
+    //Decline Reason
+    Route::resource('decline-reason','DeclineReasonController');
+
     //hoursPerWeek
     Route::resource('hours-per-week', 'HoursController');
 

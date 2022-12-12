@@ -28,6 +28,8 @@ class UserResource extends JsonResource
             'agree_terms'       =>boolval($this->agree_terms),
             'send_email'        =>boolval($this->send_email),
             'user_type'         =>(string)$request->user_type,
+            'plan_id'           =>(string)$this->plan_id,
+            'is_subscription'   =>boolval($this->plan_id),
             'is_verified'       =>(string)$this->is_verified,
             'is_profile_complete'=>boolval($this->is_profile_complete),
         ];

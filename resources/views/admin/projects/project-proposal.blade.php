@@ -137,7 +137,41 @@
                                         <p class="mb-0">{{ $proposal->cover_letter ?? '-' }}</p>
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Project Milestone</strong></h6>
+                                        <!-- {{$milestone}} -->
+                                @if(count($milestone)>0)
 
+                                        <table class="table table-striped table-hover table-bordered">
+                                            <thead>
+                                                <tr class="">
+                                                    <th class="w-25">Description</th>
+                                                    <th >Project Duration</th>
+                                                    <th >Amount</th>
+                                                    <th >Due Date</th>
+                                                    <th >Status</th>
+                                                    <th >Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($milestone as $key => $mile)
+                                                <tr class="">
+                                                    <td class="w-25">{{$mile->description}}</td>
+                                                    <td >{{$mile->project_duration}}</td>
+                                                    <td >{{$mile->amount}}</td>
+                                                    <td >{{$mile->due_date}}</td>
+                                                    <td >{{$mile->status}}</td>
+                                                    <td>{{$mile->type}}</td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        @else
+                                        <h6>Not found milestone data</h6>
+                                        @endif
+                                    </div>
+                                </div>
                             </div> 
                             <a class="btn btn-warning btn_back" href="{{ url()->previous() }}">
                                 {{ 'Back' }}

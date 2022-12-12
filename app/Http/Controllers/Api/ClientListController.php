@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Helper\ResponseBuilder;
 use Illuminate\Http\Request;
 use App\Models\SendProposal;
+use App\Models\DeclineData;
 use App\Models\ProjectProjectSkill;
 use App\Models\FreelancerSkill;
 use App\Models\SaveArchive;
@@ -43,6 +44,7 @@ class ClientListController extends Controller
          	   return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
          	}
          	$page = !empty($request->pagination) ? $request->pagination : 10; 
+         	$clientId = Project::where('id',$request->project_id)->select('id','client_id')->first();
          	$projectSkills = ProjectProjectSkill::where('project_id',$request->project_id)->pluck('project_skill_id')->toArray();
          	$freelancerSkills = FreelancerSkill::whereIn('skill_id',$projectSkills)->pluck('user_id')->toArray();
 
@@ -71,16 +73,17 @@ class ClientListController extends Controller
          	{	
          		foreach ($data as $key => $value) {
          			$value->freelancerskills = isset($freelancerSkillData[$value->user_id])?$freelancerSkillData[$value->user_id]:[];
+         			$value->client_project = $clientId;
          		}
      			$this->response = new FreelancerFilterCollection($data);
-         		return ResponseBuilder::successWithPagination($data,$this->response, "Freelancer Profile Data",$this->success);
+         		return ResponseBuilder::successWithPagination($data,$this->response, "Freelancer profile data",$this->success);
          	}else{
-         		return ResponseBuilder::error("No data found",$this->badRequest);
+         		return ResponseBuilder::successWithPagination($data,[],"No data found",$this->success);
          	}
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error($e->getMessage(),$this->serverError);
+			return ResponseBuilder::error("Oops! Something went wrong.",$this->serverError);
 		}
 	}
 
@@ -104,29 +107,35 @@ class ClientListController extends Controller
 				return ResponseBuilder::error($validator->errors()->first(),$this->badRequest);
 			}
 			$page = !empty($request->pagination) ? $request->pagination : 10;
+			$declineProposal = DeclineData::where('client_id',$user_id)->where('type','decline_proposal')->pluck('data_id')->toArray();
 			$archived = SaveArchive::where('client_id',$user_id)->where('job_id',$request->project_id)->pluck('freelancer_id')->toArray();
-			$propsalData = SendProposal::join('freelancer','freelancer.user_id','send_proposals.freelancer_id')->join('users','users.id','freelancer.user_id')->where('send_proposals.project_id',$request->project_id)->where('send_proposals.client_id',$user_id)->select('send_proposals.freelancer_id','send_proposals.cover_letter','users.first_name','users.last_name','users.profile_image','users.country','users.city','freelancer.occcuption','freelancer.amount','freelancer.total_earning');
+			$propsalData = SendProposal::join('freelancer','freelancer.user_id','send_proposals.freelancer_id')->join('users','users.id','freelancer.user_id')->where('send_proposals.project_id',$request->project_id)->where('send_proposals.client_id',$user_id)->where('type','proposal')->where('send_proposals.status','pending')->select('send_proposals.freelancer_id','send_proposals.status as proposal_status','send_proposals.id as send_proposal_id','send_proposals.client_id','send_proposals.project_id','send_proposals.cover_letter','users.first_name','users.last_name','users.profile_image','users.country','users.city','freelancer.occcuption','freelancer.amount','freelancer.total_earning');
+
 			if(!empty($archived))
 			{
-				foreach($data as $value)
+				$propsalData->whereNotIn('freelancer_id',$archived);
+			}
+			if($declineProposal){
+	        	$propsalData->whereNotIn('send_proposals.id',$declineProposal);
+	        }
+			$dataproposal = $propsalData->paginate($page);
+			if(count($dataproposal) > 0)
+			{
+				foreach($dataproposal as $value)
 	        	{
 	        		$skills = FreelancerSkill::where('user_id',$value->freelancer_id)->select('skill_id','skill_name')->get();
 	        		$value['skills'] = $skills;
 	        	}
-				$propsalData->whereNotIn('freelancer_id',$archived);
-			}
-			$dataproposal = $propsalData->paginate($page);
-			if(count($dataproposal) < 1)
-			{
-				return ResponseBuilder::error("No data found",$this->badRequest);
+				$this->response = new JobProposalCollection($dataproposal);
+				return ResponseBuilder::successWithPagination($dataproposal, $this->response, "All proposals",$this->success);
+			}else{
+				return ResponseBuilder::successWithPagination($dataproposal,[],"No data found",$this->success);
 			}
 
-			$this->response = new JobProposalCollection($dataproposal);
-			return ResponseBuilder::successWithPagination($dataproposal, $this->response, "All Proposals",$this->success);
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error($e->getMessage(),$this->serverError);
+			return ResponseBuilder::error("Oops! Something went wrong.",$this->serverError);
 		}
 	}
 }

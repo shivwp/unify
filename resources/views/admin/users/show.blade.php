@@ -79,6 +79,24 @@
                                         @endif
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 listViewclr">
+                                        <h6><strong>Visiblity status</strong></h6>
+
+                                        @if(!empty($user->online_status))
+                                            <div class="even mt-3">
+                                                <div class="parc">
+                                                    <span class="pip" data-title="{{$user->online_status}}">
+                                                        {{$user->online_status}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        
+                                        @endif
+                                    </div>
+                                </div>
+
+                               
 
                                 @if(!empty($user->social_id))
                                     <div class="col-md-4">

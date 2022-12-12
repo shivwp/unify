@@ -19,7 +19,7 @@ class FreelancerFilterCollection extends ResourceCollection
             'email'             =>isset($data->email) ? $data->email : '',
             'occuption'         =>isset($data->freelancer->occcuption) ? $data->freelancer->occcuption : '',
             'description'       =>isset($data->freelancer->description) ? $data->freelancer->description : '',
-            'amount'            =>isset($data->freelancer->amount) ? (float)$data->freelancer->amount : '',
+            'amount'            =>isset($data->amount) ? (integer)$data->amount : 0,
             'address'           =>isset($data->address) ? $data->address : '',
             'country'           =>isset($data->country) ? $data->country : '',
             'state'             =>isset($data->state) ? $data->state : '',
@@ -28,7 +28,10 @@ class FreelancerFilterCollection extends ResourceCollection
             'category'          =>isset($data->projectCategoryName) ?$data->projectCategoryName  : '',
             'skills_count'      =>count($data->freelancerskills),
             'skills'            =>$data->freelancerskills,
-            'isInvite'          =>Auth::guard('api')->check() ? $data->isInvite($data->user_id) : false,    
+            'isInvite'          =>$data->isInvite($data->user_id,$data->client_project->client_id,$data->client_project->id),    
+            'isSaveTalent'      =>$data->isSaveTalent($data->user_id,$data->client_project->client_id), 
+            'is_verified'       =>(string)$data->is_verified,   
+            'success_rate'      =>"90%"
         ];
         });
     }

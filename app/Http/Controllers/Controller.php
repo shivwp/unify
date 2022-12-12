@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use App\Helper\ResponseBuilder;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -175,7 +176,6 @@ class Controller extends BaseController
     {
         $clientData = User::with('client')->where('id', $clientId)->first();
         $ClientRating = ClientRating::where('client_id', $clientId)->get();
-        // $clientData->rating = 
         return $clientData;
     }
 
@@ -185,6 +185,50 @@ class Controller extends BaseController
         $randomCode = rand(1000, 9999);
         $code = $capitalName.$randomCode;
         return $code;
+    }
+
+    public function stripCustomerPayment($user_id, $stripe_token, $amount)
+    {
+        try{
+            $stripeAccount = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            $user = User::where('id',$user_id)->first();
+
+            if(empty($user->customer_id))
+            {   
+                $customer = $stripeAccount->customers->create([
+                    'description' => 'customer_' . $user_id,
+                    'email' => $user->email,
+                    'name' => $user->first_name . ' ' . $user->last_name,
+                    "source" => $stripe_token,
+                ]);
+
+                $customer_id = $customer->id;
+                // Create new customer
+                User::where('id', $user->id)->update(['customer_id' => $customer_id]);
+            }
+            else {
+                $customer_id = $user->customer_id;
+            }
+
+            //payment initiate
+            $paymentIntent = \Stripe\PaymentIntent::create([
+                'customer' => $customer_id,
+                'amount' => $amount * 100, 
+                'currency' => 'usd',
+                'payment_method_types' => ['card'],
+                // 'payment_method' => $card_token,//, // 'card_1Jht6ZEUI2VlKHRnc5KrHBMF',
+                'transfer_group' => 1,
+                'confirm' => 'true',
+            ]);
+
+            return $paymentIntent;
+        }
+        catch(\Stripe\Exception\InvalidRequestException $e)
+        {
+            return ResponseBuilder::error($e->getMessage(),$this->serverError);
+        }
     }
 
 

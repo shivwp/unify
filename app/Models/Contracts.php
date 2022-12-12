@@ -15,9 +15,9 @@ class Contracts extends Model
     ];
 
     protected $fillable = [
-        'type',
+        'budget_type',
         'project_id',
-        'project_title',
+        'weekly_limit',
         'proposal_id',
         'start_time',
         'end_time',

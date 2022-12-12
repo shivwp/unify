@@ -67,15 +67,15 @@ class ClientJobController extends Controller
 	       	if(count($jobdata) > 0){
 	       		$jobdata->user_id = $user_id;
 	       		$this->response = new ProjectResource($jobdata);
-	        	return ResponseBuilder::successWithPagination($jobdata,$this->response,'Client all Post Jobs',$this->success);
+	        	return ResponseBuilder::successWithPagination($jobdata,$this->response,'Client all post jobs',$this->success);
 	       	}else{
-	       		return ResponseBuilder::error("No data found", $this->badRequest);
+	       		return ResponseBuilder::successWithPagination($jobdata,[],"No data found",$this->success);
 	       	}
 	        
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
 		}
 	}
 	public function allDraftPosting(Request $request)
@@ -100,15 +100,15 @@ class ClientJobController extends Controller
 	        if(count($jobdata) > 0){
 	       		$jobdata->user_id = $user_id;
 	       		$this->response = new ProjectResource($jobdata);
-	        	return ResponseBuilder::successWithPagination($jobdata,$this->response,'Client all draft Post Jobs',$this->success);
+	        	return ResponseBuilder::successWithPagination($jobdata,$this->response,'Client all draft post jobs',$this->success);
 	       	}else{
-	       		return ResponseBuilder::error("No data found", $this->badRequest);
+	       		return ResponseBuilder::successWithPagination($jobdata,[],"No data found",$this->success);
 	       	}
 
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
 		}
 	} 
 
@@ -143,13 +143,13 @@ class ClientJobController extends Controller
 		        $invite_freelancer->save();
 		        return ResponseBuilder::successMessage("Invite sucessfully", $this->success);
 	        }else{
-	        	return ResponseBuilder::error("Already Sent Invite", $this->badRequest);
+	        	return ResponseBuilder::error("Already sent invite", $this->badRequest);
 	        }
 
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
 		}
 	}
 
@@ -177,7 +177,7 @@ class ClientJobController extends Controller
 	        {
 	        	if($clientProject->status == "active")
 	        	{
-	        		return ResponseBuilder::error("Project is Active , You can not close this Project", $this->badRequest);
+	        		return ResponseBuilder::error("Project is active , You can not close this project", $this->badRequest);
 	        	}
 	        	elseif($clientProject->status == "close")
 	        	{
@@ -190,7 +190,7 @@ class ClientJobController extends Controller
 	        		$closeJob->project_id = $request->project_id;
 	        		$closeJob->reason_id = $request->reason_id;
 	        		$closeJob->save();
-	        		return ResponseBuilder::successMessage("Project Close sucessfully", $this->success);
+	        		return ResponseBuilder::successMessage("Project close sucessfully", $this->success);
 	        	}
 	        }
 	        else
@@ -200,7 +200,7 @@ class ClientJobController extends Controller
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error($e->getMessage(), $this->badRequest);
+			return ResponseBuilder::error("Oops! Something went wrong.", $this->badRequest);
 		}
 	}
 
@@ -236,13 +236,51 @@ class ClientJobController extends Controller
 				$savetalent->freelancer_id = $request->freelancer_id;
 				$savetalent->save();
 
-				return ResponseBuilder::successMessage('Talent saved Successfully', $this->success);
+				return ResponseBuilder::successMessage('Talent saved successfully', $this->success);
 			}
 
 		} catch (\Exception $e) {
-			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
 		}
 	}
+
+
+	public function removeSaveTalent(Request $request)
+	{
+		try {
+			if(Auth::guard('api')->check()){
+				$singleuser = Auth::guard('api')->user();
+				$user_id = $singleuser->id;
+			}
+			else{
+				return ResponseBuilder::error(__("User not found"),$this->unauthorized);
+			}
+
+			$validator = Validator::make($request->all(),[
+				'freelancer_id' => 'required|exists:freelancer,user_id',
+			]);
+
+			if($validator->fails()){
+				return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
+			}
+
+			$data = SavedTalent::where('client_id','=', $user_id)->where('freelancer_id','=', $request->freelancer_id)->first();
+
+			if(!empty($data))
+			{	
+				$data->delete();
+				return ResponseBuilder::successMessage('Remove saved talent', $this->success);
+			}
+			else
+			{
+				return ResponseBuilder::error('No data found', $this->badRequest);
+			}
+
+		} catch (\Exception $e) {
+			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
+		}
+	}
+
 
 	public function saveTalentList(Request $request)
 	{
@@ -259,21 +297,26 @@ class ClientJobController extends Controller
 
 			if(!empty($allsavetalent)){
 				$talentuser = User::whereIn('id',$allsavetalent)->with('freelancer')->get();
-				if(!empty($talentuser))
+				if(count($talentuser) > 0)
 		        {
+		        	foreach($talentuser as $value)
+		        	{
+		        		$skills = FreelancerSkill::where('user_id',$value->id)->select('skill_id','skill_name')->get();
+		        		$value['skills'] = $skills;
+		        	}
 		            $this->response = new FreelancerCollection($talentuser);
-		            return ResponseBuilder::success($this->response, "All Saved Talent List");
+		            return ResponseBuilder::success($this->response, "All saved talent list");
 		        }
 		        else{
-		        	return ResponseBuilder::error("No Data found", $this->badRequest);
+		        	return ResponseBuilder::success($talentuser,"No data found");
 		        }
 			}else{
-				return ResponseBuilder::error("No Data found", $this->badRequest);
+				return ResponseBuilder::success($allsavetalent,"No data found");
 			}
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error($e->getMessage(), $this->serverError);
+			return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
 		}
 	}	
 
@@ -289,10 +332,8 @@ class ClientJobController extends Controller
              	return ResponseBuilder::error(__("User not found"), $this->unauthorized);
          	}
          	$all_inviteFreelance = InviteFreelacner::where('client_id',$user_id)->where('project_id',$request->project_id)->pluck('freelancer_id')->toArray();
-
          	if(!empty($all_inviteFreelance)){
 				$freelance_data = User::whereIn('id',$all_inviteFreelance)->with('freelancer')->get();
-				// dd($freelance_data);
 				if(count($freelance_data) > 0)
 		        {	
 		        	foreach($freelance_data as $value)
@@ -301,18 +342,18 @@ class ClientJobController extends Controller
 		        		$value['skills'] = $skills;
 		        	}
 		            $this->response = new FreelancerCollection($freelance_data);
-		            return ResponseBuilder::success($this->response, "Invited freelancer's List");
+		            return ResponseBuilder::success($this->response, "Invited freelancer's list");
 		        }
 		        else{
-		        	return ResponseBuilder::error("No Data found", $this->notFound);
+		        	return ResponseBuilder::success($freelance_data,"No data found");
 		        }
 			}else{
-				return ResponseBuilder::error('No data found', $this->serverError);
+				return ResponseBuilder::success($all_inviteFreelance,'No data found');
 			}
 		}
 		catch(\Expection $e)
 		{
-			return ResponseBuilder::error($e->getMessage(), $this->serverError);
+			return ResponseBuilder::error("Oops! Something went wrong.", $this->serverError);
 		}
 	} 
 
@@ -358,7 +399,7 @@ class ClientJobController extends Controller
    		} 
    		catch (Exception $e) 
    		{
-       		return ResponseBuilder::error(__($e->getMessage()), $this->serverError);     
+       		return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);     
    		}
    	}
    	public function archiveFreelancer($job_id)
@@ -376,9 +417,14 @@ class ClientJobController extends Controller
    			}
 
    			$save_archived = SaveArchive::where('client_id',$user_id)->where('job_id',$job_id)->pluck('freelancer_id')->toArray();
-   			$data = SendProposal::join('freelancer','freelancer.user_id','send_proposals.freelancer_id')->join('users','users.id','freelancer.user_id')->where('send_proposals.freelancer_id', $save_archived)->where('project_id',$job_id)->select('send_proposals.freelancer_id','send_proposals.cover_letter','users.first_name','users.last_name','users.profile_image','users.country','users.city','freelancer.occcuption','freelancer.amount','freelancer.total_earning')->get();
+   			$data = SendProposal::join('freelancer','freelancer.user_id','send_proposals.freelancer_id')
+   								->join('users','users.id','freelancer.user_id')
+   								->whereIn('send_proposals.freelancer_id', $save_archived)
+   								->where('project_id',$job_id)
+   								->select('send_proposals.freelancer_id','send_proposals.id as send_proposal_id','send_proposals.client_id','send_proposals.project_id','send_proposals.cover_letter','users.first_name','users.last_name','users.profile_image','users.country','users.city','freelancer.occcuption','freelancer.amount','freelancer.total_earning')
+   								->get();
 
-   			if(!empty($data))
+   			if(count($data) > 0)
    			{
    				foreach($data as $value)
 	        	{
@@ -390,13 +436,13 @@ class ClientJobController extends Controller
    			}
    			else
    			{
-   				return ResponseBuilder::error("No Data found", $this->notFound);
+   				return ResponseBuilder::success($data,"No Data found");
    			}
 
    		}
    		catch (Exception $e) 
    		{
-       		return ResponseBuilder::error(__($e->getMessage()), $this->serverError);     
+       		return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);     
    		}
 
    	}  
@@ -434,7 +480,7 @@ class ClientJobController extends Controller
    		} 
    		catch (Exception $e) 
    		{
-   			return ResponseBuilder::error(__($e->getMessage()), $this->serverError); 
+   			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError); 
    		}
    	}
 
@@ -459,7 +505,7 @@ class ClientJobController extends Controller
 
    			if($validator->fails())
    			{
-   				return ResponseBuilder::error($validator->error()->first(), $this->badRequest);
+   				return ResponseBuilder::error($validator->errors()->first(), $this->badRequest);
    			}
 
    			$exist = ShortListed::where('client_id',$user_id)
@@ -468,7 +514,7 @@ class ClientJobController extends Controller
 
          	if($exist)
          	{
-         		return ResponseBuilder::error(__("Details Already Exists"), $this->badRequest);
+         		return ResponseBuilder::error(__("Already shortlisted"), $this->badRequest);
          	}
 
      		$shortList = new ShortListed;
@@ -482,7 +528,7 @@ class ClientJobController extends Controller
    		}
    		catch(Exception $e)
    		{
-   			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+   			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
    		}
    	}
 
@@ -522,7 +568,7 @@ class ClientJobController extends Controller
    		}
    		 catch (Exception $e)
    		{
-   			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+   			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
    		}
    	}
 
@@ -542,27 +588,29 @@ class ClientJobController extends Controller
    			$frelancer_ids = ShortListed::where('client_id', $user_id)->where('job_id',$job_id)->pluck('freelancer_id')->toArray();
 
    			$data = SendProposal::join('freelancer','freelancer.user_id','send_proposals.freelancer_id')
-   								->join('users','users.id','freelancer.user_id')
-   								->where('send_proposals.freelancer_id', $frelancer_ids)
+   								->join('users','users.id','send_proposals.freelancer_id')
+   								->whereIn('send_proposals.freelancer_id', $frelancer_ids)
    								->where('project_id',$job_id)
-   								->select('send_proposals.freelancer_id','send_proposals.cover_letter','users.first_name','users.last_name','users.profile_image','users.country','users.city','freelancer.occcuption','freelancer.amount','freelancer.total_earning')
+   								->select('send_proposals.freelancer_id','send_proposals.id as send_proposal_id','send_proposals.client_id','send_proposals.project_id','send_proposals.cover_letter','users.first_name','users.last_name','users.profile_image','users.country','users.city','freelancer.occcuption','freelancer.amount','freelancer.total_earning')
    								->get();
-   			if(empty($data))
+   			if(count($data) > 0)
    			{
-   				return ResponseBuilder::error("No Data found", $this->notFound);
+	   			foreach($data as $value)
+		        {
+	        		$skills = FreelancerSkill::where('user_id',$value->freelancer_id)->select('skill_id','skill_name')->get();
+	        		$value['skills'] = $skills;
+		        }
+				$this->response = new JobProposalCollection($data);
+				return ResponseBuilder::success($this->response , "ShortListed freelancers");
    			}
-   			foreach($data as $value)
-	        {
-        		$skills = FreelancerSkill::where('user_id',$value->freelancer_id)->select('skill_id','skill_name')->get();
-        		$value['skills'] = $skills;
-	        }
-			$this->response = new JobProposalCollection($data);
-			return ResponseBuilder::success($this->response , $this->success);
-
+   			else{
+   				return ResponseBuilder::success( $data,"No Data found");
+   			}
+   			
    		}
    		catch (Exception $e)
    		{
-   			return ResponseBuilder::error(__($e->getMessage()), $this->serverError);
+   			return ResponseBuilder::error(__("Oops! Something went wrong."), $this->serverError);
    		}
    	}
 
